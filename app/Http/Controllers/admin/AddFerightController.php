@@ -49,4 +49,56 @@ class AddFerightController extends Controller
         );
         return redirect()->back()->with('success',"Freight Forwarder Add Successfully");
     }
+    public function manageferight()
+    {
+        $this->feright=FerightForwarder::all();
+
+        return view('admin.feright.user.manageuser',['forwarders'=>$this->feright]);
+    }
+
+    public function delete($id)
+    {
+        $this->feright = FerightForwarder::findOrFail($id);
+
+        if ($this->feright->image && file_exists(public_path($this->feright->image))) {
+            unlink(public_path($this->feright->image));
+        }
+
+        $this->feright->delete();
+
+        return redirect()->back()->with('success', 'Freight Forwarder deleted successfully');
+    }
+    public function edit($id)
+    {
+        $this->feright=FerightForwarder::findorfail($id);
+        return view('admin.feright.user.edit',['forwarder'=>$this->feright]);
+    }
+    public function update(Request $request,$id)
+    {
+        $this->feright=FerightForwarder::findorfail($id);
+
+        $request->validate([
+            'name'=>'required|string',
+            'email'=>'required|string',
+        ]);
+        if($request->file('image'))
+        {
+            if(file_exists($this->feright->image))
+            {
+                unlink($this->feright->image);
+            }
+            $this->imageurl=$this->sendImage($request);
+        }
+        else{
+            $this->imageurl=$this->feright->image;
+        }
+        $this->feright->update([
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'password'=>bcrypt($request->password),
+            'image'=>$this->imageurl,
+        ]);
+
+        return redirect()->back()->with('success',"Freight Forwarder update successfully");
+    }
 }

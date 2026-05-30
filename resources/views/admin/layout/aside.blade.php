@@ -49,7 +49,7 @@
                         <span class="nav-text">Add Freight Forwarder</span>
                     </a>
 
-                    <a class="nav-link ps-5" href="users.html">
+                    <a class="nav-link ps-5" href="{{route('manage.feright')}}">
                 <span class="nav-icon">
                     <i class="bi bi-list-ul"></i>
                 </span>
