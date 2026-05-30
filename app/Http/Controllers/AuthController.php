@@ -22,7 +22,7 @@ class AuthController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.dashboard')->with('success', 'Welcome, '.Auth::guard('admin')->user()->name.'!');
         }
 
         // Forwarder
@@ -30,7 +30,7 @@ class AuthController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->route('feright.dashboard');
+            return redirect()->route('feright.dashboard')->with('success', 'Welcome, '.Auth::guard('forwarder')->user()->name.'!');
         }
 
         // Accountant
@@ -38,7 +38,7 @@ class AuthController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->route('account.dashboard');
+            return redirect()->route('account.dashboard')->with('success', 'Welcome, '.Auth::guard('accountant')->user()->name.'!');
         }
 
         return back()->withErrors([
@@ -48,12 +48,12 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();
-        Auth::guard('feright')->logout();
-        Auth::guard('account')->logout();
+        Auth::guard('forwarder')->logout();
+        Auth::guard('accountant')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login.page')->with('success',"Log out successfully ");
     }
 }

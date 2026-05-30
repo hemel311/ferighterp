@@ -42,7 +42,7 @@
 
                 <div class="collapse" id="usersMenu">
 
-                    <a class="nav-link ps-5" href="add-user.html">
+                    <a class="nav-link ps-5" href="{{route('addferight')}}">
                 <span class="nav-icon">
                     <i class="bi bi-person-plus"></i>
                 </span>
