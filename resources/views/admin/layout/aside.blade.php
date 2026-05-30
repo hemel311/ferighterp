@@ -14,60 +14,220 @@
             <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
             <span class="nav-text">Dashboard</span>
         </a>
-        <a class="nav-link" href="users.html">
-            <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
-            <span class="nav-text">Users</span>
-        </a>
-        <a class="nav-link" href="add-user.html">
-            <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
-            <span class="nav-text">Add User</span>
-        </a>
-        <a class="nav-link" href="profile.html">
-            <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
-            <span class="nav-text">Profile</span>
-        </a>
-        <a class="nav-link" href="charts.html">
-            <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
-            <span class="nav-text">Charts</span>
-        </a>
-        <a class="nav-link" href="tables.html">
-            <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
-            <span class="nav-text">Tables</span>
-        </a>
-        <a class="nav-link" href="forms.html">
-            <span class="nav-icon"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i></span>
-            <span class="nav-text">Forms</span>
-        </a>
-        <a class="nav-link" href="components.html">
-            <span class="nav-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
-            <span class="nav-text">Components</span>
-        </a>
-        <a class="nav-link" href="alerts.html">
-            <span class="nav-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
-            <span class="nav-text">Alerts</span>
-        </a>
-        <a class="nav-link" href="modals.html">
-            <span class="nav-icon"><i class="bi bi-window-stack" aria-hidden="true"></i></span>
-            <span class="nav-text">Modals</span>
-        </a>
-        <a class="nav-link" href="settings.html">
-            <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
-            <span class="nav-text">Settings</span>
-        </a>
-        <a class="nav-link" href="blank.html">
-            <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-            <span class="nav-text">Blank Page</span>
-        </a>
+        <div class="nav-item">
+
+            <!-- Freight Menu -->
+            <a class="nav-link" data-bs-toggle="collapse" href="#freightMenu" role="button">
+        <span class="nav-icon">
+            <i class="bi bi-truck"></i>
+        </span>
+                <span class="nav-text">Freight</span>
+                <span class="ms-auto">
+            <i class="bi bi-chevron-down"></i>
+        </span>
+            </a>
+
+            <div class="collapse" id="freightMenu">
+
+                <!-- Users Submenu -->
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#usersMenu" role="button">
+            <span class="nav-icon">
+                <i class="bi bi-people"></i>
+            </span>
+                    <span class="nav-text">Users</span>
+                    <span class="ms-auto">
+                <i class="bi bi-chevron-down"></i>
+            </span>
+                </a>
+
+                <div class="collapse" id="usersMenu">
+
+                    <a class="nav-link ps-5" href="add-user.html">
+                <span class="nav-icon">
+                    <i class="bi bi-person-plus"></i>
+                </span>
+                        <span class="nav-text">Add Freight Forwarder</span>
+                    </a>
+
+                    <a class="nav-link ps-5" href="users.html">
+                <span class="nav-icon">
+                    <i class="bi bi-list-ul"></i>
+                </span>
+                        <span class="nav-text">Manage Freight Forwarder</span>
+                    </a>
+
+                </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#packinglist" role="button">
+                    <span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span>
+                    <span class="nav-text">Packing List</span>
+                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="collapse" id="packinglist">
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
+                        <span class="nav-text">See Packing List</span>
+                    </a>
+
+                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
+                        <span class="nav-text">Upload Templates</span>
+                    </a>
+                </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#isf" role="button">
+                    <span class="nav-icon"><i class="bi bi-file-earmark-check"></i></span>
+                    <span class="nav-text">ISF</span>
+                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="collapse" id="isf">
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
+                        <span class="nav-text">See ISF</span>
+                    </a>
+
+                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
+                        <span class="nav-text">Upload Templates</span>
+                    </a>
+                </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#si" role="button">
+                    <span class="nav-icon"><i class="bi bi-file-earmark-richtext"></i></span>
+                    <span class="nav-text">SI Excel</span>
+                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="collapse" id="si">
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
+                        <span class="nav-text">See SI Excel</span>
+                    </a>
+
+                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
+                        <span class="nav-text">Upload Templates</span>
+                    </a>
+                </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#shipmentcompany" role="button">
+                    <span class="nav-icon"><i class="bi bi-water"></i></span>
+                    <span class="nav-text">MBL Prefix</span>
+                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="collapse" id="shipmentcompany">
+                    <a class="nav-link ps-5 bi bi-plus" href="#">
+                        <span class="nav-text">Add MBL Prefix</span>
+                    </a>
+
+                    <a class="nav-link ps-5 bi bi-list-ul" href="#">
+                        <span class="nav-text">Manage Prefix</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        <div class="nav-item">
+
+            <!-- Accountant Menu -->
+            <a class="nav-link" data-bs-toggle="collapse" href="#account" role="button">
+        <span class="nav-icon">
+            <i class="bi bi-currency-dollar"></i>
+        </span>
+                <span class="nav-text">Account</span>
+                <span class="ms-auto">
+            <i class="bi bi-chevron-down"></i>
+        </span>
+            </a>
+
+            <div class="collapse" id="account">
+
+                <!-- Users Submenu -->
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#usersMenuAccount" role="button">
+            <span class="nav-icon">
+                <i class="bi bi-people"></i>
+            </span>
+                    <span class="nav-text">Users</span>
+                    <span class="ms-auto">
+                <i class="bi bi-chevron-down"></i>
+            </span>
+                </a>
+
+                <div class="collapse" id="usersMenuAccount">
+
+                    <a class="nav-link ps-5" href="add-user.html">
+                <span class="nav-icon">
+                    <i class="bi bi-person-plus"></i>
+                </span>
+                        <span class="nav-text">Add Accountant</span>
+                    </a>
+
+                    <a class="nav-link ps-5" href="users.html">
+                <span class="nav-icon">
+                    <i class="bi bi-list-ul"></i>
+                </span>
+                        <span class="nav-text">Manage Accountant</span>
+                    </a>
+
+                </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#calculation" role="button">
+                    <span class="nav-icon"><i class="bi bi-calculator"></i></span>
+                    <span class="nav-text">Calculation</span>
+                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="collapse" id="calculation">
+                    <a class="nav-link ps-5 bi bi-calculator" href="#">
+                        <span class="nav-text">See Calculation</span>
+                    </a>
+
+                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
+                        <span class="nav-text">Upload Templates</span>
+                    </a>
+                </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#cinvoice" role="button">
+                    <span class="nav-icon"><i class="bi bi-receipt"></i></span>
+                    <span class="nav-text">Commercial Invoice</span>
+                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="collapse" id="cinvoice">
+                    <a class="nav-link ps-5 bi bi-receipt" href="#">
+                        <span class="nav-text">See Commercial Invoice</span>
+                    </a>
+
+                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
+                        <span class="nav-text">Upload Templates</span>
+                    </a>
+                </div>
+                {{--<a class="nav-link ps-4" data-bs-toggle="collapse" href="#si" role="button">--}}
+                    {{--<span class="nav-icon"><i class="bi bi-file-earmark-richtext"></i></span>--}}
+                    {{--<span class="nav-text">SI Excel</span>--}}
+                    {{--<span class="ms-auto"><i class="bi bi-chevron-down"></i></span>--}}
+                {{--</a>--}}
+                {{--<div class="collapse" id="si">--}}
+                    {{--<a class="nav-link ps-5 bi bi-file-earmark-text" href="#">--}}
+                        {{--<span class="nav-text">See SI Excel</span>--}}
+                    {{--</a>--}}
+
+                    {{--<a class="nav-link ps-5 bi bi-file-arrow-up" href="#">--}}
+                        {{--<span class="nav-text">Upload Templates</span>--}}
+                    {{--</a>--}}
+                {{--</div>--}}
+                {{--<a class="nav-link ps-4" data-bs-toggle="collapse" href="#shipmentcompany" role="button">--}}
+                    {{--<span class="nav-icon"><i class="bi bi-water"></i></span>--}}
+                    {{--<span class="nav-text">MBL Prefix</span>--}}
+                    {{--<span class="ms-auto"><i class="bi bi-chevron-down"></i></span>--}}
+                {{--</a>--}}
+                {{--<div class="collapse" id="shipmentcompany">--}}
+                    {{--<a class="nav-link ps-5 bi bi-plus" href="#">--}}
+                        {{--<span class="nav-text">Add MBL Prefix</span>--}}
+                    {{--</a>--}}
+
+                    {{--<a class="nav-link ps-5 bi bi-list-ul" href="#">--}}
+                        {{--<span class="nav-text">Manage Prefix</span>--}}
+                    {{--</a>--}}
+                {{--</div>--}}
+            </div>
+
+        </div>
     </nav>
 
     <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{asset('assets')}}/images/avatar/avatar.jpg" alt="Admin Hasan">
-        <strong>Admin Hasan</strong>
-        <small>Active Workspace</small>
+        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{asset('assets')}}/images/avatar/avatar-fallback.jpg" alt="Admin Hasan">
+        <strong>{{\Illuminate\Support\Facades\Auth::guard('admin')->user()->name}}</strong>
+        <small>Administrator</small>
     </div>
 
-    <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-    </div>
+    {{--<div class="sidebar-footer">--}}
+        {{--<span class="status-dot"></span>--}}
+        {{--<span class="sidebar-footer-text">System running smoothly</span>--}}
+    {{--</div>--}}
 </aside>

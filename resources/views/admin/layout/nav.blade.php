@@ -38,8 +38,8 @@
 
             <div class="dropdown">
                 <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img class="avatar-img avatar-sm" src="{{asset('assets')}}/images/avatar/avatar.jpg" alt="Admin Hasan">
-                    <span class="profile-name d-none d-sm-inline">Admin Hasan</span>
+                    <img class="avatar-img avatar-sm" src="{{asset('assets')}}/images/avatar/avatar-12.jpg" alt="Admin Hasan">
+                    <span class="profile-name d-none d-sm-inline">{{\Illuminate\Support\Facades\Auth::guard('admin')->user()->name}}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="profile.html">Profile</a></li>

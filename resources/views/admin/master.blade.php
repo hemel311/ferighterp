@@ -26,5 +26,12 @@
     </div>
 </div>
 @include('admin.layout.js')
+<script>
+    window.adminHMDUser = {
+        name: "{{ Auth::guard('admin')->user()->name }}",
+        workspace: "{{ Auth::guard('admin')->user()->designation ?? 'Administrator' }}",
+        avatar: "{{ asset('assets/images/avatar/avatar-fallback.jpg') }}"
+    };
+</script>
 </body>
 </html>
