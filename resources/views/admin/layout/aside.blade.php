@@ -144,14 +144,14 @@
 
                 <div class="collapse" id="usersMenuAccount">
 
-                    <a class="nav-link ps-5" href="add-user.html">
+                    <a class="nav-link ps-5" href="{{route('addaccount')}}">
                 <span class="nav-icon">
                     <i class="bi bi-person-plus"></i>
                 </span>
                         <span class="nav-text">Add Accountant</span>
                     </a>
 
-                    <a class="nav-link ps-5" href="users.html">
+                    <a class="nav-link ps-5" href="{{route('manage.accountant')}}">
                 <span class="nav-icon">
                     <i class="bi bi-list-ul"></i>
                 </span>

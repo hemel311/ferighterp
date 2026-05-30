@@ -26,6 +26,14 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/edit-feright/{id}',[\App\Http\Controllers\admin\AddFerightController::class,'edit'])->name('edit.feright');
     Route::post('/update-feright/{id}',[\App\Http\Controllers\admin\AddFerightController::class,'update'])->name('update.feright');
 
+    //Accountant user
+    Route::get('/add-account',[\App\Http\Controllers\admin\AddaccountantController::class,'index'])->name('addaccount');
+    Route::post('/create-accountant',[\App\Http\Controllers\admin\AddaccountantController::class,'store'])->name('create.accountant');
+    Route::get('/manage-accountant',[\App\Http\Controllers\admin\AddaccountantController::class,'manageaccountant'])->name('manage.accountant');
+    Route::get('/delete-accountant/{id}',[\App\Http\Controllers\admin\AddaccountantController::class,'delete'])->name('delete.accountant');
+    Route::get('/edit-accountant/{id}',[\App\Http\Controllers\admin\AddaccountantController::class,'edit'])->name('edit.accounant');
+    Route::post('/update-accountant/{id}',[\App\Http\Controllers\admin\AddaccountantController::class,'update'])->name('update.accountant');
+
 });
 
 Route::middleware(['forwarder'])->group(function () {
