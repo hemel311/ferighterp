@@ -26,8 +26,8 @@
         </a>
 
         <div class="collapse" id="shipmentMenu">
-            <a class="nav-link ps-5" href="#">Create Shipment</a>
-            <a class="nav-link ps-5" href="#">Manage Shipment</a>
+            <a class="nav-link ps-5" href="{{route('add.shipment')}}">Create Shipment</a>
+            <a class="nav-link ps-5" href="{{route('manage.shipment')}}">Manage Shipment</a>
         </div>
 
         <!-- Container Info -->

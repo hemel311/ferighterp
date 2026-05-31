@@ -24,5 +24,6 @@
 </div>
 
 @include('feright.layout.js')
+@stack('js')
 </body>
 </html>

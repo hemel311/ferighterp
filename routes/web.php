@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\admin\MblPrefixController;
 use App\Http\Controllers\admin\TemplateController;
+use App\Http\Controllers\freight\ShipmentController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -58,6 +59,13 @@ Route::middleware(['forwarder'])->group(function () {
     Route::get('/feright/dashboard', function () {
         return view('feright.dashboard');
     })->name('feright.dashboard');
+Route::get('/add-shipment',[ShipmentController::class,'index'])->name('add.shipment');
+Route::post('/create-shipment',[ShipmentController::class,'store'])->name('create.shipment');
+Route::get('/manage-shipment',[ShipmentController::class,'manage'])->name('manage.shipment');
+Route::get('/delete-shipment/{id}',[ShipmentController::class,'delete'])->name('delete.shipment');
+Route::get('/see-shipment/{id}',[ShipmentController::class,'seeDetails'])->name('see.shipment');
+Route::get('/edit-shipment/{id}',[ShipmentController::class,'edit'])->name('edit.shipment');
+Route::post('/update-shipment/{id}',[ShipmentController::class,'update'])->name('update.shipment');
 
 });
 

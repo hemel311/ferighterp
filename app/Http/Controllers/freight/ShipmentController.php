@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Http\Controllers\freight;
+
+use App\Http\Controllers\Controller;
+use App\Models\Shipment;
+use Illuminate\Http\Request;
+
+class ShipmentController extends Controller
+{
+    public function index()
+    {
+        return view('feright.shipment.addshipment');
+    }
+    public function create()
+    {
+        return view('admin.shipment.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'booking_number' => 'required|unique:shipments',
+        ]);
+
+        $shipment = Shipment::create([
+            'booking_number' => $request->booking_number,
+            'shipment_type' => $request->shipment_type,
+            'carrier' => $request->carrier,
+            'vessel_name' => $request->vessel_name,
+            'voyage' => $request->voyage,
+            'port_of_loading' => $request->port_of_loading,
+            'port_of_discharge' => $request->port_of_discharge,
+            'etd' => $request->etd,
+            'eta' => $request->eta,
+            'si_cut_off' => $request->si_cut_off,
+            'cy_cut_off' => $request->cy_cut_off,
+            'container_qty' => $request->container_qty,
+            'remarks' => $request->remarks,
+            'status' => $request->status,
+        ]);
+
+        if($request->item_name)
+        {
+            foreach($request->item_name as $key => $item)
+            {
+                if(!empty($item))
+                {
+                    $shipment->items()->create([
+                        'hs_code' => $request->hs_code[$key],
+                        'item_name' => $item,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()
+            ->route('feright.dashboard')
+            ->with('success','Shipment Saved Successfully');
+    }
+    public function manage()
+    {
+        $shipment=Shipment::all();
+        return view('feright.shipment.manage',['shipments'=>$shipment]);
+    }
+
+    public function  seeDetails($id)
+    {
+        $shipment=Shipment::findorFail($id);
+        return view('feright.shipment.seedetails',['shipment'=>$shipment]);
+    }
+    public function delete($id)
+    {
+        $shipment=Shipment::findorFail($id);
+        $shipment->delete();
+        return redirect()->back()->with('message','Shipment Deleted Successfully');
+    }
+
+    public function edit($id)
+    {
+        $shipment=Shipment::findorFail($id);
+        return view('feright.shipment.edit',['shipment'=>$shipment]);
+
+    }
+
+    public function update(Request $request, $id)
+    {
+        $shipment = Shipment::findOrFail($id);
+
+        $request->validate([
+            'booking_number' => 'required|unique:shipments,booking_number,'.$shipment->id,
+        ]);
+
+        $shipment->update([
+            'booking_number' => $request->booking_number,
+            'shipment_type' => $request->shipment_type,
+            'carrier' => $request->carrier,
+            'vessel_name' => $request->vessel_name,
+            'voyage' => $request->voyage,
+            'port_of_loading' => $request->port_of_loading,
+            'port_of_discharge' => $request->port_of_discharge,
+            'etd' => $request->etd,
+            'eta' => $request->eta,
+            'si_cut_off' => $request->si_cut_off,
+            'cy_cut_off' => $request->cy_cut_off,
+            'container_qty' => $request->container_qty,
+            'remarks' => $request->remarks,
+            'status' => $request->status,
+        ]);
+
+        $shipment->items()->delete();
+
+        if($request->item_name)
+        {
+            foreach($request->item_name as $key => $item)
+            {
+                if(!empty($item))
+                {
+                    $shipment->items()->create([
+                        'hs_code' => $request->hs_code[$key],
+                        'item_name' => $item,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()
+            ->route('manage.shipment')
+            ->with('success','Shipment Updated Successfully');
+    }
+
+
+}
