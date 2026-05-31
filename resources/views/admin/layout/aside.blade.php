@@ -103,11 +103,18 @@
                         <span class="nav-text">Manage Prefix</span>
                     </a>
                 </div>
-                <div class="collapse" id="freightMenu">
-                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
-                        <span class="nav-text">Upload Template</span>
-                    </a>
-                </div>
+                <a class="nav-link ps-4" href="{{route('addtemplate')}}">
+                <span class="nav-icon">
+                    <i class="bi bi-file-arrow-up"></i>
+                </span>
+                    <span class="nav-text">Upload Template</span>
+                </a>
+                <a class="nav-link ps-4" href="{{route('manage.templates')}}">
+                <span class="nav-icon">
+                    <i class="bi bi-list-ul"></i>
+                </span>
+                    <span class="nav-text">Manage Template</span>
+                </a>
             </div>
         </div>
         <div class="nav-item">
@@ -162,10 +169,6 @@
                     <a class="nav-link ps-5 bi bi-calculator" href="#">
                         <span class="nav-text">See Calculation</span>
                     </a>
-
-                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
-                        <span class="nav-text">Upload Templates</span>
-                    </a>
                 </div>
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#cinvoice" role="button">
                     <span class="nav-icon"><i class="bi bi-receipt"></i></span>
@@ -176,11 +179,19 @@
                     <a class="nav-link ps-5 bi bi-receipt" href="#">
                         <span class="nav-text">See Commercial Invoice</span>
                     </a>
-
-                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
-                        <span class="nav-text">Upload Templates</span>
-                    </a>
                 </div>
+                <a class="nav-link ps-4" href="{{route('addtemplate')}}">
+                <span class="nav-icon">
+                    <i class="bi bi-file-arrow-up"></i>
+                </span>
+                    <span class="nav-text">Upload Template</span>
+                </a>
+                <a class="nav-link ps-4" href="{{route('manage.templates')}}">
+                <span class="nav-icon">
+                    <i class="bi bi-list-ul"></i>
+                </span>
+                    <span class="nav-text">Manage Template</span>
+                </a>
                 {{--<a class="nav-link ps-4" data-bs-toggle="collapse" href="#si" role="button">--}}
                     {{--<span class="nav-icon"><i class="bi bi-file-earmark-richtext"></i></span>--}}
                     {{--<span class="nav-text">SI Excel</span>--}}

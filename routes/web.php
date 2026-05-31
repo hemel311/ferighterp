@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\admin\MblPrefixController;
+use App\Http\Controllers\admin\TemplateController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -42,6 +43,13 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/delete-prefix/{id}',[MblPrefixController::class,'delete'])->name('delete.prefix');
     Route::get('/edit-prefix/{id}',[MblPrefixController::class,'edit'])->name('edit.prefix');
     Route::post('/update-prefix/{id}',[MblPrefixController::class,'update'])->name('update.prefix');
+
+    //upload template
+    Route::get('/add-template',[TemplateController::class,'index'])->name('addtemplate');
+    Route::post('/upload-template',[TemplateController::class,'store'])->name('upload.templates');
+    Route::get('/manage-template',[TemplateController::class,'manage'])->name('manage.templates');
+    Route::get('/delete-template/{id}',[TemplateController::class,'delete'])->name('delete.templates');
+    Route::get('/download-template/{id}',[TemplateController::class,'download'])->name('download.templates');
 
 });
 
