@@ -66,10 +66,6 @@
                     <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
                         <span class="nav-text">See Packing List</span>
                     </a>
-
-                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
-                        <span class="nav-text">Upload Templates</span>
-                    </a>
                 </div>
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#isf" role="button">
                     <span class="nav-icon"><i class="bi bi-file-earmark-check"></i></span>
@@ -81,9 +77,6 @@
                         <span class="nav-text">See ISF</span>
                     </a>
 
-                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
-                        <span class="nav-text">Upload Templates</span>
-                    </a>
                 </div>
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#si" role="button">
                     <span class="nav-icon"><i class="bi bi-file-earmark-richtext"></i></span>
@@ -95,9 +88,6 @@
                         <span class="nav-text">See SI Excel</span>
                     </a>
 
-                    <a class="nav-link ps-5 bi bi-file-arrow-up" href="#">
-                        <span class="nav-text">Upload Templates</span>
-                    </a>
                 </div>
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#shipmentcompany" role="button">
                     <span class="nav-icon"><i class="bi bi-water"></i></span>
@@ -105,16 +95,20 @@
                     <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
                 </a>
                 <div class="collapse" id="shipmentcompany">
-                    <a class="nav-link ps-5 bi bi-plus" href="#">
+                    <a class="nav-link ps-5 bi bi-plus" href="{{route('addmblprefix')}}">
                         <span class="nav-text">Add MBL Prefix</span>
                     </a>
 
-                    <a class="nav-link ps-5 bi bi-list-ul" href="#">
+                    <a class="nav-link ps-5 bi bi-list-ul" href="{{route('manage.prefix')}}">
                         <span class="nav-text">Manage Prefix</span>
                     </a>
                 </div>
+                <div class="collapse" id="freightMenu">
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
+                        <span class="nav-text">Upload Template</span>
+                    </a>
+                </div>
             </div>
-
         </div>
         <div class="nav-item">
 

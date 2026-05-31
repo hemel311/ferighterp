@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\admin\MblPrefixController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -33,6 +34,14 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/delete-accountant/{id}',[\App\Http\Controllers\admin\AddaccountantController::class,'delete'])->name('delete.accountant');
     Route::get('/edit-accountant/{id}',[\App\Http\Controllers\admin\AddaccountantController::class,'edit'])->name('edit.accounant');
     Route::post('/update-accountant/{id}',[\App\Http\Controllers\admin\AddaccountantController::class,'update'])->name('update.accountant');
+
+    //MBl prefix
+    Route::get('/add-prefix',[MblPrefixController::class,'index'])->name('addmblprefix');
+    Route::post('/create=prefix',[MblPrefixController::class,'store'])->name('create.prefix');
+    Route::get('/manage-prefix',[MblPrefixController::class,'manageprefix'])->name('manage.prefix');
+    Route::get('/delete-prefix/{id}',[MblPrefixController::class,'delete'])->name('delete.prefix');
+    Route::get('/edit-prefix/{id}',[MblPrefixController::class,'edit'])->name('edit.prefix');
+    Route::post('/update-prefix/{id}',[MblPrefixController::class,'update'])->name('update.prefix');
 
 });
 
