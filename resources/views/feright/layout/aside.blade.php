@@ -14,60 +14,95 @@
             <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
             <span class="nav-text">Dashboard</span>
         </a>
-        <a class="nav-link" href="users.html">
-            <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
-            <span class="nav-text">Users</span>
+        <!-- Shipment -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#shipmentMenu">
+    <span class="nav-icon">
+        <i class="bi bi-truck"></i>
+    </span>
+            <span class="nav-text">Shipment</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
         </a>
-        <a class="nav-link" href="add-user.html">
-            <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
-            <span class="nav-text">Add User</span>
+
+        <div class="collapse" id="shipmentMenu">
+            <a class="nav-link ps-5" href="#">Create Shipment</a>
+            <a class="nav-link ps-5" href="#">Manage Shipment</a>
+        </div>
+
+        <!-- Container Info -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#containerMenu">
+    <span class="nav-icon">
+        <i class="bi bi-box-seam"></i>
+    </span>
+            <span class="nav-text">Container Info</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
         </a>
-        <a class="nav-link" href="profile.html">
-            <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
-            <span class="nav-text">Profile</span>
+
+        <div class="collapse" id="containerMenu">
+            <a class="nav-link ps-5" href="#">Add Container</a>
+            <a class="nav-link ps-5" href="#">Manage Container</a>
+            <a class="nav-link ps-5" href="#">Add VGM Info</a>
+        </div>
+        <!-- Packing List -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#packingMenu">
+    <span class="nav-icon">
+        <i class="bi bi-file-earmark-text"></i>
+    </span>
+            <span class="nav-text">Packing List</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
         </a>
-        <a class="nav-link" href="charts.html">
-            <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
-            <span class="nav-text">Charts</span>
+
+        <div class="collapse" id="packingMenu">
+            <a class="nav-link ps-5" href="#">Add Packing List</a>
+            <a class="nav-link ps-5" href="#">Manage Packing List</a>
+        </div>
+
+        <!-- SI Excel -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#siMenu">
+    <span class="nav-icon">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+    </span>
+            <span class="nav-text">SI Excel</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
         </a>
-        <a class="nav-link" href="tables.html">
-            <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
-            <span class="nav-text">Tables</span>
+
+        <div class="collapse" id="siMenu">
+            <a class="nav-link ps-5" href="#">Add SI Excel</a>
+            <a class="nav-link ps-5" href="#">Manage SI Excel</a>
+        </div>
+
+        <!-- ISF -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#isfMenu">
+    <span class="nav-icon">
+        <i class="bi bi-shield-check"></i>
+    </span>
+            <span class="nav-text">ISF</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
         </a>
-        <a class="nav-link" href="forms.html">
-            <span class="nav-icon"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i></span>
-            <span class="nav-text">Forms</span>
-        </a>
-        <a class="nav-link" href="components.html">
-            <span class="nav-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
-            <span class="nav-text">Components</span>
-        </a>
-        <a class="nav-link" href="alerts.html">
-            <span class="nav-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
-            <span class="nav-text">Alerts</span>
-        </a>
-        <a class="nav-link" href="modals.html">
-            <span class="nav-icon"><i class="bi bi-window-stack" aria-hidden="true"></i></span>
-            <span class="nav-text">Modals</span>
-        </a>
-        <a class="nav-link" href="settings.html">
-            <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
-            <span class="nav-text">Settings</span>
-        </a>
-        <a class="nav-link" href="blank.html">
-            <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-            <span class="nav-text">Blank Page</span>
-        </a>
+
+        <div class="collapse" id="isfMenu">
+            <a class="nav-link ps-5" href="#">Add ISF</a>
+            <a class="nav-link ps-5" href="#">Manage ISF</a>
+        </div>
     </nav>
 
     <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{asset('assets')}}/images/avatar/avatar.jpg" alt="Admin Hasan">
-        <strong>Admin Hasan</strong>
-        <small>Active Workspace</small>
+        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{asset(\Illuminate\Support\Facades\Auth::guard('forwarder')->user()->image)}}" alt="Admin Hasan">
+        <strong>{{\Illuminate\Support\Facades\Auth::guard('forwarder')->user()->name}}</strong>
+        <small>Freight</small>
     </div>
 
-    <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-    </div>
+    {{--<div class="sidebar-footer">--}}
+    {{--<span class="status-dot"></span>--}}
+    {{--<span class="sidebar-footer-text">System running smoothly</span>--}}
+    {{--</div>--}}
 </aside>
