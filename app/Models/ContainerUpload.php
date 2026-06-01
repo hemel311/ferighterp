@@ -14,4 +14,8 @@ class ContainerUpload extends Model
         'container_image',
         'seal_image',
     ];
+    public function vgmInfo()
+    {
+        return $this->hasOne(Vgminfo::class, 'container_id', 'id');
+    }
 }

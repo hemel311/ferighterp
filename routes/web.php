@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\MblPrefixController;
 use App\Http\Controllers\admin\TemplateController;
 use App\Http\Controllers\freight\ShipmentController;
 use App\Http\Controllers\freight\ContainerController;
+use App\Http\Controllers\freight\VgmController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -81,7 +82,41 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
     Route::post('/container-upload/store',
         [ContainerController::class,'store']
     )->name('container.store');
+
+    Route::get('/container/manage',
+        [ContainerController::class,'manage'])
+        ->name('container.manage');
+
+    Route::get('/container/search',
+        [ContainerController::class,'search'])
+        ->name('container.search');
+
+    Route::get('/container/edit/{id}',
+        [ContainerController::class,'edit'])
+        ->name('container.edit');
+
+    Route::post('/container/update/{id}',
+        [ContainerController::class,'update'])
+        ->name('container.update');
+    Route::get('/container/delete/{id}',
+        [ContainerController::class,'delete']
+    )->name('container.delete');
+
+    //VGM
+    Route::get('/vgm',
+        [VgmController::class,'index'])
+        ->name('vgm');
+
+    Route::get('/vgm/search',
+        [VgmController::class,'search'])
+        ->name('vgm.search');
+    Route::get('/vgm/create/{id}', [VgmController::class,'create'])->name('vgm.create');
+
+    Route::post('/vgm/store', [VgmController::class,'store'])->name('vgm.store');
+    Route::get('/vgm/delete/{id}', [VgmController::class,'delete'])
+        ->name('vgm.delete');
 });
+
 
 Route::middleware(['accountant'])->group(function () {
 

@@ -43,7 +43,7 @@
 
         <div class="collapse" id="containerMenu">
             <a class="nav-link ps-5" href="{{route('add.container')}}">Add Container</a>
-            <a class="nav-link ps-5" href="#">Manage Container</a>
+            <a class="nav-link ps-5" href="{{route('container.manage')}}">Manage Container</a>
         </div>
         {{--vgm info--}}
         <a class="nav-link" data-bs-toggle="collapse" href="#vgmMenu">
@@ -57,8 +57,7 @@
         </a>
 
         <div class="collapse" id="vgmMenu">
-            <a class="nav-link ps-5" href="#">Add VGM Info</a>
-            <a class="nav-link ps-5" href="#">Manage VGM Info</a>
+            <a class="nav-link ps-5" href="{{route('vgm')}}">Add VGM Info</a>
         </div>
         <!-- Packing List -->
         <a class="nav-link" data-bs-toggle="collapse" href="#packingMenu">
