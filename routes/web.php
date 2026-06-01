@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\admin\MblPrefixController;
 use App\Http\Controllers\admin\TemplateController;
 use App\Http\Controllers\freight\ShipmentController;
+use App\Http\Controllers\freight\ContainerController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -59,6 +60,8 @@ Route::middleware(['forwarder'])->group(function () {
     Route::get('/feright/dashboard', function () {
         return view('feright.dashboard');
     })->name('feright.dashboard');
+
+//SHipment
 Route::get('/add-shipment',[ShipmentController::class,'index'])->name('add.shipment');
 Route::post('/create-shipment',[ShipmentController::class,'store'])->name('create.shipment');
 Route::get('/manage-shipment',[ShipmentController::class,'manage'])->name('manage.shipment');
@@ -67,6 +70,17 @@ Route::get('/see-shipment/{id}',[ShipmentController::class,'seeDetails'])->name(
 Route::get('/edit-shipment/{id}',[ShipmentController::class,'edit'])->name('edit.shipment');
 Route::post('/update-shipment/{id}',[ShipmentController::class,'update'])->name('update.shipment');
 
+//container
+
+Route::get('/add-container',[ContainerController::class,'index'])->name('add.container');
+    Route::post('/extract-ocr',
+        [ContainerController::class,'extractOcr']
+    )->name('extract.ocr');
+
+    // Final Save
+    Route::post('/container-upload/store',
+        [ContainerController::class,'store']
+    )->name('container.store');
 });
 
 Route::middleware(['accountant'])->group(function () {

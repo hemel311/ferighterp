@@ -42,9 +42,23 @@
         </a>
 
         <div class="collapse" id="containerMenu">
-            <a class="nav-link ps-5" href="#">Add Container</a>
+            <a class="nav-link ps-5" href="{{route('add.container')}}">Add Container</a>
             <a class="nav-link ps-5" href="#">Manage Container</a>
+        </div>
+        {{--vgm info--}}
+        <a class="nav-link" data-bs-toggle="collapse" href="#vgmMenu">
+    <span class="nav-icon">
+        <i class="bi bi-speedometer2"></i>
+    </span>
+            <span class="nav-text">VGM Info</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
+        </a>
+
+        <div class="collapse" id="vgmMenu">
             <a class="nav-link ps-5" href="#">Add VGM Info</a>
+            <a class="nav-link ps-5" href="#">Manage VGM Info</a>
         </div>
         <!-- Packing List -->
         <a class="nav-link" data-bs-toggle="collapse" href="#packingMenu">

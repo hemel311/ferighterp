@@ -27,4 +27,12 @@ class Shipment extends Model
     {
         return $this->hasMany(ShipmentItem::class);
     }
+    public function containers()
+    {
+        return $this->hasMany(
+            ContainerUpload::class,
+            'booking_number',
+            'booking_number'
+        );
+    }
 }
