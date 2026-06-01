@@ -35,4 +35,8 @@ class Shipment extends Model
             'booking_number'
         );
     }
+    public function trPackingLists()
+    {
+        return $this->hasMany(TrPackingList::class);
+    }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\TemplateController;
 use App\Http\Controllers\freight\ShipmentController;
 use App\Http\Controllers\freight\ContainerController;
 use App\Http\Controllers\freight\VgmController;
+use App\Http\Controllers\freight\PackinglistController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -115,6 +116,12 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
     Route::post('/vgm/store', [VgmController::class,'store'])->name('vgm.store');
     Route::get('/vgm/delete/{id}', [VgmController::class,'delete'])
         ->name('vgm.delete');
+    //pl
+    Route::get('/pl', [PackinglistController::class,'index'])
+        ->name('trpl.index');
+    Route::get('/pl/containers/{bookingNumber}',
+        [PackinglistController::class,'getContainers'])
+        ->name('trpl.containers');
 });
 
 

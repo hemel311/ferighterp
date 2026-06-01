@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('vgminfos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('container_id')->constrained('containers_uploads')->onDelete('cascade');
+            $table->unsignedBigInteger('container_id');
+
+            $table->foreign('container_id')
+                ->references('id')
+                ->on('container_uploads')
+                ->onDelete('cascade');
 
             $table->decimal('vgm_weight',10,2);
             $table->decimal('container_weight',10,2);

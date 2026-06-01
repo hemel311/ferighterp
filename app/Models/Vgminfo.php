@@ -17,4 +17,11 @@ class Vgminfo extends Model
     {
         return $this->belongsTo(ContainerUpload::class);
     }
+    public function trPackingLists()
+    {
+        return $this->hasMany(
+            TrPackingList::class,
+            'vgm_info_id'
+        );
+    }
 }

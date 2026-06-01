@@ -18,4 +18,11 @@ class ContainerUpload extends Model
     {
         return $this->hasOne(Vgminfo::class, 'container_id', 'id');
     }
+    public function trPackingLists()
+    {
+        return $this->hasMany(
+            TrPackingList::class,
+            'container_upload_id'
+        );
+    }
 }
