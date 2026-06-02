@@ -125,7 +125,7 @@
                                 status = '<span class="badge bg-warning">Draft</span>';
 
                                 action = `
-            <a href="/tr-packing-list/${pl.id}/edit"
+            <a href="/edit/${pl.id}""
                class="btn btn-warning btn-sm">
                 Edit Draft
             </a>
@@ -156,23 +156,20 @@
                         }
 
                         rows += `
-                <tr>
+<tr>
 
-                    <td>${item.container_number}</td>
+    <td>${item.container_number}</td>
 
-                    <td>${item.container_serial}</td>
+    <td>${item.container_serial}</td>
 
-                    <td>${item.vgm_info ? item.vgm_info.gross_weight : ''}</td>
-                    <td>${status}</td>
+    <td>${item.vgm_info ? item.vgm_info.gross_weight : 'N/A'}</td>
 
-                    <td>
-                        <a href="/tr-packing-list/create/${item.id}"
-                           class="btn btn-primary btn-sm">
-                           Create PL
-                        </a>
-                    </td>
+    <td>${status}</td>
 
-                </tr>`;
+    <td>${action}</td>
+
+</tr>`;
+
                     });
 
                     $('#containerTableBody').html(rows);
@@ -180,6 +177,7 @@
             });
 
         });
+
     </script>
 
 @endpush

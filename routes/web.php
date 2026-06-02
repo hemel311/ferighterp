@@ -122,6 +122,29 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
     Route::get('/pl/containers/{bookingNumber}',
         [PackinglistController::class,'getContainers'])
         ->name('trpl.containers');
+    Route::get('tr-packing-list/create/{id}',
+        [PackinglistController::class,'create'])
+        ->name('trpl.create');
+    Route::post('/store',
+        [PackinglistController::class,'store'])
+        ->name('trpl.store');
+
+    Route::get('/edit/{id}',
+        [PackinglistController::class,'edit'])
+        ->name('trpl.edit');
+
+    Route::post('/update/{id}',
+        [PackinglistController::class,'update'])
+        ->name('trpl.update');
+
+    Route::get('/preview/{id}',
+        [PackinglistController::class,'preview'])
+        ->name('trpl.preview');
+
+    Route::delete('/delete/{id}',
+        [PackinglistController::class,'delete'])
+        ->name('trpl.delete');
+
 });
 
 
