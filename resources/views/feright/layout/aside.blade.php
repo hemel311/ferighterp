@@ -71,7 +71,7 @@
         </a>
 
         <div class="collapse" id="packingMenu">
-            <a class="nav-link ps-5" href="{{route('trpl.index')}}">Add Packing List</a>
+            <a class="nav-link ps-5" href="{{route('trpl.index')}}">Add TR PL</a>
             <a class="nav-link ps-5" href="{{route('us.pl')}}">Add us PL</a>
         </div>
 
@@ -103,8 +103,8 @@
         </a>
 
         <div class="collapse" id="isfMenu">
-            <a class="nav-link ps-5" href="#">Add ISF</a>
-            <a class="nav-link ps-5" href="#">Manage ISF</a>
+            <a class="nav-link ps-5" href="{{route('isf.index')}}">Add ISF</a>
+            <a class="nav-link ps-5" href="{{route('isf.manage')}}">Manage ISF</a>
         </div>
     </nav>
 

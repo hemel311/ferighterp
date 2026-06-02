@@ -38,6 +38,9 @@ Upload Template
                 <option value="CI">
                     Commercial Invoice
                 </option>
+                <option value="ISF">
+                    ISF
+                </option>
 
             </select>
         </div>

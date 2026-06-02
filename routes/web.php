@@ -10,6 +10,7 @@ use App\Http\Controllers\freight\ContainerController;
 use App\Http\Controllers\freight\VgmController;
 use App\Http\Controllers\freight\PackinglistController;
 use App\Http\Controllers\freight\UspackingListController;
+use App\Http\Controllers\freight\IsfController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -174,9 +175,32 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
         [UsPackingListController::class, 'update']
     )->name('uspl.update');
     Route::get(
-        '/export-excel/{id}',
+        '/us-export-excel/{id}',
         [UspackingListController::class,'exportExcel']
     )->name('uspl.export.excel');
+
+    Route::get('/create-isf',[IsfController::class,'create'])->name('isf.index');
+    Route::get('/isf/get-shipment-data/{id}', [IsfController::class, 'getShipmentData'])
+        ->name('isf.get-shipment-data');
+    Route::post('/isf/store', [IsfController::class, 'store'])
+        ->name('isf.store');
+    Route::get('/isf/{id}/preview',
+        [IsfController::class,'preview'])
+        ->name('isf.preview');
+    Route::get('/isf-manage',[IsfController::class,'manage'])->name('isf.manage');
+    Route::get(
+        '/isf-export-excel/{id}',
+        [IsfController::class,'exportExcel']
+    )->name('isf.export.excel');
+
+    Route::get('/isf/edit/{id}', [IsfController::class, 'edit'])
+        ->name('isf.edit');
+
+    Route::post('/isf/update/{id}', [IsfController::class, 'update'])
+        ->name('isf.update');
+    Route::get('/isf/delete/{id}', [IsfController::class, 'delete'])
+        ->name('isf.delete');
+
 
 });
 

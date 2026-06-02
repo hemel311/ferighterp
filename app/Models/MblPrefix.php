@@ -7,4 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class MblPrefix extends Model
 {
     protected $fillable=['shipping_company','prefix'];
+
+    public function isfs()
+    {
+        return $this->hasMany(Isf::class);
+    }
 }
+

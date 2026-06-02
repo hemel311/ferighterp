@@ -178,11 +178,14 @@ class UspackingListController extends Controller
 
                     'total_item_qty'     => $item['item_quantity'] ?? 0,
 
-                    'pallet_pack_kg'     => (
+                    'pallet_pack_kg' =>
                         ($item['total_pallets'] ?? 0) > 0
-                    )
-                        ? ($item['net_weight'] / $item['total_pallets'])
-                        : 0,
+                            ? round($item['net_weight'] / $item['total_pallets'], 2)
+                            : (
+                        ($item['total_packages'] ?? 0) > 0
+                            ? round($item['net_weight'] / $item['total_packages'], 2)
+                            : 0
+                        ),
                 ]);
             }
 
@@ -274,7 +277,7 @@ class UspackingListController extends Controller
 
         $row = 8;
 
-        foreach($packingList->product as $item)
+        foreach($packingList->products as $item)
         {
             $sheet->setCellValue(
                 'C'.$row,
@@ -283,7 +286,7 @@ class UspackingListController extends Controller
 
             $sheet->setCellValue(
                 'D'.$row,
-                $item->total_packages
+                $item->packages
             );
             $sheet->setCellValue(
                 'E'.$row,
@@ -297,7 +300,7 @@ class UspackingListController extends Controller
 
             $sheet->setCellValue(
                 'G'.$row,
-                $item->item_quantity
+                $item->total_item_qty
             );
 
             $palletPackKg = 0;
@@ -305,14 +308,14 @@ class UspackingListController extends Controller
             if($item->total_pallets > 0)
             {
                 $palletPackKg =
-                    $item->net_weight /
+                    $item->total_kg /
                     $item->total_pallets;
             }
-            elseif($item->total_packages > 0)
+            elseif($item->packages > 0)
             {
                 $palletPackKg =
-                    $item->net_weight /
-                    $item->total_packages;
+                    $item->total_kg /
+                    $item->packages;
             }
 
             $sheet->setCellValue(
@@ -320,9 +323,10 @@ class UspackingListController extends Controller
                 round($palletPackKg,2)
             );
 
+
             $sheet->setCellValue(
                 'I'.$row,
-                $item->net_weight
+                $item->total_kg
             );
 
             $sheet->setCellValue(
@@ -343,31 +347,40 @@ class UspackingListController extends Controller
         ==========================
         */
 
+        $totalNetWeight = $packingList->products->sum('total_kg');
+
+        $totalGrossWeight = $packingList->products->sum('gross_weight');
+
+        $totalPallets = $packingList->products->sum('total_pallets');
+
+        $totalPackages = $packingList->products->sum('packages');
+
+        $totalPieces = $packingList->products->sum('total_item_qty');
+
         $sheet->setCellValue(
             'I18',
-            $packingList->total_net_weight
+            $totalNetWeight
         );
 
         $sheet->setCellValue(
             'I19',
-            $packingList->total_gross_weight
+            $totalGrossWeight
         );
 
         $sheet->setCellValue(
             'I20',
-            $packingList->total_pallets
+            $totalPallets
         );
 
         $sheet->setCellValue(
             'I22',
-            $packingList->total_packages
+            $totalPackages
         );
 
         $sheet->setCellValue(
             'I23',
-            $packingList->total_item_quantity
+            $totalPieces
         );
-
 
         $fileName =
             'US_Packing_List_'.
