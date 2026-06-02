@@ -29,7 +29,7 @@
                         Edit
                     </a>
 
-                    <a href=""
+                    <a href="{{route('trpl.export.pdf',$packingList->id)}}"
                        class="btn btn-danger btn-sm">
                         PDF
                     </a>
@@ -38,6 +38,7 @@
                        class="btn btn-success btn-sm">
                         Excel
                     </a>
+                    <a href="{{ route('trpl.delete',$packingList->id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this Packing List?')"> Delete </a>
 
                 </div>
 

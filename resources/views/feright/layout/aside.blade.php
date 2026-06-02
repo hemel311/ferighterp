@@ -72,7 +72,7 @@
 
         <div class="collapse" id="packingMenu">
             <a class="nav-link ps-5" href="{{route('trpl.index')}}">Add Packing List</a>
-            <a class="nav-link ps-5" href="#">Manage Packing List</a>
+            <a class="nav-link ps-5" href="#">Add us PL</a>
         </div>
 
         <!-- SI Excel -->

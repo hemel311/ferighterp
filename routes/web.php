@@ -141,13 +141,18 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
         [PackinglistController::class,'preview'])
         ->name('trpl.preview');
 
-    Route::delete('/delete/{id}',
+    Route::get('/delete/{id}',
         [PackinglistController::class,'delete'])
         ->name('trpl.delete');
     Route::get(
         '/export-excel/{id}',
         [PackinglistController::class,'exportExcel']
     )->name('trpl.export.excel');
+
+    Route::get(
+        '/export-pdf/{id}',
+        [PackinglistController::class,'exportPdf']
+    )->name('trpl.export.pdf');
 
 });
 

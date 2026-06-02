@@ -140,6 +140,7 @@
                class="btn btn-success btn-sm">
                 View
             </a>
+
         `;
                             }
                         }

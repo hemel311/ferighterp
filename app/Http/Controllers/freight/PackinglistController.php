@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Templates;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PackinglistController extends Controller
 {
@@ -58,12 +59,6 @@ class PackinglistController extends Controller
             return redirect()
                 ->route('trpl.preview', $existingPackingList->id)
                 ->with('warning', 'Packing list already submitted.');
-        }
-
-        // Check VGM exists
-        if (!$container->vgmInfo) {
-            return redirect()->back()
-                ->with('error', 'VGM information not found for this container.');
         }
 
         return view(
@@ -134,6 +129,21 @@ class PackinglistController extends Controller
 
             'status' => $status,
         ]);
+
+        $container = ContainerUpload::with('vgmInfo')
+            ->findOrFail($request->container_upload_id);
+
+        if (
+            $status == 'submitted' &&
+            !$container->vgmInfo
+        ) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error',
+                    'VGM must be submitted before Packing List can be submitted.'
+                );
+        }
 
         foreach ($request->items as $item)
         {
@@ -285,10 +295,29 @@ class PackinglistController extends Controller
         );
     }
 
-    public function delete($id)
-    {
 
-    }
+public function delete($id)
+{
+    $packingList = TrPackingList::findOrFail($id);
+
+    // Delete all items first
+    TrPackingListItem::where(
+        'tr_packing_list_id',
+        $packingList->id
+    )->delete();
+
+    // Delete packing list
+    $packingList->delete();
+
+    return redirect()
+        ->route('trpl.index')
+        ->with(
+            'success',
+            'Packing List deleted successfully.'
+        );
+}
+
+
 
     public function exportExcel($id)
     {
@@ -334,12 +363,12 @@ class PackinglistController extends Controller
 
         $sheet->setCellValue(
             'A4',
-            $packingList->to_location
+            "To:"." ".$packingList->to_location
         );
 
         $sheet->setCellValue(
             'A11',
-            $packingList->from_location
+            "From:"." ".$packingList->from_location
         );
 
         $sheet->setCellValue(
@@ -461,6 +490,27 @@ class PackinglistController extends Controller
                 $writer->save('php://output');
             },
             $fileName
+        );
+    }
+
+    public function exportPdf($id)
+    {
+        $packingList = TrPackingList::with([
+            'container',
+            'items'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView(
+            'feright.pl.pdf',
+            compact('packingList')
+        );
+
+        $pdf->setPaper(
+            'a3','landscape'
+        );
+
+        return $pdf->download(
+            'TR_PL_'.$packingList->id.'.pdf'
         );
     }
 
