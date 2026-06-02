@@ -163,7 +163,7 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
         [UsPackingListController::class,'create'])
         ->name('uspl.create');
 
-    Route::get('/us-pl/edit/{id}', [UsPackingListController::class,'edit']);
+    Route::get('/us-pl/edit/{id}', [UsPackingListController::class,'edit'])->name('uspl.edit');
 
     Route::get('/us-pl/preview/{id}', [UsPackingListController::class,'preview']);
     Route::post('/us-pl/store',
@@ -173,6 +173,10 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
         '/us-pl/update/{id}',
         [UsPackingListController::class, 'update']
     )->name('uspl.update');
+    Route::get(
+        '/export-excel/{id}',
+        [UspackingListController::class,'exportExcel']
+    )->name('uspl.export.excel');
 
 });
 

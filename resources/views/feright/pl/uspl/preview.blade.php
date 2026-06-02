@@ -24,17 +24,17 @@
 
                 <div>
 
-                    <a href=""
+                    <a href="{{route('uspl.edit',['id'=>$packingList->id])}}"
                        class="btn btn-warning btn-sm">
                         Edit
                     </a>
 
-                    <a href=""
-                       class="btn btn-danger btn-sm">
-                        PDF
-                    </a>
+                    {{--<a href="{{route('uspl.export.excel')}}"--}}
+                       {{--class="btn btn-danger btn-sm">--}}
+                        {{--PDF--}}
+                    {{--</a>--}}
 
-                    <a href=""
+                    <a href="{{route('uspl.export.excel',['id'=>$packingList->id])}}"
                        class="btn btn-success btn-sm">
                         Excel
                     </a>
@@ -104,6 +104,9 @@
                         <th>Warehouse Code</th>
                         <th>Pallets</th>
                         <th>Packages</th>
+                        <th style="">
+                            Quantity Item per Palet/Pack & kg
+                        </th>
                         <th>Total KG</th>
                         <th>Gross Weight</th>
                         <th>Pallet/Pack KG</th>
@@ -126,6 +129,7 @@
                             <td>{{ $item->total_pallets }}</td>
 
                             <td>{{ $item->packages }}</td>
+                            <td>{{ $item->qty_per_pallet }}</td>
 
                             <td>{{ $item->total_kg }}</td>
 

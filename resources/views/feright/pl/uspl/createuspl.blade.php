@@ -122,6 +122,9 @@
                             <th style="width:100px">
                                 Packages
                             </th>
+                            <th style="width:100px">
+                                Quantity Item per Palet/Pack & kg
+                            </th>
 
                             <th style="width:120px">
                                 Total KG
@@ -173,6 +176,12 @@
                                 <input type="number"
                                        name="items[0][total_packages]"
                                        class="form-control packages calc"
+                                       min="0">
+                            </td>
+                            <td>
+                                <input type="number"
+                                       name="items[0][qty_per_pallet]"
+                                       class="form-control"
                                        min="0">
                             </td>
 
@@ -366,6 +375,12 @@
             <input type="number"
                    name="items[${rowIndex}][total_packages]"
                    class="form-control packages calc"
+                   min="0">
+        </td>
+        <td>
+            <input type="number"
+                   name="items[${rowIndex}][qty_per_pallet]"
+                   class="form-control packages"
                    min="0">
         </td>
 

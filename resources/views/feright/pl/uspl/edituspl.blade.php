@@ -116,6 +116,9 @@
                             <th style="width:100px">
                                 Packages
                             </th>
+                            <th style="width:100px">
+                                Quantity Item per Palet/Pack & kg
+                            </th>
 
                             <th style="width:120px">
                                 Total KG
@@ -173,6 +176,12 @@
                                     <input type="number"
                                            name="items[{{ $key }}][total_packages]"
                                            value="{{ $product->packages }}"
+                                           class="form-control packages calc">
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           name="items[{{ $key }}][qty_per_pallet]"
+                                           value="{{ $product->qty_per_pallet }}"
                                            class="form-control packages calc">
                                 </td>
 
@@ -372,6 +381,14 @@
                    name="items[${rowIndex}][total_packages]"
                    class="form-control packages calc"
                    min="0">
+
+        </td>
+        <td>
+            <input type="number"
+                   name="items[${rowIndex}][qty_per_pallet]"
+                   class="form-control packages calc"
+                   min="0">
+
         </td>
 
         <td>

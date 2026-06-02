@@ -87,6 +87,7 @@ class UspackingListController extends Controller
                     'total_pallets'      => $item['total_pallets'] ?? 0,
 
                     'packages'           => $item['total_packages'] ?? 0,
+                    'qty_per_pallet'    =>$item['total_packages'] ?? 0,
 
                     'total_kg'           => $item['net_weight'] ?? 0,
 
@@ -165,6 +166,7 @@ class UspackingListController extends Controller
                     'product_name'       => $item['product_name'] ?? null,
 
                     'warehouse_code'     => $item['warehouse_code'] ?? null,
+                    'qty_per_pallet'    =>$item['qty_per_pallet'] ?? null,
 
                     'total_pallets'      => $item['total_pallets'] ?? 0,
 
@@ -220,7 +222,7 @@ class UspackingListController extends Controller
     {
         $packingList = UsPackingList::with([
             'container',
-            'product'
+            'products'
         ])->findOrFail($id);
 
         $template = Templates::where(
@@ -232,7 +234,7 @@ class UspackingListController extends Controller
         {
             return back()->with(
                 'error',
-                'TR PL Template Not Found'
+                'US PL Template Not Found'
             );
         }
 
@@ -270,7 +272,7 @@ class UspackingListController extends Controller
         ==========================
         */
 
-        $row = 6;
+        $row = 8;
 
         foreach($packingList->product as $item)
         {
