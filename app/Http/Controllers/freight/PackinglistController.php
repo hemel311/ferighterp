@@ -7,7 +7,10 @@ use App\Models\ContainerUpload;
 use App\Models\Shipment;
 use App\Models\TrPackingList;
 use App\Models\TrPackingListItem;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Templates;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PackinglistController extends Controller
 {
@@ -285,6 +288,180 @@ class PackinglistController extends Controller
     public function delete($id)
     {
 
+    }
+
+    public function exportExcel($id)
+    {
+        $packingList = TrPackingList::with([
+            'container',
+            'items'
+        ])->findOrFail($id);
+
+        $template = Templates::where(
+            'type',
+            'TR_PL'
+        )->first();
+
+        if(!$template)
+        {
+            return back()->with(
+                'error',
+                'TR PL Template Not Found'
+            );
+        }
+
+        $templatePath = storage_path(
+            'app/private/' . $template->file
+        );
+
+        if(!file_exists($templatePath))
+        {
+            return back()->with(
+                'error',
+                'Template File Not Found'
+            );
+        }
+
+        $spreadsheet = IOFactory::load($templatePath);
+
+        $sheet = $spreadsheet->getActiveSheet();
+
+        /*
+        ==========================
+        HEADER DATA
+        ==========================
+        */
+
+        $sheet->setCellValue(
+            'A4',
+            $packingList->to_location
+        );
+
+        $sheet->setCellValue(
+            'A11',
+            $packingList->from_location
+        );
+
+        $sheet->setCellValue(
+            'D4',
+            "CONTAINER NUMBER"." ".$packingList->container->container_number
+        );
+
+        /*
+        ==========================
+        PRODUCT DATA
+        ==========================
+        */
+
+        $row = 6;
+
+        foreach($packingList->items as $item)
+        {
+            $sheet->setCellValue(
+                'D'.$row,
+                $item->total_pallets
+            );
+
+            $sheet->setCellValue(
+                'E'.$row,
+                $item->total_packages
+            );
+
+            $sheet->setCellValue(
+                'G'.$row,
+                $item->product_name
+            );
+
+            $sheet->setCellValue(
+                'H'.$row,
+                $item->item_quantity
+            );
+
+            $palletPackKg = 0;
+
+            if($item->total_pallets > 0)
+            {
+                $palletPackKg =
+                    $item->net_weight /
+                    $item->total_pallets;
+            }
+            elseif($item->total_packages > 0)
+            {
+                $palletPackKg =
+                    $item->net_weight /
+                    $item->total_packages;
+            }
+
+            $sheet->setCellValue(
+                'I'.$row,
+                round($palletPackKg,2)
+            );
+
+            $sheet->setCellValue(
+                'J'.$row,
+                $item->net_weight
+            );
+
+            $sheet->setCellValue(
+                'K'.$row,
+                $item->gross_weight
+            );
+
+            $row++;
+        }
+
+        /*
+        ==========================
+        TOTALS
+        ==========================
+        */
+
+        $sheet->setCellValue(
+            'J20',
+            $packingList->total_net_weight
+        );
+
+        $sheet->setCellValue(
+            'J21',
+            $packingList->total_gross_weight
+        );
+
+        $sheet->setCellValue(
+            'J22',
+            $packingList->total_pallets
+        );
+
+        $sheet->setCellValue(
+            'J24',
+            $packingList->total_packages
+        );
+
+        $sheet->setCellValue(
+            'J25',
+            $packingList->total_item_quantity
+        );
+        $sheet->setCellValue(
+            'A19',"INVOICE DATE:".Carbon::parse($packingList->pl_date
+            )->format('d.m.Y')
+        );
+
+        $fileName =
+            'TR_Packing_List_'.
+            $packingList->container->container_number.
+            '.xlsx';
+
+        return response()->streamDownload(
+            function () use ($spreadsheet)
+            {
+                $writer = IOFactory::createWriter(
+                    $spreadsheet,
+                    'Xlsx'
+                );
+
+                $writer->save('php://output');
+            },
+            $fileName
+        );
     }
 
 }

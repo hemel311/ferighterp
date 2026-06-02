@@ -21,6 +21,7 @@ class TemplateController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
+            'type' => 'required',
             'file' => 'required|mimes:xlsx,xls'
         ]);
 
@@ -44,6 +45,7 @@ class TemplateController extends Controller
         // Save in database
         Templates::create([
             'name' => $request->name,
+            'type'=>$request->type,
             'file' => $filePath,
         ]);
 

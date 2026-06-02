@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Templates extends Model
 {
-    protected $fillable=['name','file'];
+    protected $fillable=['name','type','file'];
 }

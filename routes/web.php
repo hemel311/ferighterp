@@ -144,6 +144,10 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
     Route::delete('/delete/{id}',
         [PackinglistController::class,'delete'])
         ->name('trpl.delete');
+    Route::get(
+        '/export-excel/{id}',
+        [PackinglistController::class,'exportExcel']
+    )->name('trpl.export.excel');
 
 });
 

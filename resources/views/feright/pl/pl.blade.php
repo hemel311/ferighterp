@@ -136,7 +136,7 @@
                                 status = '<span class="badge bg-success">Submitted</span>';
 
                                 action = `
-            <a href="/tr-packing-list/${pl.id}/preview"
+            <a href="/preview/${pl.id}"
                class="btn btn-success btn-sm">
                 View
             </a>
