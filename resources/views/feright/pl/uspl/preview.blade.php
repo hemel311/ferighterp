@@ -1,14 +1,14 @@
 @extends('feright.master')
 
 @section('title')
-    TR Packing List Preview
+    US Packing List Preview
 @endsection
 
 @section('body')
 
     <div class="page-header">
         <h3 class="page-title">
-            TR Packing List Preview
+            US Packing List Preview
         </h3>
     </div>
 
@@ -24,21 +24,21 @@
 
                 <div>
 
-                    <a href="{{ route('trpl.edit',$packingList->id) }}"
+                    <a href=""
                        class="btn btn-warning btn-sm">
                         Edit
                     </a>
 
-                    {{--<a href="{{route('trpl.export.pdf',$packingList->id)}}"--}}
-                       {{--class="btn btn-danger btn-sm">--}}
-                        {{--PDF--}}
-                    {{--</a>--}}
+                    <a href=""
+                       class="btn btn-danger btn-sm">
+                        PDF
+                    </a>
 
-                    <a href="{{ route('trpl.export.excel',$packingList->id) }}"
+                    <a href=""
                        class="btn btn-success btn-sm">
                         Excel
                     </a>
-                    <a href="{{ route('trpl.delete',$packingList->id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this Packing List?')"> Delete </a>
+                    <a href="" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this Packing List?')"> Delete </a>
 
                 </div>
 
@@ -50,7 +50,7 @@
 
             <div class="row">
 
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <label>Booking Number</label>
 
                     <input type="text"
@@ -59,7 +59,7 @@
                            readonly>
                 </div>
 
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <label>Container Number</label>
 
                     <input type="text"
@@ -68,42 +68,13 @@
                            readonly>
                 </div>
 
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <label>VGM Gross Weight</label>
 
                     <input type="text"
                            class="form-control"
-                           value="{{ $packingList->container->vgmInfo->gross_weight }}"
+                           value="{{ $packingList->container->vgmInfo->gross_weight ?? 0 }}"
                            readonly>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <label>Date</label>
-
-                    <input type="text"
-                           class="form-control"
-                           value="{{ $packingList->pl_date }}"
-                           readonly>
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label>From</label>
-
-                    <textarea class="form-control"
-                              rows="4"
-                              readonly>{{ $packingList->from_location }}</textarea>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label>To</label>
-
-                    <textarea class="form-control"
-                              rows="4"
-                              readonly>{{ $packingList->to_location }}</textarea>
-
                 </div>
 
             </div>
@@ -130,9 +101,9 @@
                     <tr>
 
                         <th>Product Name</th>
+                        <th>Warehouse Code</th>
                         <th>Pallets</th>
                         <th>Packages</th>
-                        <th>Quantity  item per Palet/pack & kg</th>
                         <th>Total KG</th>
                         <th>Gross Weight</th>
                         <th>Pallet/Pack KG</th>
@@ -144,36 +115,25 @@
 
                     <tbody>
 
-                    @foreach($packingList->items as $item)
+                    @foreach($packingList->products as $item)
 
                         <tr>
 
                             <td>{{ $item->product_name }}</td>
 
+                            <td>{{ $item->warehouse_code }}</td>
+
                             <td>{{ $item->total_pallets }}</td>
 
-                            <td>{{ $item->total_packages }}</td>
-                            <td>{{ $item->quantity_per_unit }}</td>
+                            <td>{{ $item->packages }}</td>
 
-                            <td>{{ $item->net_weight }}</td>
+                            <td>{{ $item->total_kg }}</td>
 
                             <td>{{ $item->gross_weight }}</td>
 
-                            <td>
+                            <td>{{ $item->pallet_pack_kg }}</td>
 
-                                @if($item->total_pallets > 0)
-
-                                    {{ number_format($item->net_weight / $item->total_pallets,2) }}
-
-                                @elseif($item->total_packages > 0)
-
-                                    {{ number_format($item->net_weight / $item->total_packages,2) }}
-
-                                @endif
-
-                            </td>
-
-                            <td>{{ $item->item_quantity }}</td>
+                            <td>{{ $item->total_item_qty }}</td>
 
                         </tr>
 
@@ -205,7 +165,7 @@
 
                     <input type="text"
                            class="form-control"
-                           value="{{ $packingList->total_net_weight }}"
+                           value="{{ $packingList->products->sum('total_kg') }}"
                            readonly>
                 </div>
 
@@ -214,7 +174,7 @@
 
                     <input type="text"
                            class="form-control"
-                           value="{{ $packingList->total_gross_weight }}"
+                           value="{{ $packingList->products->sum('gross_weight') }}"
                            readonly>
                 </div>
 
@@ -223,7 +183,7 @@
 
                     <input type="text"
                            class="form-control"
-                           value="{{ $packingList->total_pallets }}"
+                           value="{{ $packingList->products->sum('total_pallets') }}"
                            readonly>
                 </div>
 
@@ -232,7 +192,7 @@
 
                     <input type="text"
                            class="form-control"
-                           value="{{ $packingList->total_packages }}"
+                           value="{{ $packingList->products->sum('packages') }}"
                            readonly>
                 </div>
 
@@ -241,7 +201,7 @@
 
                     <input type="text"
                            class="form-control"
-                           value="{{ $packingList->total_item_quantity }}"
+                           value="{{ $packingList->products->sum('total_item_qty') }}"
                            readonly>
                 </div>
 

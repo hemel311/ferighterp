@@ -152,7 +152,6 @@ class PackinglistController extends Controller
                 'tr_packing_list_id' => $packingList->id,
 
                 'product_name' => $item['product_name'],
-
                 'description' => $item['description'] ?? null,
 
                 'total_pallets' => $item['total_pallets'] ?? 0,
@@ -160,6 +159,7 @@ class PackinglistController extends Controller
                 'total_packages' => $item['total_packages'] ?? 0,
 
                 'item_quantity' => $item['item_quantity'] ?? 0,
+                'quantity_per_unit'=>$item['quantity_per_unit'] ?? 0,
 
                 'gross_weight' => $item['gross_weight'] ?? 0,
 
@@ -254,6 +254,7 @@ class PackinglistController extends Controller
                 'tr_packing_list_id' => $packingList->id,
 
                 'product_name' => $item['product_name'],
+                'quantity_per_unit'=>$item['quantity_per_unit'],
 
                 'description' => $item['description'] ?? null,
 
@@ -394,6 +395,10 @@ public function delete($id)
             $sheet->setCellValue(
                 'E'.$row,
                 $item->total_packages
+            );
+            $sheet->setCellValue(
+                'F'.$row,
+                $item->quantity_per_unit
             );
 
             $sheet->setCellValue(

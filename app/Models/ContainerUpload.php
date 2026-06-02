@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\UsPackingList;
+use App\Models\Vgminfo;
 
 class ContainerUpload extends Model
 {
@@ -25,4 +27,10 @@ class ContainerUpload extends Model
             'container_upload_id'
         );
     }
-}
+    public function usPackingLists()
+    {
+        return $this->hasMany(
+            UsPackingList::class,
+            'container_upload_id'
+        );
+    }}

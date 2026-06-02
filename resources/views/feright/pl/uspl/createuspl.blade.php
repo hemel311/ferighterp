@@ -8,23 +8,23 @@
 
     <div class="page-header">
         <h3 class="page-title">
-            Edit TR Packing List
+            Create US Packing List
         </h3>
     </div>
 
     <form method="POST"
-          action="{{ route('trpl.update',$packingList->id) }}"
+          action="{{route('uspl.store')}}"
           id="packingListForm">
 
         @csrf
 
         <input type="hidden"
                name="container_upload_id"
-               value="{{ $packingList->container_upload_id }}">
+               value="{{ $container->id }}">
 
         <input type="hidden"
                name="vgm_info_id"
-               value="{{ $packingList->vgm_info_id }}">
+               value="{{ $container->vgmInfo->id ?? '' }}">
         <input type="hidden"
                name="force_submit"
                id="force_submit"
@@ -44,7 +44,7 @@
 
                         <input type="text"
                                class="form-control"
-                               value="{{ $packingList->container->booking_number }}"
+                               value="{{ $container->booking_number }}"
                                readonly>
                     </div>
 
@@ -55,7 +55,7 @@
 
                         <input type="text"
                                class="form-control"
-                               value="{{ $packingList->container->container_number }}"
+                               value="{{ $container->container_number }}"
                                readonly>
                     </div>
 
@@ -67,41 +67,9 @@
                         <input type="text"
                                id="vgm_gross_weight"
                                class="form-control"
-                               value="{{ $packingList->container->vgmInfo->gross_weight ?? 0 }}"
+                               value="{{ $container->vgmInfo->gross_weight ?? 0 }}"
                                readonly>
                     </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label">
-                            Date
-                        </label>
-
-                        <input type="date"
-                               name="pl_date"
-                               class="form-control"
-                               value="{{ $packingList->pl_date }}">
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">
-                            From
-                        </label>
-
-                        <textarea name="from_location"
-                                  rows="5"
-                                  class="form-control">{{ $packingList->from_location }}</textarea>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">
-                            To
-                        </label>
-
-                        <textarea name="to_location"
-                                  rows="5"
-                                  class="form-control">{{ $packingList->to_location }}</textarea>
-                    </div>
-
                 </div>
 
             </div>
@@ -143,6 +111,9 @@
                             <th style="min-width:180px">
                                 Product Name
                             </th>
+                            <th style="min-width:180px">
+                                Warehouse Code
+                            </th>
 
                             <th style="width:100px">
                                 Pallets
@@ -150,9 +121,6 @@
 
                             <th style="width:100px">
                                 Packages
-                            </th>
-                            <th style="width:100px">
-                                Quantity Item per Palet/Pack & kg
                             </th>
 
                             <th style="width:120px">
@@ -181,76 +149,68 @@
 
                         <tbody id="productBody">
 
-                        @foreach($packingList->items as $key => $item)
+                        <tr>
 
-                            <tr>
+                            <td>
+                                <input type="text"
+                                       name="items[0][product_name]"
+                                       class="form-control" required>
+                            </td>
+                            <td>
+                                <input type="text"
+                                       name="items[0][warehouse_code]"
+                                       class="form-control">
+                            </td>
 
-                                <td>
-                                    <input type="text"
-                                           name="items[{{ $key }}][product_name]"
-                                           value="{{ $item->product_name }}"
-                                           class="form-control">
-                                </td>
+                            <td>
+                                <input type="number"
+                                       name="items[0][total_pallets]"
+                                       class="form-control pallets calc"
+                                       min="0">
+                            </td>
 
-                                <td>
-                                    <input type="number"
-                                           name="items[{{ $key }}][total_pallets]"
-                                           value="{{ $item->total_pallets }}"
-                                           class="form-control pallets calc">
-                                </td>
+                            <td>
+                                <input type="number"
+                                       name="items[0][total_packages]"
+                                       class="form-control packages calc"
+                                       min="0">
+                            </td>
 
-                                <td>
-                                    <input type="number"
-                                           name="items[{{ $key }}][total_packages]"
-                                           value="{{ $item->total_packages }}"
-                                           class="form-control packages calc">
-                                </td>
-                                <td>
-                                    <input type="number"
-                                           name="items[{{ $key }}][quantity_per_unit]"
-                                           value="{{ $item->quantity_per_unit }}"
-                                           class="form-control packages calc">
-                                </td>
+                            <td>
+                                <input type="number"
+                                       step="0.01"
+                                       name="items[0][net_weight]"
+                                       class="form-control net-weight calc">
+                            </td>
 
-                                <td>
-                                    <input type="number"
-                                           step="0.01"
-                                           name="items[{{ $key }}][net_weight]"
-                                           value="{{ $item->net_weight }}"
-                                           class="form-control net-weight calc">
-                                </td>
+                            <td>
+                                <input type="number"
+                                       step="0.01"
+                                       name="items[0][gross_weight]"
+                                       class="form-control gross-weight calc">
+                            </td>
 
-                                <td>
-                                    <input type="number"
-                                           step="0.01"
-                                           name="items[{{ $key }}][gross_weight]"
-                                           value="{{ $item->gross_weight }}"
-                                           class="form-control gross-weight calc">
-                                </td>
+                            <td>
+                                <input type="text"
+                                       class="form-control pallet-pack-kg"
+                                       readonly>
+                            </td>
 
-                                <td>
-                                    <input type="text"
-                                           class="form-control pallet-pack-kg"
-                                           readonly>
-                                </td>
+                            <td>
+                                <input type="number"
+                                       name="items[0][item_quantity]"
+                                       class="form-control quantity calc">
+                            </td>
 
-                                <td>
-                                    <input type="number"
-                                           name="items[{{ $key }}][item_quantity]"
-                                           value="{{ $item->item_quantity }}"
-                                           class="form-control quantity calc">
-                                </td>
 
-                                <td>
-                                    <button type="button"
-                                            class="btn btn-danger btn-sm removeRow">
-                                        ×
-                                    </button>
-                                </td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-danger btn-sm removeRow">
+                                    ×
+                                </button>
+                            </td>
 
-                            </tr>
-
-                        @endforeach
+                        </tr>
 
                         </tbody>
 
@@ -369,6 +329,7 @@
                 Submit
             </button>
 
+
         </div>
 
     </form>
@@ -377,7 +338,7 @@
 @push('js')
     <script>
 
-        let rowIndex = {{ $packingList->items->count() }};
+        let rowIndex = 1;
 
         $('#addRow').click(function(){
 
@@ -389,7 +350,11 @@
                    name="items[${rowIndex}][product_name]"
                    class="form-control" required>
         </td>
-
+        <td>
+    <input type="text"
+           name="items[${rowIndex}][warehouse_code]"
+           class="form-control">
+    </td>
         <td>
             <input type="number"
        name="items[${rowIndex}][total_pallets]"
@@ -401,12 +366,6 @@
             <input type="number"
                    name="items[${rowIndex}][total_packages]"
                    class="form-control packages calc"
-                   min="0">
-        </td>
-        <td>
-            <input type="number"
-                   name="items[${rowIndex}][quantity_per_unit]"
-                   class="form-control"
                    min="0">
         </td>
 
@@ -613,6 +572,6 @@
         $('textarea').on('focus', function() {
             this.setSelectionRange(0, 0);
         });
-        calculateTotals();
+
     </script>
 @endpush

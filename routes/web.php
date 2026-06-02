@@ -9,6 +9,7 @@ use App\Http\Controllers\freight\ShipmentController;
 use App\Http\Controllers\freight\ContainerController;
 use App\Http\Controllers\freight\VgmController;
 use App\Http\Controllers\freight\PackinglistController;
+use App\Http\Controllers\freight\UspackingListController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -153,6 +154,25 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
         '/export-pdf/{id}',
         [PackinglistController::class,'exportPdf']
     )->name('trpl.export.pdf');
+    //us pl
+    Route::get('/us-pl', [UsPackingListController::class,'index'])->name('us.pl');
+
+    Route::get('/us-pl/containers/{bookingNumber}', [UsPackingListController::class,'getContainers']);
+
+    Route::get('/us-pl/create/{id}',
+        [UsPackingListController::class,'create'])
+        ->name('uspl.create');
+
+    Route::get('/us-pl/edit/{id}', [UsPackingListController::class,'edit']);
+
+    Route::get('/us-pl/preview/{id}', [UsPackingListController::class,'preview']);
+    Route::post('/us-pl/store',
+        [UsPackingListController::class,'store'])
+        ->name('uspl.store');
+    Route::post(
+        '/us-pl/update/{id}',
+        [UsPackingListController::class, 'update']
+    )->name('uspl.update');
 
 });
 
