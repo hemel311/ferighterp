@@ -164,6 +164,7 @@ class PackinglistController extends Controller
                 'gross_weight' => $item['gross_weight'] ?? 0,
 
                 'net_weight' => $item['net_weight'] ?? 0,
+                'pallet_pack_kg' => $item['pallet_pack_kg'] ?? null,
             ]);
         }
 
@@ -267,6 +268,8 @@ class PackinglistController extends Controller
                 'gross_weight' => $item['gross_weight'] ?? 0,
 
                 'net_weight' => $item['net_weight'] ?? 0,
+                'pallet_pack_kg' =>
+                    $item['pallet_pack_kg'] ?? null,
             ]);
         }
 
@@ -411,24 +414,10 @@ public function delete($id)
                 $item->item_quantity
             );
 
-            $palletPackKg = 0;
-
-            if($item->total_pallets > 0)
-            {
-                $palletPackKg =
-                    $item->net_weight /
-                    $item->total_pallets;
-            }
-            elseif($item->total_packages > 0)
-            {
-                $palletPackKg =
-                    $item->net_weight /
-                    $item->total_packages;
-            }
 
             $sheet->setCellValue(
                 'I'.$row,
-                round($palletPackKg,2)
+                $item->pallet_pack_kg
             );
 
             $sheet->setCellValue(
@@ -510,12 +499,10 @@ public function delete($id)
             compact('packingList')
         );
 
-        $pdf->setPaper(
-            'a3','landscape'
-        );
+        $pdf->setPaper('a3','landscape');
 
-        return $pdf->download(
-            'TR_PL_'.$packingList->id.'.pdf'
+        return $pdf->stream(
+            'TR_Packing_List_'.$packingList->container->container_number.'.pdf'
         );
     }
 

@@ -232,6 +232,7 @@
 
                             <td>
                                 <input type="text"
+                                       name="items[0][pallet_pack_kg]"
                                        class="form-control pallet-pack-kg"
                                        readonly>
                             </td>
@@ -438,9 +439,10 @@
         </td>
 
         <td>
-            <input type="text"
-                   class="form-control pallet-pack-kg"
-                   readonly>
+           <input type="text"
+       name="items[${rowIndex}][pallet_pack_kg]"
+       class="form-control pallet-pack-kg"
+       readonly>
         </td>
 
         <td>

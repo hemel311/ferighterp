@@ -152,74 +152,104 @@
 
                         <tbody id="productBody">
 
-                        <tr>
+                        @foreach($products as $index => $product)
 
-                            <td>
-                                <input type="text"
-                                       name="items[0][product_name]"
-                                       class="form-control" required>
-                            </td>
-                            <td>
-                                <input type="text"
-                                       name="items[0][warehouse_code]"
-                                       class="form-control">
-                            </td>
+                            <tr>
 
-                            <td>
-                                <input type="number"
-                                       name="items[0][total_pallets]"
-                                       class="form-control pallets calc"
-                                       min="0">
-                            </td>
+                                <td>
+                                    <input type="text"
+                                           name="items[{{$index}}][product_name]"
+                                           value="{{ $product->product_name }}"
+                                           class="form-control">
+                                </td>
 
-                            <td>
-                                <input type="number"
-                                       name="items[0][total_packages]"
-                                       class="form-control packages calc"
-                                       min="0">
-                            </td>
-                            <td>
-                                <input type="number"
-                                       name="items[0][qty_per_pallet]"
-                                       class="form-control"
-                                       min="0">
-                            </td>
+                                <td>
+                                    <input type="text"
+                                           name="items[{{$index}}][warehouse_code]"
+                                           class="form-control">
+                                </td>
 
-                            <td>
-                                <input type="number"
-                                       step="0.01"
-                                       name="items[0][net_weight]"
-                                       class="form-control net-weight calc">
-                            </td>
+                                <td>
+                                    <input type="number"
+                                           name="items[{{$index}}][total_pallets]"
+                                           value="{{ $product->total_pallets }}"
+                                           class="form-control pallets calc">
+                                </td>
 
-                            <td>
-                                <input type="number"
-                                       step="0.01"
-                                       name="items[0][gross_weight]"
-                                       class="form-control gross-weight calc">
-                            </td>
+                                <td>
+                                    <input type="number"
+                                           name="items[{{$index}}][total_packages]"
+                                           value="{{ $product->total_packages }}"
+                                           class="form-control packages calc">
+                                </td>
 
-                            <td>
-                                <input type="text"
-                                       class="form-control pallet-pack-kg"
-                                       readonly>
-                            </td>
+                                <td>
+                                    <input type="text"
+                                           name="items[{{$index}}][qty_per_pallet]"
+                                           value="{{ $product->quantity_per_unit }}"
+                                           class="form-control">
+                                </td>
 
-                            <td>
-                                <input type="number"
-                                       name="items[0][item_quantity]"
-                                       class="form-control quantity calc">
-                            </td>
+                                <td>
+                                    <input type="number"
+                                           step="0.01"
+                                           name="items[{{$index}}][net_weight]"
+                                           value="{{ $product->net_weight }}"
+                                           class="form-control net-weight calc">
+                                </td>
 
+                                <td>
+                                    <input type="number"
+                                           step="0.01"
+                                           name="items[{{$index}}][gross_weight]"
+                                           value="{{ $product->gross_weight }}"
+                                           class="form-control gross-weight calc">
+                                </td>
 
-                            <td>
-                                <button type="button"
-                                        class="btn btn-danger btn-sm removeRow">
-                                    ×
-                                </button>
-                            </td>
+                                <td>
 
-                        </tr>
+                                    @php
+                                        $palletPackKg = 0;
+
+                                        if($product->total_pallets > 0)
+                                        {
+                                            $palletPackKg =
+                                                $product->net_weight /
+                                                $product->total_pallets;
+                                        }
+                                        elseif($product->total_packages > 0)
+                                        {
+                                            $palletPackKg =
+                                                $product->net_weight /
+                                                $product->total_packages;
+                                        }
+                                    @endphp
+
+                                    <input type="text"
+                                           class="form-control pallet-pack-kg"
+                                           value="{{ round($palletPackKg,2) }}"
+                                           readonly>
+
+                                </td>
+
+                                <td>
+                                    <input type="number"
+                                           name="items[{{$index}}][item_quantity]"
+                                           value="{{ $product->item_quantity }}"
+                                           class="form-control quantity calc">
+                                </td>
+
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm removeRow">
+                                        ×
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        @endforeach
+
 
                         </tbody>
 
@@ -347,7 +377,7 @@
 @push('js')
     <script>
 
-        let rowIndex = 1;
+        let rowIndex = {{ count($products) }};
 
         $('#addRow').click(function(){
 
@@ -378,10 +408,9 @@
                    min="0">
         </td>
         <td>
-            <input type="number"
-                   name="items[${rowIndex}][qty_per_pallet]"
-                   class="form-control packages"
-                   min="0">
+            <input type="text"
+       name="items[${rowIndex}][qty_per_pallet]"
+       class="form-control">
         </td>
 
         <td>
@@ -586,6 +615,18 @@
 
         $('textarea').on('focus', function() {
             this.setSelectionRange(0, 0);
+        });
+
+        $(document).on('keyup change','.calc',function(){
+
+            calculateTotals();
+
+        });
+
+        $(document).ready(function () {
+
+            calculateTotals();
+
         });
 
     </script>

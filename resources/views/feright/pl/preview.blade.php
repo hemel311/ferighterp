@@ -161,15 +161,7 @@
 
                             <td>
 
-                                @if($item->total_pallets > 0)
-
-                                    {{ number_format($item->net_weight / $item->total_pallets,2) }}
-
-                                @elseif($item->total_packages > 0)
-
-                                    {{ number_format($item->net_weight / $item->total_packages,2) }}
-
-                                @endif
+                                {{ $item->pallet_pack_kg}}
 
                             </td>
 

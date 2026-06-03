@@ -214,10 +214,10 @@
                                 </td>
                                 <td>
                                     <input
-                                            type="{{ $item->is_special_product ? 'text' : 'number' }}"
+                                            type="text"
                                             name="items[{{ $key }}][quantity_per_unit]"
                                             value="{{ $item->quantity_per_unit }}"
-                                            class="form-control quantity-per-unit calc">
+                                            class="form-control quantity-per-unit {{ !$item->is_special_product ? 'calc' : '' }}">
                                 </td>
 
                                 <td>
@@ -238,8 +238,9 @@
 
                                 <td>
                                     <input type="text"
-                                           class="form-control pallet-pack-kg"
-                                           readonly>
+                                           name="items[{{ $key }}][pallet_pack_kg]"
+                                           value="{{ $item->pallet_pack_kg }}"
+                                           class="form-control pallet-pack-kg">
                                 </td>
 
                                 <td>

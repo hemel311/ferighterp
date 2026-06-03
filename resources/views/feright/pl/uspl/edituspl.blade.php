@@ -11,9 +11,6 @@
             Create US Packing List
         </h3>
     </div>
-
-        @csrf
-
         <form method="POST"
               action="{{ route('uspl.update',$packingList->id) }}"
               id="packingListForm">
@@ -179,10 +176,10 @@
                                            class="form-control packages calc">
                                 </td>
                                 <td>
-                                    <input type="number"
+                                    <input type="text"
                                            name="items[{{ $key }}][qty_per_pallet]"
                                            value="{{ $product->qty_per_pallet }}"
-                                           class="form-control packages calc">
+                                           class="form-control">
                                 </td>
 
                                 <td>
@@ -384,10 +381,9 @@
 
         </td>
         <td>
-            <input type="number"
-                   name="items[${rowIndex}][qty_per_pallet]"
-                   class="form-control packages calc"
-                   min="0">
+           <input type="text"
+       name="items[${rowIndex}][qty_per_pallet]"
+       class="form-control">
 
         </td>
 
@@ -593,6 +589,11 @@
 
         $('textarea').on('focus', function() {
             this.setSelectionRange(0, 0);
+        });
+        $(document).ready(function () {
+
+            calculateTotals();
+
         });
 
     </script>

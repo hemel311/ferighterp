@@ -16,6 +16,8 @@ class TrPackingListItem extends Model
         'item_quantity',
         'net_weight',
         'gross_weight',
+        'pallet_pack_kg'
+
     ];
 
     public function packingList()

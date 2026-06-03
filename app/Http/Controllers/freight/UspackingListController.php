@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\ContainerUpload;
 use App\Models\Shipment;
 use App\Models\Templates;
+use App\Models\TrPackingList;
+use App\Models\TrPackingListItem;
 use App\Models\UsPackingList;
 use App\Models\UsPackingListProduct;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -40,9 +43,24 @@ class UspackingListController extends Controller
         $container = ContainerUpload::with('vgmInfo')
             ->findOrFail($id);
 
+        $trPackingList = TrPackingList::where(
+            'container_upload_id',
+            $container->id
+        )->first();
+
+        $products = collect();
+
+        if ($trPackingList) {
+            $products = $trPackingList->items;
+        }
+
         return view(
             'feright.pl.uspl.createuspl',
-            compact('container')
+            compact(
+                'container',
+                'trPackingList',
+                'products'
+            )
         );
     }
     public function store(Request $request)
@@ -87,7 +105,7 @@ class UspackingListController extends Controller
                     'total_pallets'      => $item['total_pallets'] ?? 0,
 
                     'packages'           => $item['total_packages'] ?? 0,
-                    'qty_per_pallet'    =>$item['total_packages'] ?? 0,
+                    'qty_per_pallet' => $item['qty_per_pallet'] ?? null,
 
                     'total_kg'           => $item['net_weight'] ?? 0,
 
@@ -398,6 +416,48 @@ class UspackingListController extends Controller
                 $writer->save('php://output');
             },
             $fileName
+        );
+    }
+
+    public function delete($id)
+    {
+        $packingList = UsPackingList::findOrFail($id);
+
+        // Delete all items first
+        UsPackingListProduct::where(
+            'us_packing_list_id',
+            $packingList->id
+        )->delete();
+
+        // Delete packing list
+        $packingList->delete();
+
+        return redirect()
+            ->route('us.pl')
+            ->with(
+                'success',
+                'Packing List deleted successfully.'
+            );
+    }
+
+    public function exportPdf($id)
+    {
+        $packingList = UsPackingList::with([
+            'container',
+            'products'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView(
+            'feright.pl.uspl.pdf',
+            compact('packingList')
+        );
+
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->stream(
+            'US_Packing_List_' .
+            $packingList->container->container_number .
+            '.pdf'
         );
     }
 }

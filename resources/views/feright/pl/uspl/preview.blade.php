@@ -29,16 +29,16 @@
                         Edit
                     </a>
 
-                    {{--<a href="{{route('uspl.export.excel')}}"--}}
-                       {{--class="btn btn-danger btn-sm">--}}
-                        {{--PDF--}}
-                    {{--</a>--}}
+                    <a href="{{route('uspl.export.pdf',['id'=>$packingList->id])}}"
+                       class="btn btn-danger btn-sm">
+                        PDF
+                    </a>
 
                     <a href="{{route('uspl.export.excel',['id'=>$packingList->id])}}"
                        class="btn btn-success btn-sm">
                         Excel
                     </a>
-                    <a href="" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this Packing List?')"> Delete </a>
+                    <a href="{{route('us.delete',['id'=>$packingList->id])}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this Packing List?')"> Delete </a>
 
                 </div>
 

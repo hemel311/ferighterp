@@ -166,9 +166,8 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
 
     Route::get('/us-pl/containers/{bookingNumber}', [UsPackingListController::class,'getContainers']);
 
-    Route::get('/us-pl/create/{id}',
-        [UsPackingListController::class,'create'])
-        ->name('uspl.create');
+    Route::get('/us-pl/create/{container_number}', [UsPackingListController::class,'create'])
+        ->name('us.pl.create');
 
     Route::get('/us-pl/edit/{id}', [UsPackingListController::class,'edit'])->name('uspl.edit');
 
@@ -184,6 +183,11 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
         '/us-export-excel/{id}',
         [UspackingListController::class,'exportExcel']
     )->name('uspl.export.excel');
+    Route::get(
+        '/us-export-pdf/{id}',
+        [UspackingListController::class,'exportPdf']
+    )->name('uspl.export.pdf');
+    Route::get('/uspl-delete/{id}',[UspackingListController::class,'delete'])->name('us.delete');
 
     Route::get('/create-isf',[IsfController::class,'create'])->name('isf.index');
     Route::get('/isf/get-shipment-data/{id}', [IsfController::class, 'getShipmentData'])

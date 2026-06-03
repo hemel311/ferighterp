@@ -81,58 +81,17 @@
     <table>
 
         <thead>
-        @php
-            $emptyRows = max(0, 12 - $packingList->items->count());
-            $rowspan = 1 + $packingList->items->count() + $emptyRows;
-        @endphp
+
         <tr class="header">
 
-            <td rowspan="{{ $rowspan }}"
-                width="20%"
-                style="padding:0; vertical-align:top;">
-                <div style="padding:5px;">
-
-                    <strong>To:</strong><br>
-
-                    {!! nl2br(e($packingList->to_location)) !!}
-
-                    <hr style="margin:10px 0;">
-
-                    <strong>From:</strong><br>
-
-                    {!! nl2br(e($packingList->from_location)) !!}
-                </div>
-
-            </td>
-
-            <th width="7%">Total Pallets</th>
-
-            <th width="7%">Packages</th>
-
-            <th width="12%">
-                Quantity Item Per
-                Pallet/Pack
-            </th>
-
-            <th width="35%">
-                Product Name
-            </th>
-
-            <th width="10%">
-                Total Item Quantity
-            </th>
-
-            <th width="10%">
-                Pallet / Pack KG
-            </th>
-
-            <th width="10%">
-                Total KG
-            </th>
-
-            <th width="9%">
-                Gross Weight
-            </th>
+            <th>Total Pallets</th>
+            <th>Packages</th>
+            <th>Quantity item per Pallet/Pack</th>
+            <th>TOTAL item Quantity</th>
+            <th>PALET / Pack KG</th>
+            <th>TOTAL KG</th>
+            <th>GROSS WEIGHT</th>
+            <th>Warehouse code</th>
 
         </tr>
 
@@ -140,7 +99,7 @@
 
         <tbody>
 
-        @foreach($packingList->items as $item)
+        @foreach($packingList->products as $item)
 
             <tr>
 
@@ -149,11 +108,11 @@
                 </td>
 
                 <td class="text-center">
-                    {{ $item->total_packages }}
+                    {{ $item->packages }}
                 </td>
 
                 <td class="text-center">
-                    {{ $item->quantity_per_unit }}
+                    {{ $item->qty_per_pallet }}
                 </td>
 
                 <td>
@@ -161,7 +120,7 @@
                 </td>
 
                 <td class="text-center">
-                    {{ $item->item_quantity }}
+                    {{ $item->total_item_qty }}
                 </td>
 
                 <td class="text-right">
@@ -169,11 +128,15 @@
                 </td>
 
                 <td class="text-right">
-                    {{ number_format($item->net_weight,2) }}
+                    {{ number_format($item->total_kg,2) }}
                 </td>
 
                 <td class="text-right">
                     {{ number_format($item->gross_weight,2) }}
+                </td>
+
+                <td>
+                    {{ $item->warehouse_code }}
                 </td>
 
             </tr>
@@ -181,10 +144,11 @@
         @endforeach
 
         {{-- Empty Rows --}}
-        @for($i = $packingList->items->count(); $i < 12; $i++)
+        @for($i = $packingList->products->count(); $i < 10; $i++)
 
             <tr>
                 <td>&nbsp;</td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -197,103 +161,94 @@
         @endfor
 
         </tbody>
+
     </table>
-        <br>
+
+    <br>
+
+    <table>
+
+        <tr>
+            <td colspan="9"
+                style="font-size:18px;font-weight:bold;">
+                CONTAINER NUMBER
+                {{ $packingList->container->container_number }}
+            </td>
+        </tr>
+
+    </table>
 
     @php
 
         $totalNetWeight =
-            $packingList->items->sum('net_weight');
+            $packingList->products->sum('total_kg');
 
         $totalGrossWeight =
-            $packingList->items->sum('gross_weight');
+            $packingList->products->sum('gross_weight');
 
         $totalPallets =
-            $packingList->items->sum('total_pallets');
+            $packingList->products->sum('total_pallets');
 
         $totalPackages =
-            $packingList->items->sum('total_packages');
+            $packingList->products->sum('packages');
 
         $totalPieces =
-            $packingList->items->sum('item_quantity');
+            $packingList->products->sum('total_item_qty');
 
     @endphp
 
-    <table style="margin-top:5px;">
+    <table>
 
         <tr>
 
-            <td width="20%">
-                INVOICE DATE: {{ \Carbon\Carbon::parse($packingList->pl_date)->format('d.m.Y') }}
-            </td>
+            <td width="55%"></td>
 
-            <td width="55%"
-                style="
-            text-align:center;
-            font-size:18px;
-            font-weight:bold;
-        ">
-                CONTAINER NUMBER
-                {{ $packingList->container->container_number }}
-            </td>
-
-            <td width="15%">
+            <td class="summary-label">
                 Net weight
             </td>
 
-            <td width="10%">
-                {{ number_format($totalNetWeight,2) }} kg
+            <td>
+                {{ number_format($totalNetWeight,2) }}
+                kg
             </td>
 
         </tr>
 
         <tr>
 
-            <td>
-                C.I.F. ISTANBUL
-            </td>
-
             <td></td>
 
-            <td>
+            <td class="summary-label">
                 Gross weight
             </td>
 
             <td>
-                {{ number_format($totalGrossWeight,2) }} kg
+                {{ number_format($totalGrossWeight,2) }}
+                kg
             </td>
 
         </tr>
 
         <tr>
 
-            <td>
-                CASH IN ADVANCE
-            </td>
-
-
-
             <td></td>
 
-            <td>
-                Total Pallets
+            <td class="summary-label">
+                Total palets
             </td>
 
             <td>
-                {{ $totalPallets }} pallets
+                {{ $totalPallets }}
+                palets
             </td>
 
         </tr>
 
         <tr>
 
-            <td>
-                INVOICE NUMBER:
-            </td>
-
             <td></td>
 
-            <td>
+            <td class="summary-label">
                 Total Volume
             </td>
 
@@ -305,43 +260,35 @@
 
         <tr>
 
-            <td valign="top">
-                Notes:
-            </td>
-
             <td></td>
 
-            <td>
+            <td class="summary-label">
                 Total Package
             </td>
 
             <td>
-                {{ $totalPackages }} Packages
+                {{ $totalPackages }}
+                Packages
             </td>
 
         </tr>
 
         <tr>
 
-            <td style="height:40px;"></td>
-
             <td></td>
 
-            <td>
-                Total Pieces
+            <td class="summary-label">
+                Total pieces
             </td>
 
             <td>
-                {{ $totalPieces }} Pieces
+                {{ $totalPieces }}
+                pieces
             </td>
 
         </tr>
 
     </table>
-
-
-
-
 
 </div>
 
