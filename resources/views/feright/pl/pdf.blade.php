@@ -84,7 +84,11 @@
     </tr>
     <tr>
 
-        <td rowspan="15" valign="top">
+        @php
+            $rowspan = $packingList->items->count() + 1;
+        @endphp
+
+        <td rowspan="{{ $rowspan }}" valign="top" width="20%">
 
             <strong>To:</strong><br>
 
@@ -189,107 +193,76 @@
         </tr>
 
 @endforeach
-    @for($i=0;$i<12;$i++)
-
-        <tr class="empty-row">
-
-            <td>&nbsp;</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-
-        </tr>
-
-@endfor
     <tr>
 
-        <td valign="top" style="height:120px">
+        <td style="height:120px" valign="top">
 
             <strong>From:</strong><br>
 
-            {{$packingList->from_location}}
+            {{ $packingList->from_location }}
 
         </td>
 
         <td colspan="8"></td>
 
     </tr>
+</table>
+<table class="master-table">
 
     <tr>
-
-        <td>
+        <td width="20%">
             INVOICE DATE:
             {{ \Carbon\Carbon::parse($packingList->pl_date)->format('d.m.Y') }}
         </td>
-
-        <td colspan="8"></td>
-
+        <td width="80%"></td>
     </tr>
 
     <tr>
-
-        <td>
-            C.I.F. ISTANBUL
-        </td>
-
-        <td colspan="8"></td>
-
+        <td>C.I.F. ISTANBUL</td>
+        <td></td>
     </tr>
 
     <tr>
-
-        <td>
-            CASH IN ADVANCE
-        </td>
-
-        <td colspan="8"></td>
-
+        <td>CASH IN ADVANCE</td>
+        <td></td>
     </tr>
 
     <tr>
-
-        <td>
-            INVOICE NUMBER:
-        </td>
-
-        <td colspan="8"></td>
-
+        <td>INVOICE NUMBER:</td>
+        <td></td>
     </tr>
 
     <tr>
-
-        <td style="height:70px" valign="top">
+        <td style="height:80px" valign="top">
             Notes:
         </td>
-
-        <td colspan="8"></td>
-
+        <td></td>
     </tr>
-    @php
 
-        $totalNetWeight =
-            $packingList->items->sum('net_weight');
+</table>
+@php
 
-        $totalGrossWeight =
-            $packingList->items->sum('gross_weight');
+    $totalNetWeight =
+        $packingList->items->sum('net_weight');
 
-        $totalPallets =
-            $packingList->items->sum('total_pallets');
+    $totalGrossWeight =
+        $packingList->items->sum('gross_weight');
 
-        $totalPackages =
-            $packingList->items->sum('total_packages');
+    $totalPallets =
+        $packingList->items->sum('total_pallets');
 
-        $totalPieces =
-            $packingList->items->sum('item_quantity');
+    $totalPackages =
+        $packingList->items->sum('total_packages');
 
-    @endphp
+    $totalPieces =
+        $packingList->items->sum('item_quantity');
+
+@endphp
+<table class="master-table">
+
     <tr>
 
-        <td colspan="5"
+        <td colspan="2"
             class="container-title">
 
             CONTAINER NUMBER
@@ -297,11 +270,11 @@
 
         </td>
 
-        <td colspan="2">
+        <td>
             Net weight
         </td>
 
-        <td colspan="2">
+        <td>
             {{ number_format($totalNetWeight,2) }} kg
         </td>
 
@@ -309,19 +282,19 @@
 
     <tr>
 
-        <td colspan="3">
+        <td>
             gross weight kg
         </td>
 
-        <td colspan="2">
+        <td>
             net weight kg
         </td>
 
-        <td colspan="2">
+        <td>
             Gross weight
         </td>
 
-        <td colspan="2">
+        <td>
             {{ number_format($totalGrossWeight,2) }} kg
         </td>
 
@@ -329,71 +302,42 @@
 
     <tr>
 
-        <td colspan="3"
-            class="text-right">
-
+        <td class="text-right">
             {{ number_format($totalGrossWeight,2) }}
-
         </td>
 
-        <td colspan="2"
-            class="text-right">
-
+        <td class="text-right">
             {{ number_format($totalNetWeight,2) }}
-
         </td>
 
-        <td colspan="2">
+        <td>
             Total pallets
         </td>
 
-        <td colspan="2">
+        <td>
             {{ $totalPallets }} pallets
         </td>
 
     </tr>
 
     <tr>
-
-        <td colspan="5"></td>
-
-        <td colspan="2">
-            Total Volume
-        </td>
-
-        <td colspan="2">
-            60 m3
-        </td>
-
+        <td colspan="2"></td>
+        <td>Total Volume</td>
+        <td>60 m3</td>
     </tr>
 
     <tr>
-
-        <td colspan="5"></td>
-
-        <td colspan="2">
-            Total Package
-        </td>
-
-        <td colspan="2">
-            {{ $totalPackages }} Packages
-        </td>
-
+        <td colspan="2"></td>
+        <td>Total Package</td>
+        <td>{{ $totalPackages }} Packages</td>
     </tr>
 
     <tr>
-
-        <td colspan="5"></td>
-
-        <td colspan="2">
-            Total pieces
-        </td>
-
-        <td colspan="2">
-            {{ $totalPieces }} pieces
-        </td>
-
+        <td colspan="2"></td>
+        <td>Total pieces</td>
+        <td>{{ $totalPieces }} pieces</td>
     </tr>
+
 </table>
 </body>
 </html>
