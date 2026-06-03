@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,259 +6,227 @@
     <style>
 
         @page{
-            margin:10px;
+            margin:0;
         }
 
         body{
             font-family: DejaVu Sans, sans-serif;
-            font-size:12px;
+            font-size:11px;
+            margin:0;
+            padding:0;
         }
 
         table{
-            width:100%;
             border-collapse:collapse;
         }
 
-        td{
+        .master-table{
+            width:100%;
+        }
+
+        .master-table td,
+        .master-table th{
             border:1px solid #000;
-            padding:3px;
+            padding:2px;
             vertical-align:middle;
         }
 
         .title{
-            font-size:28px;
+            font-size:22px;
             font-weight:bold;
             text-align:center;
         }
 
         .container-title{
-            font-size:20px;
+            font-size:18px;
             font-weight:bold;
             text-align:center;
         }
 
-        .company{
-            width:170px;
-            vertical-align:top;
-            height:170px;
-        }
-
-        .atlantic{
-            width:170px;
-            vertical-align:top;
-            height:170px;
-        }
-
-        .header{
-            font-size:10px;
-            font-weight:bold;
+        .text-center{
             text-align:center;
-            height:55px;
         }
 
-        .right{
+        .text-right{
             text-align:right;
         }
 
-        .center{
-            text-align:center;
+        .bold{
+            font-weight:bold;
         }
 
-        .product-row{
-            height:28px;
+        .small{
+            font-size:10px;
         }
 
-        .notes{
-            height:130px;
-            vertical-align:top;
-        }
-        td:nth-child(5){
-            width:260px;
+        .empty-row{
+            height:18px;
         }
 
     </style>
-
 </head>
-
 <body>
 
-<table>
+<table class="master-table">
 
     <tr>
-
-        <td rowspan="8" class="company">
-
-            {{ $packingList->to_location }}
-
-        </td>
+        <td rowspan="2" width="20%"></td>
 
         <td colspan="8" class="title">
-
             Packing List
-
         </td>
-
     </tr>
 
     <tr>
-
         <td colspan="8" class="container-title">
-
-            CONTAINER NUMBER
-            {{ $packingList->container->container_number }}
-
+            CONTAINER NUMBER {{ $packingList->container->container_number }}
         </td>
-
     </tr>
-
     <tr>
 
-        <td class="header">
-            Total Pallets
+        <td rowspan="15" valign="top">
+
+            <strong>To:</strong><br>
+
+           {{$packingList->to_location}}
+
         </td>
 
-        <td class="header">
+        <th width="5%">
+            Total<br>Palets
+        </th>
+
+        <th width="5%">
             Packages
-        </td>
+        </th>
 
-        <td class="header">
-            Quantity Item /
-            Pallet
-        </td>
+        <th width="10%">
+            Quantity Item Per<br>
+            Palet/Pack & KG
+        </th>
 
-        <td class="header">
+        <th width="32%">
             TYPE
-        </td>
+        </th>
 
-        <td class="header">
-            TOTAL Item
-            Quantity
-        </td>
+        <th width="10%">
+            TOTAL Item<br>
+            Quantity/KG
+        </th>
 
-        <td class="header">
-            PALET /
-            PACK KG
-        </td>
+        <th width="9%">
+            PALET /<br>
+            Pack KG
+        </th>
 
-        <td class="header">
+        <th width="9%">
             TOTAL KG
-        </td>
+        </th>
 
-        <td class="header">
-            GROSS WEIGHT
-        </td>
+        <th width="10%">
+            GROSS<br>
+            WEIGHT
+        </th>
 
     </tr>
-
-    @php
-        $maxRows = 8;
-    @endphp
-
     @foreach($packingList->items as $item)
 
-        @php
+        <tr>
 
-            $qtyPerPallet = '';
-            $packKg = '';
+            <td class="text-center">
+                {{ $item->total_pallets }}
+            </td>
 
-            if($item->total_pallets > 0)
-            {
-                $qtyPerPallet = round(
-                    $item->item_quantity / $item->total_pallets,
-                    2
-                );
+            <td class="text-center">
+                {{ $item->total_packages }}
+            </td>
 
-                $packKg = round(
-                    $item->net_weight / $item->total_pallets,
-                    2
-                );
-            }
+            <td class="text-center">
+                {{ $item->quantity_per_unit }}
+            </td>
 
-        @endphp
+            <td>
+                {{ $item->product_name }}
+            </td>
 
-        <tr class="product-row">
+            <td class="text-right">
+                {{ $item->item_quantity }}
+            </td>
 
-            <td class="right">{{ $item->total_pallets }}</td>
+            <td class="text-right">
 
-            <td class="right">{{ $item->total_packages }}</td>
+                @php
 
-            <td class="right">{{ $qtyPerPallet }}</td>
+                    $palletPackKg = 0;
 
-            <td>{{ $item->product_name }}</td>
+                    if($item->total_pallets > 0)
+                    {
+                        $palletPackKg =
+                            $item->net_weight /
+                            $item->total_pallets;
+                    }
+                    elseif($item->total_packages > 0)
+                    {
+                        $palletPackKg =
+                            $item->net_weight /
+                            $item->total_packages;
+                    }
 
-            <td class="right">{{ $item->item_quantity }}</td>
+                @endphp
 
-            <td class="right">{{ $packKg }}</td>
+                {{ number_format($palletPackKg,2) }}
 
-            <td class="right">{{ $item->net_weight }}</td>
+            </td>
 
-            <td class="right">{{ $item->gross_weight }}</td>
+            <td class="text-right">
+                {{ number_format($item->net_weight,2) }}
+            </td>
 
-        </tr>
-
-    @endforeach
-
-    @php
-        $blankRows = 8 - $packingList->items->count();
-    @endphp
-
-    @for($i = 0; $i < $blankRows; $i++)
-
-        <tr class="product-row">
-
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td class="text-right">
+                {{ number_format($item->gross_weight,2) }}
+            </td>
 
         </tr>
 
-    @endfor
+@endforeach
+    @for($i=0;$i<12;$i++)
 
+        <tr class="empty-row">
+
+            <td>&nbsp;</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+        </tr>
+
+@endfor
     <tr>
 
-        <td class="atlantic">
+        <td valign="top" style="height:120px">
 
-            {{ $packingList->from_location }}
+            <strong>From:</strong><br>
+
+            {{$packingList->from_location}}
 
         </td>
 
-        <td colspan="8"
-            style="height:170px;">
-        </td>
+        <td colspan="8"></td>
 
     </tr>
 
-</table>
-
-<table>
-
     <tr>
 
-        <td style="width:25%;">
+        <td>
             INVOICE DATE:
             {{ \Carbon\Carbon::parse($packingList->pl_date)->format('d.m.Y') }}
         </td>
 
-        <td colspan="2"
-            class="container-title">
-
-            CONTAINER NUMBER
-            {{ $packingList->container->container_number }}
-
-        </td>
-
-        <td>
-            Net weight
-        </td>
-
-        <td>
-            {{ number_format($packingList->total_net_weight,2) }} kg
-        </td>
+        <td colspan="8"></td>
 
     </tr>
 
@@ -269,21 +236,7 @@
             C.I.F. ISTANBUL
         </td>
 
-        <td>
-            gross weight kg
-        </td>
-
-        <td>
-            net weight kg
-        </td>
-
-        <td>
-            Gross weight
-        </td>
-
-        <td>
-            {{ number_format($packingList->total_gross_weight,2) }} kg
-        </td>
+        <td colspan="8"></td>
 
     </tr>
 
@@ -293,43 +246,122 @@
             CASH IN ADVANCE
         </td>
 
-        <td class="right">
-            {{ number_format($packingList->total_gross_weight,2) }}
-        </td>
+        <td colspan="8"></td>
 
-        <td class="right">
-            {{ number_format($packingList->total_net_weight,2) }}
-        </td>
+    </tr>
+
+    <tr>
 
         <td>
-            Total pallets
+            INVOICE NUMBER:
         </td>
 
-        <td>
-            {{ $packingList->total_pallets }}
+        <td colspan="8"></td>
+
+    </tr>
+
+    <tr>
+
+        <td style="height:70px" valign="top">
+            Notes:
+        </td>
+
+        <td colspan="8"></td>
+
+    </tr>
+    @php
+
+        $totalNetWeight =
+            $packingList->items->sum('net_weight');
+
+        $totalGrossWeight =
+            $packingList->items->sum('gross_weight');
+
+        $totalPallets =
+            $packingList->items->sum('total_pallets');
+
+        $totalPackages =
+            $packingList->items->sum('total_packages');
+
+        $totalPieces =
+            $packingList->items->sum('item_quantity');
+
+    @endphp
+    <tr>
+
+        <td colspan="5"
+            class="container-title">
+
+            CONTAINER NUMBER
+            {{ $packingList->container->container_number }}
+
+        </td>
+
+        <td colspan="2">
+            Net weight
+        </td>
+
+        <td colspan="2">
+            {{ number_format($totalNetWeight,2) }} kg
         </td>
 
     </tr>
 
     <tr>
 
-        <td rowspan="4" class="notes">
+        <td colspan="3">
+            gross weight kg
+        </td>
 
-            INVOICE NUMBER:
+        <td colspan="2">
+            net weight kg
+        </td>
 
-            <br><br>
+        <td colspan="2">
+            Gross weight
+        </td>
 
-            Notes:
+        <td colspan="2">
+            {{ number_format($totalGrossWeight,2) }} kg
+        </td>
+
+    </tr>
+
+    <tr>
+
+        <td colspan="3"
+            class="text-right">
+
+            {{ number_format($totalGrossWeight,2) }}
 
         </td>
 
-        <td rowspan="4" colspan="2"></td>
+        <td colspan="2"
+            class="text-right">
 
-        <td>
+            {{ number_format($totalNetWeight,2) }}
+
+        </td>
+
+        <td colspan="2">
+            Total pallets
+        </td>
+
+        <td colspan="2">
+            {{ $totalPallets }} pallets
+        </td>
+
+    </tr>
+
+    <tr>
+
+        <td colspan="5"></td>
+
+        <td colspan="2">
             Total Volume
         </td>
 
-        <td>
+        <td colspan="2">
             60 m3
         </td>
 
@@ -337,37 +369,31 @@
 
     <tr>
 
-        <td>
+        <td colspan="5"></td>
+
+        <td colspan="2">
             Total Package
         </td>
 
-        <td>
-            {{ $packingList->total_packages }}
+        <td colspan="2">
+            {{ $totalPackages }} Packages
         </td>
 
     </tr>
 
     <tr>
 
-        <td>
+        <td colspan="5"></td>
+
+        <td colspan="2">
             Total pieces
         </td>
 
-        <td>
-            {{ $packingList->total_item_quantity }}
+        <td colspan="2">
+            {{ $totalPieces }} pieces
         </td>
 
     </tr>
-
-    <tr>
-
-        <td></td>
-        <td></td>
-
-    </tr>
-
 </table>
-
 </body>
 </html>
-

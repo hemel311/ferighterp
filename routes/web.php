@@ -116,8 +116,14 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
     Route::get('/vgm/create/{id}', [VgmController::class,'create'])->name('vgm.create');
 
     Route::post('/vgm/store', [VgmController::class,'store'])->name('vgm.store');
+    Route::post('/vgm/extract-pdf',
+        [VgmController::class,'extractPdf'])
+        ->name('vgm.extract');
     Route::get('/vgm/delete/{id}', [VgmController::class,'delete'])
         ->name('vgm.delete');
+    Route::get('/vgm/download/{id}',
+        [VgmController::class,'download'])
+        ->name('vgm.download');
     //pl
     Route::get('/pl', [PackinglistController::class,'index'])
         ->name('trpl.index');
@@ -218,5 +224,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+Route::get('/phpinfo', function () {
+    phpinfo();
+});
+
 
 require __DIR__.'/auth.php';

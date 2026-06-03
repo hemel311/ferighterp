@@ -170,6 +170,12 @@
                             <th style="width:120px">
                                 Total Quantity
                             </th>
+                            <th style="width:120px">
+                                Manual Entry
+                            </th>
+                            <th style="width:120px">
+                                Special Product
+                            </th>
 
                             <th style="width:80px">
                                 Action
@@ -205,9 +211,10 @@
                             <td>
                                 <input type="number"
                                        name="items[0][quantity_per_unit]"
-                                       class="form-control"
+                                       class="form-control quantity-per-unit calc"
                                        min="0">
                             </td>
+
 
                             <td>
                                 <input type="number"
@@ -232,10 +239,21 @@
                             <td>
                                 <input type="number"
                                        name="items[0][item_quantity]"
-                                       class="form-control quantity calc">
+                                       class="form-control quantity  calc" readonly>
+                            </td>
+                            <td>
+                                <input type="checkbox"
+                                       class="manual-quantity">
                             </td>
 
+                            <td>
 
+                                <input type="checkbox"
+                                       class="special-product"
+                                       name="items[0][is_special_product]"
+                                       value="1">
+
+                            </td>
                             <td>
                                 <button type="button"
                                         class="btn btn-danger btn-sm removeRow">
@@ -398,11 +416,12 @@
                    min="0">
         </td>
         <td>
-            <input type="number"
-                   name="items[${rowIndex}][quantity_per_unit]"
-                   class="form-control"
-                   min="0">
-        </td>
+        <input type="number"
+                                   name="items[${rowIndex}][quantity_per_unit]"
+                                   class="form-control quantity-per-unit calc"
+                                   min="0">
+</td>
+
 
         <td>
             <input type="number"
@@ -427,8 +446,20 @@
         <td>
             <input type="number"
                    name="items[${rowIndex}][item_quantity]"
-                   class="form-control quantity calc">
+                   class="form-control quantity calc" readonly>
         </td>
+         <td>
+                                <input type="checkbox"
+                                       class="manual-quantity">
+                            </td>
+                            <td>
+
+    <input type="checkbox"
+           class="special-product"
+           name="items[${rowIndex}][is_special_product]"
+           value="1">
+
+</td>
 
         <td>
             <button type="button"
@@ -460,6 +491,24 @@
             }
 
         });
+        $(document).on('change','.special-product',function()
+        {
+            let row = $(this).closest('tr');
+            let quantityField = row.find('.quantity');
+            let palletPackField = row.find('.pallet-pack-kg');
+            let quantityPerUnitField = row.find('.quantity-per-unit');
+
+            if($(this).is(':checked'))
+            {
+                quantityField.prop('readonly',false); palletPackField.prop('readonly',false);
+                quantityPerUnitField .attr('type','text') .removeClass('calc') .val('');
+            }
+            else {
+                quantityField.prop('readonly',true);
+                palletPackField.prop('readonly',true);
+                quantityPerUnitField .attr('type','number') .addClass('calc') .val(''); calculateTotals();
+            }
+        });
 
         function calculateTotals()
         {
@@ -468,55 +517,73 @@
             let totalPallets = 0;
             let totalPackages = 0;
             let totalPieces = 0;
-
             $('#productBody tr').each(function(){
+                let row = $(this);
+                let pallets =
+                    parseFloat(row.find('.pallets').val()) || 0;
+                let packages =
+                    parseFloat(row.find('.packages').val()) || 0;
+                let netWeight =
+                    parseFloat(row.find('.net-weight').val()) || 0;
+                let grossWeight =
+                    parseFloat(row.find('.gross-weight').val()) || 0;
+                let quantityPerUnit =
+                    parseFloat(
+                        row.find('input[name*="[quantity_per_unit]"]').val()
+                    ) || 0;
+                let quantityField =
+                    row.find('.quantity');
+                let manualQuantity =
+                    row.find('.manual-quantity').is(':checked');
+                let specialProduct =
+                    row.find('.special-product').is(':checked');
+                let quantity =
+                    parseFloat(quantityField.val()) || 0;
+// Normal Product Auto Calculation
+                if(!manualQuantity && !specialProduct)
+                {
+                    if(pallets > 0)
+                    {
+                        quantity = pallets * quantityPerUnit;
+                    }
+                    else if(packages > 0)
+                    {
 
-                let pallets = parseFloat($(this).find('.pallets').val()) || 0;
-
-                let packages = parseFloat($(this).find('.packages').val()) || 0;
-
-                let netWeight = parseFloat($(this).find('.net-weight').val()) || 0;
-
-                let grossWeight = parseFloat($(this).find('.gross-weight').val()) || 0;
-
-                let quantity = parseFloat($(this).find('.quantity').val()) || 0;
-
+                        quantity = packages * quantityPerUnit;
+                    }
+                    quantityField.val(quantity);
+                }
                 totalNetWeight += netWeight;
-
                 totalGrossWeight += grossWeight;
-
                 totalPallets += pallets;
-
                 totalPackages += packages;
-
                 totalPieces += quantity;
-
-                let palletPackKg = 0;
-
-                if(pallets > 0)
+// Auto Pallet/Pack KG
+                if(!specialProduct)
                 {
-                    palletPackKg = netWeight / pallets;
+                    let palletPackKg = 0;
+                    if(pallets > 0)
+                    {
+                        palletPackKg = netWeight / pallets;
+                    }
+                    else if(packages > 0)
+                    {
+                        palletPackKg = netWeight / packages;
+                    }
+                    row.find('.pallet-pack-kg')
+                        .val(
+                            palletPackKg > 0
+                                ? palletPackKg.toFixed(2)
+                                : ''
+                        );
                 }
-                else if(packages > 0)
-                {
-                    palletPackKg = netWeight / packages;
-                }
-
-                $(this)
-                    .find('.pallet-pack-kg')
-                    .val(palletPackKg > 0 ? palletPackKg.toFixed(2) : '');
-
             });
-
             $('#total_net_weight').val(totalNetWeight.toFixed(2));
-
             $('#total_gross_weight').val(totalGrossWeight.toFixed(2));
-
             $('#total_pallets').val(totalPallets);
-
             $('#total_packages').val(totalPackages);
-
             $('#total_pieces').val(totalPieces);
+
         }
         $(document).on('keyup change','.calc',function(){
 
@@ -606,6 +673,57 @@
 
         $('textarea').on('focus', function() {
             this.setSelectionRange(0, 0);
+        });
+
+        $(document).on('change','.manual-quantity',function(){
+
+            let row = $(this).closest('tr');
+
+            let quantityField = row.find('.quantity');
+
+            if($(this).is(':checked'))
+            {
+                quantityField.prop('readonly',false);
+            }
+            else
+            {
+                quantityField.prop('readonly',true);
+
+                let pallets =
+                    parseFloat(row.find('.pallets').val()) || 0;
+
+                let packages =
+                    parseFloat(row.find('.packages').val()) || 0;
+
+                let quantityPerUnit =
+                    parseFloat(
+                        row.find('input[name*="[quantity_per_unit]"]').val()
+                    ) || 0;
+
+                let quantity = 0;
+
+                let isSpecial =
+                    $(this)
+                        .find('.special-product')
+                        .is(':checked');
+
+                if(!isSpecial)
+                {
+                    if(pallets > 0)
+                    {
+                        quantity = pallets * quantityPerUnit;
+                    }
+                    else if(packages > 0)
+                    {
+                        quantity = packages * quantityPerUnit;
+                    }
+
+                    quantityField.val(quantity);
+                }
+
+                calculateTotals();
+            }
+
         });
 
     </script>

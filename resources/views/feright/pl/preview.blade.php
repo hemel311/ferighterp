@@ -29,10 +29,10 @@
                         Edit
                     </a>
 
-                    {{--<a href="{{route('trpl.export.pdf',$packingList->id)}}"--}}
-                       {{--class="btn btn-danger btn-sm">--}}
-                        {{--PDF--}}
-                    {{--</a>--}}
+                    <a href="{{route('trpl.export.pdf',$packingList->id)}}"
+                       class="btn btn-danger btn-sm">
+                        PDF
+                    </a>
 
                     <a href="{{ route('trpl.export.excel',$packingList->id) }}"
                        class="btn btn-success btn-sm">

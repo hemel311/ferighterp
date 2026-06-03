@@ -16,19 +16,18 @@
 
                 <div class="card-body">
 
-                    <form action="{{ route('vgm.store') }}" method="POST">
+                    <form action="{{ route('vgm.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <input type="hidden" name="container_id" value="{{ $container->id }}">
-
                         <div class="mb-3">
-                            <label>Container Number</label>
-                            <input type="text"
+                            <label>Upload VGM PDF</label>
+                            <input type="file"
+                                   id="vgm_pdf"
+                                   name="pdf_file"
                                    class="form-control"
-                                   value="{{ $container->container_number }}"
-                                   readonly>
+                                   accept=".pdf">
                         </div>
-
                         <div class="mb-3">
                             <label>VGM Weight</label>
                             <input type="number"
@@ -74,15 +73,66 @@
 
 @push('js')
     <script>
-        document.getElementById('vgm_weight').addEventListener('input', calculateGross);
-        document.getElementById('container_weight').addEventListener('input', calculateGross);
+
+        $(document).ready(function () {
+
+            // Upload PDF and extract data
+            $('#vgm_pdf').change(function () {
+
+                let formData = new FormData();
+
+                formData.append('pdf', this.files[0]);
+                formData.append('_token', '{{ csrf_token() }}');
+
+                $.ajax({
+
+                    url: "{{ route('vgm.extract') }}",
+
+                    type: "POST",
+
+                    data: formData,
+
+                    processData: false,
+
+                    contentType: false,
+
+                    success: function (res) {
+
+                        $('#vgm_weight').val(res.vgm_weight);
+                        $('#container_weight').val(res.container_weight);
+                        $('#gross_weight').val(res.gross_weight);
+
+                    },
+
+                    error: function (xhr) {
+
+                        console.log(xhr.responseText);
+
+                        alert('PDF extraction failed.');
+
+                    }
+
+                });
+
+            });
+
+            // Manual calculation if values change
+            $('#vgm_weight, #container_weight').on('input', function () {
+
+                calculateGross();
+
+            });
+
+        });
 
         function calculateGross()
         {
-            let vgm = parseFloat(document.getElementById('vgm_weight').value) || 0;
-            let container = parseFloat(document.getElementById('container_weight').value) || 0;
+            let vgm = parseFloat($('#vgm_weight').val()) || 0;
 
-            document.getElementById('gross_weight').value = (vgm - container).toFixed(2);
+            let container = parseFloat($('#container_weight').val()) || 0;
+
+            $('#gross_weight').val((vgm - container).toFixed(2));
         }
+
     </script>
 @endpush

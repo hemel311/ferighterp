@@ -107,21 +107,26 @@
 
 
                     <td>
-    ${
+${
                             row.vgm_info !== null
                                 ? `
+        <a href="/vgm/download/${row.vgm_info.id}"
+           class="btn btn-info btn-sm">
+            Download
+        </a>
+
         <a href="/vgm/delete/${row.vgm_info.id}"
            class="btn btn-danger btn-sm"
            onclick="return confirm('Are you sure you want to delete this VGM?')">
             Delete
         </a>
-       `
+      `
                                 : `
         <a href="{{ url('vgm/create') }}/${row.id}"
            class="btn btn-primary btn-sm">
             Add VGM
         </a>
-       `
+      `
                             }
 </td>
 

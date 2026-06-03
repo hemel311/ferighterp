@@ -11,6 +11,7 @@ class Vgminfo extends Model
         'vgm_weight',
         'container_weight',
         'gross_weight',
+        'pdf_file'
     ];
 
     public function container()

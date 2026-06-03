@@ -9,13 +9,13 @@ class TrPackingListItem extends Model
     protected $fillable = [
         'tr_packing_list_id',
         'product_name',
-        'description',
+        'is_special_product',
+        'quantity_per_unit',
         'total_pallets',
         'total_packages',
-        'quantity_per_unit',
         'item_quantity',
-        'gross_weight',
         'net_weight',
+        'gross_weight',
     ];
 
     public function packingList()
