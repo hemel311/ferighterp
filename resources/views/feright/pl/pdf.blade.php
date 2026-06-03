@@ -227,14 +227,44 @@
                 INVOICE DATE: {{ \Carbon\Carbon::parse($packingList->pl_date)->format('d.m.Y') }}
             </td>
 
-            <td width="55%"
-                style="
-            text-align:center;
-            font-size:18px;
-            font-weight:bold;
-        ">
-                CONTAINER NUMBER
-                {{ $packingList->container->container_number }}
+            <td width="55%" style="padding:0;">
+
+                <table style="width:100%; border-collapse:collapse;">
+
+                    <tr>
+                        <td colspan="2"
+                            style="
+                        text-align:center;
+                        font-size:18px;
+                        font-weight:bold;
+                    ">
+                            CONTAINER NUMBER
+                            {{ $packingList->container->container_number }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align:center;">
+                            net weight
+                        </td>
+
+                        <td style="text-align:center;">
+                            gross weight
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align:center;">
+                            {{ number_format($totalNetWeight,2) }}
+                        </td>
+
+                        <td style="text-align:center;">
+                            {{ number_format($totalGrossWeight,2) }}
+                        </td>
+                    </tr>
+
+                </table>
+
             </td>
 
             <td width="15%">
@@ -246,8 +276,6 @@
             </td>
 
         </tr>
-
-        <tr>
 
             <td>
                 C.I.F. ISTANBUL
@@ -323,7 +351,7 @@
 
         <tr>
 
-            <td style="height:40px;"></td>
+            <td style="height:20px;"></td>
 
             <td></td>
 
