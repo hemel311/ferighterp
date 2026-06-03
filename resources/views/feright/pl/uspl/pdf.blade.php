@@ -87,6 +87,7 @@
             <th>Total Pallets</th>
             <th>Packages</th>
             <th>Quantity item per Pallet/Pack</th>
+            <th>Product Name</th>
             <th>TOTAL item Quantity</th>
             <th>PALET / Pack KG</th>
             <th>TOTAL KG</th>
@@ -165,19 +166,6 @@
     </table>
 
     <br>
-
-    <table>
-
-        <tr>
-            <td colspan="9"
-                style="font-size:18px;font-weight:bold;">
-                CONTAINER NUMBER
-                {{ $packingList->container->container_number }}
-            </td>
-        </tr>
-
-    </table>
-
     @php
 
         $totalNetWeight =
@@ -197,18 +185,27 @@
 
     @endphp
 
-    <table>
+    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
 
         <tr>
 
-            <td width="55%"></td>
+            <td colspan="4"
+                style="border:1px solid #000;
+                   font-size:18px;
+                   font-weight:bold;
+                   text-align:center;">
 
-            <td class="summary-label">
+                CONTAINER NUMBER
+                {{ $packingList->container->container_number }}
+
+            </td>
+
+            <td style="border:1px solid #000;">
                 Net weight
             </td>
 
-            <td>
-                {{ number_format($totalNetWeight,2) }}
+            <td style="border:1px solid #000;">
+                {{ number_format($totalNetWeight,1) }}
                 kg
             </td>
 
@@ -216,14 +213,24 @@
 
         <tr>
 
-            <td></td>
+            <td style="border:1px solid #000;"></td>
 
-            <td class="summary-label">
+            <td style="border:1px solid #000;">
+                gross weight kg
+            </td>
+
+            <td style="border:1px solid #000;">
+                net weight kg
+            </td>
+
+            <td style="border:1px solid #000;"></td>
+
+            <td style="border:1px solid #000;">
                 Gross weight
             </td>
 
-            <td>
-                {{ number_format($totalGrossWeight,2) }}
+            <td style="border:1px solid #000;">
+                {{ number_format($totalGrossWeight,1) }}
                 kg
             </td>
 
@@ -231,13 +238,23 @@
 
         <tr>
 
-            <td></td>
+            <td style="border:1px solid #000;"></td>
 
-            <td class="summary-label">
+            <td style="border:1px solid #000; text-align:right;">
+                {{ number_format($totalGrossWeight,0) }}
+            </td>
+
+            <td style="border:1px solid #000; text-align:right;">
+                {{ number_format($totalNetWeight,0) }}
+            </td>
+
+            <td style="border:1px solid #000;"></td>
+
+            <td style="border:1px solid #000;">
                 Total palets
             </td>
 
-            <td>
+            <td style="border:1px solid #000;">
                 {{ $totalPallets }}
                 palets
             </td>
@@ -246,13 +263,14 @@
 
         <tr>
 
-            <td></td>
+            <td colspan="4"
+                style="border:1px solid #000;"></td>
 
-            <td class="summary-label">
+            <td style="border:1px solid #000;">
                 Total Volume
             </td>
 
-            <td>
+            <td style="border:1px solid #000;">
                 60 m3
             </td>
 
@@ -260,13 +278,14 @@
 
         <tr>
 
-            <td></td>
+            <td colspan="4"
+                style="border:1px solid #000;"></td>
 
-            <td class="summary-label">
+            <td style="border:1px solid #000;">
                 Total Package
             </td>
 
-            <td>
+            <td style="border:1px solid #000;">
                 {{ $totalPackages }}
                 Packages
             </td>
@@ -275,13 +294,14 @@
 
         <tr>
 
-            <td></td>
+            <td colspan="4"
+                style="border:1px solid #000;"></td>
 
-            <td class="summary-label">
+            <td style="border:1px solid #000;">
                 Total pieces
             </td>
 
-            <td>
+            <td style="border:1px solid #000;">
                 {{ $totalPieces }}
                 pieces
             </td>
@@ -289,6 +309,8 @@
         </tr>
 
     </table>
+
+
 
 </div>
 
