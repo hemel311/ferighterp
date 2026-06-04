@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\freight;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,10 @@ class ShipmentController extends Controller
 {
     public function index()
     {
-        return view('feright.shipment.addshipment');
+        $products = Product::orderBy('product_name')->get();
+        return view('feright.shipment.addshipment',[
+            'products' => $products
+        ]);
     }
     public function create()
     {
@@ -40,15 +44,18 @@ class ShipmentController extends Controller
             'status' => $request->status,
         ]);
 
-        if($request->item_name)
+        if($request->product_id)
         {
-            foreach($request->item_name as $key => $item)
+            foreach($request->product_id as $key => $productId)
             {
-                if(!empty($item))
+                if(!empty($productId))
                 {
+                    $product = Product::find($productId);
+
                     $shipment->items()->create([
-                        'hs_code' => $request->hs_code[$key],
-                        'item_name' => $item,
+                        'product_id' => $productId,
+                        'hs_code'    => $request->hs_code[$key],
+                        'item_name'  => $product->product_name,
                     ]);
                 }
             }
@@ -78,8 +85,9 @@ class ShipmentController extends Controller
 
     public function edit($id)
     {
+        $products=Product::orderBy('product_name')->get();
         $shipment=Shipment::findorFail($id);
-        return view('feright.shipment.edit',['shipment'=>$shipment]);
+        return view('feright.shipment.edit',['shipment'=>$shipment,'products' => $products,]);
 
     }
 
@@ -110,15 +118,18 @@ class ShipmentController extends Controller
 
         $shipment->items()->delete();
 
-        if($request->item_name)
+        if($request->product_id)
         {
-            foreach($request->item_name as $key => $item)
+            foreach($request->product_id as $key => $productId)
             {
-                if(!empty($item))
+                if(!empty($productId))
                 {
+                    $product = Product::find($productId);
+
                     $shipment->items()->create([
-                        'hs_code' => $request->hs_code[$key],
-                        'item_name' => $item,
+                        'product_id' => $productId,
+                        'hs_code'    => $request->hs_code[$key],
+                        'item_name'  => $product->product_name,
                     ]);
                 }
             }

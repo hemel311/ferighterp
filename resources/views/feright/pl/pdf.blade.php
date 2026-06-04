@@ -224,146 +224,128 @@
 
     <table style="margin-top:5px;">
 
+        {{-- Invoice Date --}}
         <tr>
-
-            <td width="20%" class="invoice">
-                INVOICE DATE: {{ \Carbon\Carbon::parse($packingList->pl_date)->format('d.m.Y') }}
+            <td  class="invoice"
+                style="border-right:1px solid #000;">
+                INVOICE DATE:
+                {{ \Carbon\Carbon::parse($packingList->pl_date)->format('d.m.Y') }}
             </td>
-
-            <td width="55%" style="padding:0;">
-
-                <table style="width:100%; border-collapse:collapse;">
-
-                    <tr>
-                        <td colspan="2"
-                            style="
-                        text-align:center;
-                        font-size:18px;
-                        font-weight:bold;
-                    ">
-                            CONTAINER NUMBER
-                            {{ $packingList->container->container_number }}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style="text-align:center;">
-                            net weight
-                        </td>
-
-                        <td style="text-align:center;">
-                            gross weight
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style="text-align:center;">
-                            {{ number_format($totalNetWeight,2) }}
-                        </td>
-
-                        <td style="text-align:center;">
-                            {{ number_format($totalGrossWeight,2) }}
-                        </td>
-                    </tr>
-
-                </table>
-
-            </td>
-
-            <td width="15%">
-                Net weight
-            </td>
-
-            <td width="10%">
-                {{ number_format($totalNetWeight,2) }} kg
-            </td>
-
+            <td colspan="5"></td>
         </tr>
+
+        {{-- CIF + Container Number --}}
+        <tr>
 
             <td class="invoice">
                 C.I.F. ISTANBUL
             </td>
 
-            <td></td>
-
-            <td>
-                Gross weight
+            <td colspan="2"
+                style="
+                font-size:18px;
+                font-weight:bold;
+            ">
+                CONTAINER NUMBER
+                {{ $packingList->container->container_number }}
             </td>
 
             <td>
-                {{ number_format($totalGrossWeight,2) }} kg
+                Net weight
             </td>
+
+            <td>
+                {{ number_format($totalNetWeight,2) }}
+            </td>
+            <td>kg</td>
 
         </tr>
 
+        {{-- Cash In Advance --}}
         <tr>
 
             <td class="invoice">
                 CASH IN ADVANCE
             </td>
 
+            <td class="">
+                gross weight kg
+            </td>
 
-
-            <td></td>
-
-            <td>
-                Total Pallets
+            <td class="">
+                net weight kg
             </td>
 
             <td>
-                {{ $totalPallets }} pallets
+                Gross weight
             </td>
+
+            <td>
+                {{ number_format($totalGrossWeight,2) }}
+            </td>
+            <td>kg</td>
 
         </tr>
 
+        {{-- Invoice Number --}}
         <tr>
 
             <td class="invoice">
                 INVOICE NUMBER:
             </td>
 
-            <td></td>
+            <td class="text-right">
+                {{ number_format($totalGrossWeight,2) }}
+            </td>
+
+            <td class="text-right">
+                {{ number_format($totalNetWeight,2) }}
+            </td>
 
             <td>
                 Total Volume
             </td>
 
             <td>
-                60 m3
+                60
             </td>
+            <td>m3</td>
 
         </tr>
 
+        {{-- Notes --}}
         <tr>
 
-            <td valign="top" class="invoice">
+            <td class="invoice" valign="top" rowspan="2">
                 Notes:
             </td>
 
-            <td></td>
+            <td colspan="2" rowspan="2"></td>
 
             <td>
                 Total Package
             </td>
 
             <td>
-                {{ $totalPackages }} Packages
+                {{ $totalPackages }}
             </td>
+
+            <td>Packages</td>
 
         </tr>
 
         <tr>
-
-            <td style="height:20px;"></td>
-
-            <td></td>
 
             <td>
                 Total Pieces
             </td>
 
             <td>
-                {{ $totalPieces }} Pieces
+                {{ $totalPieces }}
+            </td>
+
+            <td>
+                Pieces
             </td>
 
         </tr>

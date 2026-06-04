@@ -188,25 +188,46 @@
 
                                 <div class="row item-row mb-3">
 
-                                    <div class="col-md-4">
-                                        <input type="text"
-                                               name="hs_code[]"
-                                               class="form-control"
-                                               placeholder="HS Code">
+                                    <div class="col-md-5">
+
+                                        <select name="product_id[]"
+                                                class="form-select product-select">
+
+                                            <option value="">
+                                                Select Product
+                                            </option>
+
+                                            @foreach($products as $product)
+
+                                                <option value="{{ $product->id }}"
+                                                        data-hs="{{ $product->hs_code }}">
+
+                                                    {{ $product->product_name }}
+
+                                                </option>
+
+                                            @endforeach
+
+                                        </select>
+
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-5">
+
                                         <input type="text"
-                                               name="item_name[]"
-                                               class="form-control"
-                                               placeholder="Item Name">
+                                               name="hs_code[]"
+                                               class="form-control hs-code"
+                                               placeholder="HS Code">
+
                                     </div>
 
                                     <div class="col-md-2">
+
                                         <button type="button"
                                                 class="btn btn-danger remove-item">
                                             Remove
                                         </button>
+
                                     </div>
 
                                 </div>
@@ -264,34 +285,72 @@
 
         $(document).ready(function(){
 
+            // Add Item Row
             $('#add-item').on('click', function(){
 
-                $('#item-container').append(`
-            <div class="row item-row mb-3">
+                let row = `
+        <div class="row item-row mb-3">
 
-                <div class="col-md-4">
-                    <input type="text"
-                           name="hs_code[]"
-                           class="form-control"
-                           placeholder="HS Code">
+            <div class="col-md-5">
+
+                <select name="product_id[]"
+                        class="form-select product-select">
+
+                    <option value="">
+                        Select Product
+                    </option>
+
+                    @foreach($products as $product)
+
+                    <option value="{{ $product->id }}"
+                                data-hs="{{ $product->hs_code }}">
+                            {{ $product->product_name }}
+                    </option>
+
+@endforeach
+
+                    </select>
+
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-5">
+
                     <input type="text"
-                           name="item_name[]"
-                           class="form-control"
-                           placeholder="Item Name">
+                           name="hs_code[]"
+                           class="form-control hs-code"
+                           placeholder="HS Code">
+
                 </div>
 
                 <div class="col-md-2">
+
                     <button type="button"
                             class="btn btn-danger remove-item">
                         Remove
                     </button>
+
                 </div>
 
             </div>
-        `);
+`;
+
+                $('#item-container').append(row);
+
+                $('#item-container .product-select').last().select2({
+                    placeholder: 'Search Product',
+                    width: '100%'
+                });
+
+            });
+
+            $(document).on('change', '.product-select', function(){
+
+                let hsCode = $(this).find(':selected').data('hs');
+
+                $(this)
+                    .closest('.item-row')
+                    .find('.hs-code')
+                    .val(hsCode);
 
             });
 
@@ -304,7 +363,10 @@
             });
 
         });
-
+        $('.product-select').select2({
+            placeholder: 'Search Product',
+            width: '100%'
+        });
     </script>
 @endpush
 

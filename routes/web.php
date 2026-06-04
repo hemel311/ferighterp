@@ -246,6 +246,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/phpinfo', function () {
     phpinfo();
 });
-
+Route::get('/test-libreoffice', [PackinglistController::class, 'testLibreOffice']);
 
 require __DIR__.'/auth.php';

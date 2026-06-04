@@ -252,15 +252,124 @@ class IsfController extends Controller
     {
         $isf = Isf::findOrFail($id);
 
-        $pdf = Pdf::loadView(
-            'feright.isf.pdf',
-            compact('isf')
+        $template = Templates::where('type', 'ISF')
+            ->firstOrFail();
+
+        $templatePath = storage_path(
+            'app/private/' . $template->file
         );
 
-        $pdf->setPaper('A4', 'portrait');
+        if (!file_exists($templatePath))
+        {
+            return back()->with(
+                'error',
+                'Template File Not Found'
+            );
+        }
 
-        return $pdf->stream(
-            'ISF-' . $isf->booking_number . '.pdf'
+        $hsCodes = explode("\n", trim($isf->hs_code));
+        $products = explode("\n", trim($isf->product_name));
+
+        $containers = collect(
+            preg_split('/\r\n|\r|\n/', trim($isf->container_numbers))
+        )
+            ->filter()
+            ->implode(',');
+
+        $combined = [];
+
+        foreach ($hsCodes as $index => $hsCode)
+        {
+            $combined[] = trim($hsCode).' '.trim($products[$index] ?? '');
+        }
+
+        $spreadsheet = IOFactory::load($templatePath);
+
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setPrintArea('A1:J41');
+
+        $sheet->getPageSetup()->setOrientation(
+            \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT
+        );
+
+        $sheet->getPageSetup()->setPaperSize(
+            \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Fill Template Cells
+        |--------------------------------------------------------------------------
+        */
+
+        $sheet->setCellValue('A20', implode(',', $combined));
+
+        $sheet->setCellValue('A29', $isf->hbl);
+        $sheet->setCellValue('D29', $isf->mbl);
+        $sheet->setCellValue('F29', $isf->vessel_name);
+        $sheet->setCellValue('J29', $isf->voyage);
+
+        $sheet->setCellValue('A7', $isf->from_address);
+        $sheet->setCellValue('F7', $isf->to_address);
+
+        $sheet->setCellValue('I20', $isf->manufacturer);
+
+        $sheet->setCellValue(
+            'A31',
+            Carbon::parse($isf->etd)->format('d M Y')
+        );
+
+        $sheet->setCellValue('D31', $isf->port_of_loading);
+        $sheet->setCellValue('F31', $containers);
+        $sheet->setCellValue('J31', $isf->port_of_discharge);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Temp Files
+        |--------------------------------------------------------------------------
+        */
+
+        $tempDir = storage_path('app/temp');
+
+        if (!file_exists($tempDir))
+        {
+            mkdir($tempDir, 0777, true);
+        }
+
+        $excelFile = $tempDir.'/ISF_'.$isf->id.'.xlsx';
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save($excelFile);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Convert XLSX → PDF Using LibreOffice
+        |--------------------------------------------------------------------------
+        */
+
+        $libreOfficePath = '"C:\Program Files\LibreOffice\program\soffice.exe"';
+
+        $command =
+            $libreOfficePath .
+            ' --headless --convert-to pdf' .
+            ' --outdir "' . $tempDir . '"' .
+            ' "' . $excelFile . '"';
+
+        exec($command);
+
+        $pdfFile = $tempDir.'/ISF_'.$isf->id.'.pdf';
+
+        if (!file_exists($pdfFile))
+        {
+            return back()->with(
+                'error',
+                'PDF conversion failed'
+            );
+        }
+
+        return response()->download(
+            $pdfFile,
+            'ISF-'.$isf->booking_number.'.pdf'
         );
     }
 

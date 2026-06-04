@@ -14,9 +14,14 @@
     <meta charset="utf-8">
 
     <style>
+        @font-face {
+            font-family: 'CalistoMT';
+            src: url('{{ public_path('fonts/CALIST.TTF') }}')
+            format('truetype');
+        }
 
         body{
-            font-family: DejaVu Sans;
+            font-family: CalistoMT;
             font-size:11px;
             line-height:1.3;
         }
@@ -65,6 +70,17 @@
         .small{
             font-size:10px;
         }
+        .isf-table{
+            width:100%;
+            border-collapse:collapse;
+            border:2px solid #000;
+        }
+
+        .isf-table td{
+            border:1px solid #000;
+            padding:3px;
+            vertical-align:top;
+        }
 
     </style>
 </head>
@@ -82,44 +98,94 @@
     ITEMS 1-7 to be completed by shipper and verified by ISF Filer:
 </div>
 
-<table>
+<table class="isf-table">
 
     <tr>
 
-        <td width="50%">
-            <div class="box-title">
-                (1) SELLER NAME AND ADDRESS
-            </div>
-
-            {{ $isf->from_address }}
+        <td style="
+            width:50%;
+            border:1px solid #000;
+            text-align:center;
+            font-weight:bold;
+            padding:4px;
+        ">
+            (1) SELLER NAME AND ADDRESS
         </td>
 
-        <td width="50%">
-            <div class="box-title">
-                (2) BUYER NAME AND ADDRESS
-            </div>
-
-            {{ $isf->to_address }}
+        <td style="
+            width:50%;
+            border:1px solid #000;
+            text-align:center;
+            font-weight:bold;
+            padding:4px;
+        ">
+            (2) BUYER NAME AND ADDRESS
         </td>
 
     </tr>
 
     <tr>
 
-        <td class="cell-height">
-            <div class="box-title">
-                (3) CONSOLIDATOR (STUFFER) NAME AND ADDRESS
-            </div>
-
-            {{ $isf->from_address }}
+        <td style="
+            height:85px;
+            border:1px solid #000;
+            vertical-align:top;
+            padding:6px;
+        ">
+            {!! nl2br(e($isf->from_address)) !!}
         </td>
 
-        <td class="cell-height">
-            <div class="box-title">
-                (4) CONTAINER STUFFING LOCATION NAME AND ADDRESS
-            </div>
-            ATLANTIC GROUP TEKSTIL ELEKTRONIK A.S DERVISLER
-            SOKAK NO1/3 HOCAPASA MAH FATIH ISTANBUL TURKEY
+        <td style="
+            height:85px;
+            border:1px solid #000;
+            vertical-align:top;
+            padding:6px;
+        ">
+            {!! nl2br(e($isf->to_address)) !!}
+        </td>
+
+    </tr>
+
+    <tr>
+
+        <td style="
+            border:1px solid #000;
+            text-align:center;
+            font-weight:bold;
+            padding:4px;
+        ">
+            (3) CONSOLIDATOR (STUFFER) NAME AND ADDRESS
+        </td>
+
+        <td style="
+            border:1px solid #000;
+            text-align:center;
+            font-weight:bold;
+            padding:4px;
+        ">
+            (4) CONTAINER STUFFING LOCATION NAME AND ADDRESS
+        </td>
+
+    </tr>
+
+    <tr>
+
+        <td style="
+            height:85px;
+            border:1px solid #000;
+            vertical-align:top;
+            padding:6px;
+        ">
+            {!! nl2br(e($isf->from_address)) !!}
+        </td>
+
+        <td style="
+            height:85px;
+            border:1px solid #000;
+            vertical-align:top;
+            padding:6px;
+        ">
+            {!! nl2br(e($isf->from_address)) !!}
         </td>
 
     </tr>
@@ -138,31 +204,81 @@
 
 <br>
 
-<table>
+<table class="isf-table">
 
     <tr>
 
-        <td width="50%">
-            <div class="box-title">
-                (5) COMMODITY HTSUS NUMBER(S) AND DESCRIPTION
-            </div>
-
-            {{ implode(', ', $combined) }}
+        <td style="
+            width:65%;
+            border:1px solid #000;
+            font-weight:bold;
+            padding:4px;
+            vertical-align:top;
+        ">
+            (5) COMMODITY HTSUS NUMBER(S) AND DESCRIPTION
         </td>
 
-        <td width="15%">
-            <div class="box-title">
-                (6) COUNTRY OF ORIGIN
-            </div>
+        <td style="
+            width:15%;
+            border:1px solid #000;
+            font-weight:bold;
+            padding:4px;
+            vertical-align:top;
+        ">
+            (6) COUNTRY OF ORIGIN
+        </td>
 
+        <td style="
+            width:20%;
+            border:1px solid #000;
+            font-weight:bold;
+            padding:4px;
+            vertical-align:top;
+        ">
+            (7) MANUFACTURER
+        </td>
+
+    </tr>
+
+    <tr>
+
+        <td style="
+            height:65px;
+            border:1px solid #000;
+            vertical-align:top;
+            padding:6px;
+        ">
+
+            @php
+                $hsCodes = preg_split('/\r\n|\r|\n/', trim($isf->hs_code));
+                $products = preg_split('/\r\n|\r|\n/', trim($isf->product_name));
+
+                $combined = [];
+
+                foreach ($hsCodes as $index => $hsCode) {
+                    $combined[] = trim($hsCode).' '.trim($products[$index] ?? '');
+                }
+            @endphp
+
+            {{ implode(', ', $combined) }}
+
+        </td>
+
+        <td style="
+            height:65px;
+            border:1px solid #000;
+            vertical-align:top;
+            padding:6px;
+        ">
             TURKEY-TR
         </td>
 
-        <td width="35%">
-            <div class="box-title">
-                (7) MANUFACTURER
-            </div>
-
+        <td style="
+            height:65px;
+            border:1px solid #000;
+            vertical-align:top;
+            padding:6px;
+        ">
             {{ $isf->manufacturer }}
         </td>
 
@@ -170,45 +286,31 @@
 
 </table>
 
-<br>
-
-<br>
-
 <div style="font-size:11px;">
-    This form, or something similar AND a copy of the commercial Invoice(s)
-    MUST be completed in English and e mailed to the USA office no later
-    than 72 hours prior to sailing.
+    To be completed by Shipper and the Origin freight forwarder:
 </div>
 
-<br><br>
+<table class="isf-table">
 
+    <tr style="height:22px;">
 
-
-<table>
-
-    <tr>
-
-        <td>
-            <strong>House B/L #</strong>
-            <br>
+        <td style="width:20%; border:1px solid #000; padding:3px;">
+            <strong>House B/L #</strong><br>
             {{ $isf->hbl }}
         </td>
 
-        <td>
-            <strong>Master B/L #</strong>
-            <br>
+        <td style="width:48%; border:1px solid #000; padding:3px;">
+            <strong>Master B/L #</strong><br>
             {{ $isf->mbl }}
         </td>
 
-        <td>
-            <strong>Vessel Name</strong>
-            <br>
+        <td style="width:16%; border:1px solid #000; padding:3px;">
+            <strong>Vessel Name</strong><br>
             {{ $isf->vessel_name }}
         </td>
 
-        <td>
-            <strong>Voyage No.</strong>
-            <br>
+        <td style="width:16%; border:1px solid #000; padding:3px;">
+            <strong>Voyage No.</strong><br>
             {{ $isf->voyage }}
         </td>
 
@@ -216,29 +318,39 @@
 
     <tr>
 
-        <td>
-            <strong>Date of Departure</strong>
-            <br>
+        <td style="border:1px solid #000; padding:3px;">
+            <strong>Date of Departure</strong><br>
             {{ \Carbon\Carbon::parse($isf->etd)->format('d-M-y') }}
         </td>
 
-        <td>
-            <strong>Port of Departure</strong>
-            <br>
+        <td style="border:1px solid #000; padding:3px;">
+            <strong>Port of Departure</strong><br>
             {{ $isf->port_of_loading }}
         </td>
 
-        <td colspan="2">
-            <strong>Container Number(s)</strong>
-            <br>
-            {{ str_replace("\n", ",", $isf->container_numbers) }}
+        <td style="border:1px solid #000; padding:3px;">
+            <strong>Co Number(s)</strong><br>
+
+            {{ collect(preg_split('/\r\n|\r|\n/', trim($isf->container_numbers)))
+                ->filter()
+                ->implode(', ') }}
+        </td>
+
+        <td style="border:1px solid #000; padding:3px;">
+            <strong>Port&nbsp;of&nbsp;Unloading&nbsp;&amp;&nbsp;ETA</strong><br>
+
+            {{ $isf->port_of_discharge }}
+
+            @if(!empty($isf->eta))
+                <br>
+                ETA: {{ \Carbon\Carbon::parse($isf->eta)->format('d-M-y') }}
+            @endif
         </td>
 
     </tr>
 
 </table>
 
-<br>
 
 <div class="section-title">
     Items 8-10 to be completed at destination by ISF Filer / Importer:

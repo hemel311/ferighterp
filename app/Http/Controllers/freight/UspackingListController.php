@@ -447,17 +447,231 @@ class UspackingListController extends Controller
             'products'
         ])->findOrFail($id);
 
-        $pdf = Pdf::loadView(
-            'feright.pl.uspl.pdf',
-            compact('packingList')
+        $template = Templates::where(
+            'type',
+            'US_PL'
+        )->first();
+
+        if (!$template)
+        {
+            return back()->with(
+                'error',
+                'US PL Template Not Found'
+            );
+        }
+
+        $templatePath = storage_path(
+            'app/private/' . $template->file
         );
 
-        $pdf->setPaper('A4', 'landscape');
+        if (!file_exists($templatePath))
+        {
+            return back()->with(
+                'error',
+                'Template File Not Found'
+            );
+        }
 
-        return $pdf->stream(
+        $spreadsheet = IOFactory::load($templatePath);
+
+        $sheet = $spreadsheet->getActiveSheet();
+
+        /*
+        ==========================
+        PAGE SETUP
+        ==========================
+        */
+        $sheet->getPageMargins()->setTop(0.25);
+        $sheet->getPageMargins()->setBottom(0.25);
+        $sheet->getPageMargins()->setLeft(0.25);
+        $sheet->getPageMargins()->setRight(0.25);
+
+        $sheet->getPageSetup()->setHorizontalCentered(true);
+        $sheet->getPageSetup()->setVerticalCentered(true);
+        $sheet->getPageSetup()->setPrintArea('B2:L24');
+
+        $sheet->getPageSetup()->setOrientation(
+            \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE
+        );
+
+        $sheet->getPageSetup()->setPaperSize(
+            \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4
+        );
+
+        /*
+        ==========================
+        HEADER
+        ==========================
+        */
+
+        $sheet->setCellValue(
+            'C6',
+            "CONTAINER NUMBER"." ".$packingList->container->container_number
+        );
+
+        /*
+        ==========================
+        PRODUCT DATA
+        ==========================
+        */
+
+        $row = 8;
+
+        foreach($packingList->products as $item)
+        {
+            $sheet->setCellValue(
+                'C'.$row,
+                $item->total_pallets
+            );
+
+            $sheet->setCellValue(
+                'D'.$row,
+                $item->packages
+            );
+            $sheet->setCellValue(
+                'E'.$row,
+                $item->qty_per_pallet
+            );
+
+            $sheet->setCellValue(
+                'F'.$row,
+                $item->product_name
+            );
+
+            $sheet->setCellValue(
+                'G'.$row,
+                $item->total_item_qty
+            );
+
+            $palletPackKg = 0;
+
+            if($item->total_pallets > 0)
+            {
+                $palletPackKg =
+                    $item->total_kg /
+                    $item->total_pallets;
+            }
+            elseif($item->packages > 0)
+            {
+                $palletPackKg =
+                    $item->total_kg /
+                    $item->packages;
+            }
+
+            $sheet->setCellValue(
+                'H'.$row,
+                round($palletPackKg,2)
+            );
+
+
+            $sheet->setCellValue(
+                'I'.$row,
+                $item->total_kg
+            );
+
+            $sheet->setCellValue(
+                'J'.$row,
+                $item->gross_weight
+            );
+            $sheet->setCellValue(
+                'K'.$row,
+                $item->warehouse_code
+            );
+
+            $row++;
+        }
+
+        /*
+        ==========================
+        TOTALS
+        ==========================
+        */
+
+        $totalNetWeight = $packingList->products->sum('total_kg');
+
+        $totalGrossWeight = $packingList->products->sum('gross_weight');
+
+        $totalPallets = $packingList->products->sum('total_pallets');
+
+        $totalPackages = $packingList->products->sum('packages');
+
+        $totalPieces = $packingList->products->sum('total_item_qty');
+
+        $sheet->setCellValue(
+            'I18',
+            $totalNetWeight
+        );
+
+        $sheet->setCellValue(
+            'I19',
+            $totalGrossWeight
+        );
+
+        $sheet->setCellValue(
+            'I20',
+            $totalPallets
+        );
+
+        $sheet->setCellValue(
+            'I22',
+            $totalPackages
+        );
+
+        $sheet->setCellValue(
+            'I23',
+            $totalPieces
+        );
+        /*
+        ==========================
+        SAVE XLSX
+        ==========================
+        */
+
+        $xlsxFile = storage_path(
+            'app/temp/US_PL_'.$packingList->id.'.xlsx'
+        );
+
+        $writer = IOFactory::createWriter(
+            $spreadsheet,
+            'Xlsx'
+        );
+
+        $writer->save($xlsxFile);
+
+        /*
+        ==========================
+        CONVERT TO PDF
+        ==========================
+        */
+
+        $command =
+            '"C:\Program Files\LibreOffice\program\soffice.exe" ' .
+            '--headless --convert-to pdf ' .
+            '--outdir "' .
+            storage_path('app/temp') .
+            '" "' .
+            $xlsxFile .
+            '"';
+
+        exec($command, $output, $result);
+
+        $pdfFile = storage_path(
+            'app/temp/US_PL_'.$packingList->id.'.pdf'
+        );
+
+        if (!file_exists($pdfFile))
+        {
+            return back()->with(
+                'error',
+                'PDF conversion failed'
+            );
+        }
+
+        return response()->download(
+            $pdfFile,
             'US_Packing_List_' .
             $packingList->container->container_number .
             '.pdf'
-        );
+        )->deleteFileAfterSend(false);
     }
 }

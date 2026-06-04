@@ -366,17 +366,17 @@ public function delete($id)
         */
 
         $sheet->setCellValue(
-            'A4',
+            'C6',
             "To:"." ".$packingList->to_location
         );
 
         $sheet->setCellValue(
-            'A11',
+            'C13',
             "From:"." ".$packingList->from_location
         );
 
         $sheet->setCellValue(
-            'D4',
+            'F6',
             "CONTAINER NUMBER"." ".$packingList->container->container_number
         );
 
@@ -386,47 +386,47 @@ public function delete($id)
         ==========================
         */
 
-        $row = 6;
+        $row = 8;
 
         foreach($packingList->items as $item)
         {
             $sheet->setCellValue(
-                'D'.$row,
+                'F'.$row,
                 $item->total_pallets
             );
 
             $sheet->setCellValue(
-                'E'.$row,
+                'G'.$row,
                 $item->total_packages
             );
             $sheet->setCellValue(
-                'F'.$row,
+                'H'.$row,
                 $item->quantity_per_unit
             );
 
             $sheet->setCellValue(
-                'G'.$row,
+                'I'.$row,
                 $item->product_name
             );
 
             $sheet->setCellValue(
-                'H'.$row,
+                'J'.$row,
                 $item->item_quantity
             );
 
 
             $sheet->setCellValue(
-                'I'.$row,
+                'K'.$row,
                 $item->pallet_pack_kg
             );
 
             $sheet->setCellValue(
-                'J'.$row,
+                'L'.$row,
                 $item->net_weight
             );
 
             $sheet->setCellValue(
-                'K'.$row,
+                'M'.$row,
                 $item->gross_weight
             );
 
@@ -440,31 +440,31 @@ public function delete($id)
         */
 
         $sheet->setCellValue(
-            'J20',
+            'L22',
             $packingList->total_net_weight
         );
 
         $sheet->setCellValue(
-            'J21',
+            'L23',
             $packingList->total_gross_weight
         );
 
         $sheet->setCellValue(
-            'J22',
+            'L24',
             $packingList->total_pallets
         );
 
         $sheet->setCellValue(
-            'J24',
+            'L26',
             $packingList->total_packages
         );
 
         $sheet->setCellValue(
-            'J25',
+            'L27',
             $packingList->total_item_quantity
         );
         $sheet->setCellValue(
-            'A19',"INVOICE DATE:".Carbon::parse($packingList->pl_date
+            'C21',"INVOICE DATE:".Carbon::parse($packingList->pl_date
             )->format('d.m.Y')
         );
 
@@ -487,23 +487,260 @@ public function delete($id)
         );
     }
 
-    public function exportPdf($id)
+public function exportPdf($id)
+{
+    $packingList = TrPackingList::with([
+        'container',
+        'items'
+    ])->findOrFail($id);
+
+    $template = Templates::where(
+        'type',
+        'TR_PL'
+    )->first();
+
+    if (!$template)
     {
-        $packingList = TrPackingList::with([
-            'container',
-            'items'
-        ])->findOrFail($id);
-
-        $pdf = Pdf::loadView(
-            'feright.pl.pdf',
-            compact('packingList')
-        );
-
-        $pdf->setPaper('a3','landscape');
-
-        return $pdf->stream(
-            'TR_Packing_List_'.$packingList->container->container_number.'.pdf'
+        return back()->with(
+            'error',
+            'TR PL Template Not Found'
         );
     }
+
+    $templatePath = storage_path(
+        'app/private/' . $template->file
+    );
+
+    if (!file_exists($templatePath))
+    {
+        return back()->with(
+            'error',
+            'Template File Not Found'
+        );
+    }
+
+    $spreadsheet = IOFactory::load($templatePath);
+
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $sheet->getPageSetup()->setPrintArea('B2:N28');
+
+    $sheet->getPageSetup()->setOrientation(
+        \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE
+    );
+
+    $sheet->getPageSetup()->setPaperSize(
+        \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Center on Page
+    |--------------------------------------------------------------------------
+    */
+    $sheet->getPageMargins()->setTop(0.25);
+    $sheet->getPageMargins()->setBottom(0.25);
+    $sheet->getPageMargins()->setLeft(0.25);
+    $sheet->getPageMargins()->setRight(0.25);
+
+    $sheet->getPageSetup()->setHorizontalCentered(true);
+    $sheet->getPageSetup()->setVerticalCentered(true);
+    /*
+    ==========================
+    HEADER
+    ==========================
+    */
+
+    $sheet->setCellValue(
+        'C6',
+        "To:"." ".$packingList->to_location
+    );
+
+    $sheet->setCellValue(
+        'C13',
+        "From:"." ".$packingList->from_location
+    );
+
+    $sheet->setCellValue(
+        'F6',
+        "CONTAINER NUMBER"." ".$packingList->container->container_number
+    );
+
+    /*
+    ==========================
+    PRODUCT DATA
+    ==========================
+    */
+
+    $row = 8;
+
+    foreach($packingList->items as $item)
+    {
+        $sheet->setCellValue(
+            'F'.$row,
+            $item->total_pallets
+        );
+
+        $sheet->setCellValue(
+            'G'.$row,
+            $item->total_packages
+        );
+        $sheet->setCellValue(
+            'H'.$row,
+            $item->quantity_per_unit
+        );
+
+        $sheet->setCellValue(
+            'I'.$row,
+            $item->product_name
+        );
+
+        $sheet->setCellValue(
+            'J'.$row,
+            $item->item_quantity
+        );
+
+
+        $sheet->setCellValue(
+            'K'.$row,
+            $item->pallet_pack_kg
+        );
+
+        $sheet->setCellValue(
+            'L'.$row,
+            $item->net_weight
+        );
+
+        $sheet->setCellValue(
+            'M'.$row,
+            $item->gross_weight
+        );
+
+        $row++;
+    }
+
+    /*
+    ==========================
+    TOTALS
+    ==========================
+    */
+
+    $sheet->setCellValue(
+        'L22',
+        $packingList->total_net_weight
+    );
+
+    $sheet->setCellValue(
+        'L23',
+        $packingList->total_gross_weight
+    );
+
+    $sheet->setCellValue(
+        'L24',
+        $packingList->total_pallets
+    );
+
+    $sheet->setCellValue(
+        'L26',
+        $packingList->total_packages
+    );
+
+    $sheet->setCellValue(
+        'L27',
+        $packingList->total_item_quantity
+    );
+    $sheet->setCellValue(
+        'C21',"INVOICE DATE:".Carbon::parse($packingList->pl_date
+        )->format('d.m.Y')
+    );
+    /*
+    ==========================
+    SAVE XLSX
+    ==========================
+    */
+
+    $xlsxFile = storage_path(
+        'app/temp/TR_PL_'.$packingList->id.'.xlsx'
+    );
+
+    $writer = IOFactory::createWriter(
+        $spreadsheet,
+        'Xlsx'
+    );
+
+    $writer->save($xlsxFile);
+
+    /*
+    ==========================
+    CONVERT TO PDF
+    ==========================
+    */
+
+    $command =
+        '"C:\Program Files\LibreOffice\program\soffice.exe" ' .
+        '--headless --convert-to pdf ' .
+        '--outdir "' .
+        storage_path('app/temp') .
+        '" "' .
+        $xlsxFile .
+        '"';
+
+    exec($command, $output, $result);
+
+    $pdfFile = storage_path(
+        'app/temp/TR_PL_'.$packingList->id.'.pdf'
+    );
+
+    if (!file_exists($pdfFile))
+    {
+        return back()->with(
+            'error',
+            'PDF conversion failed'
+        );
+    }
+
+    return response()->download(
+        $pdfFile,
+        'TR_Packing_List_' .
+        $packingList->container->container_number .
+        '.pdf'
+    )->deleteFileAfterSend(false);
+}
+
+
+
+//    public function testLibreOffice()
+//    {
+//        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+//
+//        $sheet = $spreadsheet->getActiveSheet();
+//
+//        $sheet->setCellValue('A1', 'TR Packing List Test');
+//
+//        $xlsxFile = storage_path('app/temp/test.xlsx');
+//
+//        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter(
+//            $spreadsheet,
+//            'Xlsx'
+//        );
+//
+//        $writer->save($xlsxFile);
+//
+//        $command =
+//            '"C:\Program Files\LibreOffice\program\soffice.exe" ' .
+//            '--headless --convert-to pdf ' .
+//            '--outdir "' . storage_path('app/temp') . '" "' .
+//            $xlsxFile . '"';
+//
+//        exec($command, $output, $result);
+//
+//        return [
+//            'result' => $result,
+//            'output' => $output,
+//            'pdf_exists' => file_exists(
+//                storage_path('app/temp/test.pdf')
+//            )
+//        ];
+//    }
 
 }
