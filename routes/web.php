@@ -210,6 +210,9 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
         ->name('isf.update');
     Route::get('/isf/delete/{id}', [IsfController::class, 'delete'])
         ->name('isf.delete');
+    Route::get('/isf/{id}/pdf',
+        [IsfController::class, 'exportPdf'])
+        ->name('isf.pdf');
 
 
 });

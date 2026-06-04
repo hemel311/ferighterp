@@ -10,6 +10,9 @@ class Isf extends Model
             'shipment_id',
             'mbl_prefix_id',
             'booking_number',
+            'from_address',
+            'to_address',
+            'manufacturer',
 
             'product_name',
             'hs_code',

@@ -55,6 +55,31 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <label>From</label>
+
+                                <textarea name="from_address"
+                                          id="from_address"
+                                          rows="4"
+                                          class="form-control">{{ isset($isf) ? $isf->from_address : '' }}</textarea>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label>To</label>
+
+                                <textarea name="to_address"
+                                          id="to_address"
+                                          rows="4"
+                                          class="form-control">{{ isset($isf) ? $isf->to_address : '' }}</textarea>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label>Manufacturer</label>
+
+                                <textarea name="manufacturer"
+                                          id="manufacturer"
+                                          rows="3"
+                                          class="form-control">{{ isset($isf) ? $isf->manufacturer : '' }}</textarea>
+                            </div>
 
                         </div>
 

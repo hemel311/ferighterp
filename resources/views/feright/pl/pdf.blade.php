@@ -62,6 +62,9 @@
         .text-center{
             text-align:center;
         }
+        .invoice{
+            background-color: #d8dee7;
+        }
 
     </style>
 </head>
@@ -223,7 +226,7 @@
 
         <tr>
 
-            <td width="20%">
+            <td width="20%" class="invoice">
                 INVOICE DATE: {{ \Carbon\Carbon::parse($packingList->pl_date)->format('d.m.Y') }}
             </td>
 
@@ -277,7 +280,7 @@
 
         </tr>
 
-            <td>
+            <td class="invoice">
                 C.I.F. ISTANBUL
             </td>
 
@@ -295,7 +298,7 @@
 
         <tr>
 
-            <td>
+            <td class="invoice">
                 CASH IN ADVANCE
             </td>
 
@@ -315,7 +318,7 @@
 
         <tr>
 
-            <td>
+            <td class="invoice">
                 INVOICE NUMBER:
             </td>
 
@@ -333,7 +336,7 @@
 
         <tr>
 
-            <td valign="top">
+            <td valign="top" class="invoice">
                 Notes:
             </td>
 

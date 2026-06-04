@@ -19,6 +19,10 @@
                class="btn btn-success">
                 Export Excel
             </a>
+            <a href="{{route('isf.pdf',['id'=>$isf->id])}}"
+               class="btn btn-primary">
+                Export PDF
+            </a>
 
         </div>
 
@@ -47,6 +51,19 @@
                         <tr>
                             <th>MBL Number</th>
                             <td>{{ $isf->mbl }}</td>
+                        </tr>
+                        <tr>
+                            <th>From</th>
+                            <td>{{ $isf->from_address }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>To</th>
+                            <td>{{ $isf->to_address }}</td>
+                        </tr>
+                        <tr>
+                            <th>Manufacturer</th>
+                            <td>{{ $isf->manufacturer }}</td>
                         </tr>
 
                         <tr>

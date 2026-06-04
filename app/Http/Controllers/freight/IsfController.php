@@ -7,6 +7,7 @@ use App\Models\Isf;
 use App\Models\MblPrefix;
 use App\Models\Shipment;
 use App\Models\Templates;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -53,6 +54,9 @@ class IsfController extends Controller
             'mbl_prefix_id'      => $request->mbl_prefix_id,
 
             'booking_number'     => $shipment->booking_number,
+            'from_address' => $request->from_address,
+            'to_address'   => $request->to_address,
+            'manufacturer' => $request->manufacturer,
 
             'product_name'       => $request->product_name,
             'hs_code'            => $request->hs_code,
@@ -151,6 +155,9 @@ class IsfController extends Controller
         $sheet->setCellValue('D29', $isf->mbl);
         $sheet->setCellValue('F29', $isf->vessel_name);
         $sheet->setCellValue('J29', $isf->voyage);
+        $sheet->setCellValue('A7',$isf->from_address);
+        $sheet->setCellValue('F7',$isf->to_address);
+        $sheet->setCellValue('I20',$isf->manufacturer);
 
         // Shipment Information
         $sheet->setCellValue('A31', Carbon::parse($isf->etd)->format('d M Y'));
@@ -198,6 +205,11 @@ class IsfController extends Controller
 
             'mbl_prefix_id'     => $request->mbl_prefix_id,
 
+            'from_address' => $request->from_address,
+            'to_address'   => $request->to_address,
+            'manufacturer' => $request->manufacturer,
+
+
             'product_name'      => $request->product_name,
             'hs_code'           => $request->hs_code,
 
@@ -220,7 +232,7 @@ class IsfController extends Controller
         if($request->status == 'Draft')
         {
             return redirect()
-                ->route('isf.index')
+                ->route('isf.edit',$id)
                 ->with('success','ISF Updated Successfully');
         }
 
@@ -234,6 +246,22 @@ class IsfController extends Controller
         $isf=Isf::findorFail($id);
         $isf->delete();
         return redirect()->back()->with('success',"ISF Deleted Successfully");
+    }
+
+    public function exportPdf($id)
+    {
+        $isf = Isf::findOrFail($id);
+
+        $pdf = Pdf::loadView(
+            'feright.isf.pdf',
+            compact('isf')
+        );
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream(
+            'ISF-' . $isf->booking_number . '.pdf'
+        );
     }
 
 }
