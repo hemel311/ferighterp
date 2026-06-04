@@ -11,6 +11,7 @@ use App\Http\Controllers\freight\VgmController;
 use App\Http\Controllers\freight\PackinglistController;
 use App\Http\Controllers\freight\UspackingListController;
 use App\Http\Controllers\freight\IsfController;
+use App\Http\Controllers\freight\ProductController;
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -73,6 +74,17 @@ Route::get('/delete-shipment/{id}',[ShipmentController::class,'delete'])->name('
 Route::get('/see-shipment/{id}',[ShipmentController::class,'seeDetails'])->name('see.shipment');
 Route::get('/edit-shipment/{id}',[ShipmentController::class,'edit'])->name('edit.shipment');
 Route::post('/update-shipment/{id}',[ShipmentController::class,'update'])->name('update.shipment');
+
+//product
+    Route::get('/add-product',[ProductController::class,'index'])->name('add.product');
+    Route::post('/create-product',[ProductController::class,'store'])->name('create.product');
+
+    Route::get('/manage-product',[ProductController::class,'manage'])->name('manage.product');
+
+    Route::get('/edit-product/{id}',[ProductController::class,'edit'])->name('edit.product');
+    Route::post('/update-product/{id}',[ProductController::class,'update'])->name('update.product');
+
+    Route::get('/delete-product/{id}',[ProductController::class,'delete'])->name('delete.product');
 
 //container
 

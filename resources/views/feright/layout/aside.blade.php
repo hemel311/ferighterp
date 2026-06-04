@@ -14,6 +14,22 @@
             <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
             <span class="nav-text">Dashboard</span>
         </a>
+        {{--Product menu--}}
+        <a class="nav-link" data-bs-toggle="collapse" href="#productMenu">
+    <span class="nav-icon">
+        <i class="bi bi-tag"></i>
+    </span>
+            <span class="nav-text">Product</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
+        </a>
+
+        <div class="collapse" id="productMenu">
+            <a class="nav-link ps-5" href="{{route('add.product')}}">Add Product</a>
+            <a class="nav-link ps-5" href="{{route('manage.product')}}">Manage Product</a>
+        </div>
+
         <!-- Shipment -->
         <a class="nav-link" data-bs-toggle="collapse" href="#shipmentMenu">
     <span class="nav-icon">

@@ -57,6 +57,15 @@
                     </a>
 
                 </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#productMenu" role="button">
+            <span class="nav-icon">
+                <i class="bi bi-box"></i>
+            </span>
+                    <span class="nav-text">Product</span>
+                    <span class="ms-auto">
+                <i class="bi bi-chevron-down"></i>
+            </span>
+                </a>
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#packinglist" role="button">
                     <span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span>
                     <span class="nav-text">Packing List</span>
