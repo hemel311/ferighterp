@@ -57,23 +57,17 @@
                     </a>
 
                 </div>
-                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#productMenu" role="button">
-            <span class="nav-icon">
-                <i class="bi bi-box"></i>
-            </span>
-                    <span class="nav-text">Product</span>
-                    <span class="ms-auto">
-                <i class="bi bi-chevron-down"></i>
-            </span>
-                </a>
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#packinglist" role="button">
                     <span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span>
                     <span class="nav-text">Packing List</span>
                     <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
                 </a>
                 <div class="collapse" id="packinglist">
-                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
-                        <span class="nav-text">See Packing List</span>
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('trpl.index.admin')}}">
+                        <span class="nav-text">See TR Packing List</span>
+                    </a>
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('admin.us.pl')}}">
+                        <span class="nav-text">See US Packing List</span>
                     </a>
                 </div>
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#isf" role="button">
@@ -82,8 +76,11 @@
                     <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
                 </a>
                 <div class="collapse" id="isf">
-                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('admin.isf.manage')}}">
                         <span class="nav-text">See ISF</span>
+                    </a>
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('admin.isf.index')}}">
+                        <span class="nav-text">Create ISF</span>
                     </a>
 
                 </div>

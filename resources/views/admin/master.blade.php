@@ -26,6 +26,7 @@
     </div>
 </div>
 @include('admin.layout.js')
+@stack('js')
 <script>
     window.adminHMDUser = {
         name: "{{ Auth::guard('admin')->user()->name }}",

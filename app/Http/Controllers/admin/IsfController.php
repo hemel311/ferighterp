@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\freight;
+namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Isf;
@@ -22,7 +22,7 @@ class IsfController extends Controller
         $prefixes = MblPrefix::orderBy('shipping_company')
             ->get();
 
-        return view('feright.isf.create', compact(
+        return view('admin.feright.isf.create', compact(
             'shipments',
             'prefixes'
         ));
@@ -78,12 +78,12 @@ class IsfController extends Controller
         if($request->status == 'Draft')
         {
             return redirect()
-                ->route('isf.manage')
+                ->route('admin.isf.manage')
                 ->with('success', 'ISF Draft Saved Successfully');
         }
 
         return redirect()
-            ->route('isf.preview', $isf->id)
+            ->route('admin.isf.preview', $isf->id)
             ->with('success', 'ISF Submitted Successfully');
     }
 
@@ -91,13 +91,13 @@ class IsfController extends Controller
     {
         $isf = Isf::findOrFail($id);
 
-        return view('feright.isf.preview', compact('isf'));
+        return view('admin.feright.isf.preview', compact('isf'));
     }
 
     public function manage()
     {
         $isf=Isf::all();
-        return view('feright.isf.manage',['isfs'=>$isf]);
+        return view('admin.feright.isf.manage',['isfs'=>$isf]);
     }
 
     public function exportExcel($id)
@@ -187,7 +187,7 @@ class IsfController extends Controller
             ->get();
 
         return view(
-            'feright.isf.edit',
+            'admin.feright.isf.edit',
             compact(
                 'isf',
                 'shipments',
@@ -231,12 +231,12 @@ class IsfController extends Controller
         if($request->status == 'Draft')
         {
             return redirect()
-                ->route('isf.edit',$id)
+                ->route('admin.isf.edit',$id)
                 ->with('success','ISF Updated Successfully');
         }
 
         return redirect()
-            ->route('isf.preview',$isf->id)
+            ->route('admin.isf.preview',$isf->id)
             ->with('success','ISF Submitted Successfully');
     }
 
@@ -371,5 +371,4 @@ class IsfController extends Controller
             'ISF-'.$isf->booking_number.'.pdf'
         );
     }
-
 }

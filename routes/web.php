@@ -12,6 +12,11 @@ use App\Http\Controllers\freight\PackinglistController;
 use App\Http\Controllers\freight\UspackingListController;
 use App\Http\Controllers\freight\IsfController;
 use App\Http\Controllers\freight\ProductController;
+use App\Http\Controllers\admin\plController;
+use App\Http\Controllers\admin\UsplController;
+use App\Http\Controllers\admin\IsfController as adminisf;
+
+
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
 Route::post('/common-login', [AuthController::class, 'login'])
@@ -57,6 +62,100 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/manage-template',[TemplateController::class,'manage'])->name('manage.templates');
     Route::get('/delete-template/{id}',[TemplateController::class,'delete'])->name('delete.templates');
     Route::get('/download-template/{id}',[TemplateController::class,'download'])->name('download.templates');
+
+
+    //Tr pl admin
+    Route::get('/admin/pl',[plController::class,'index'])->name('trpl.index.admin');
+    Route::get('/admin/tr-packing-list/create/{id}',
+        [plController::class,'create'])
+        ->name('trpl.admin.create');
+    Route::post('/admin/store',
+        [plController::class,'store'])
+        ->name('trpl.admin.store');
+
+    Route::get('/admin/edit/{id}',
+        [plController::class,'edit'])
+        ->name('trpl.admin.edit');
+
+    Route::post('/admin/update/{id}',
+        [plController::class,'update'])
+        ->name('trpl.admin.update');
+
+    Route::get('/admin/preview/{id}',
+        [plController::class,'preview'])
+        ->name('trpl.admin.preview');
+    Route::get('/admin/pl/containers/{bookingNumber}',
+        [plController::class,'getContainers'])
+        ->name('trpl.admin.containers');
+
+    Route::get('/admin/delete/{id}',
+        [plController::class,'delete'])
+        ->name('trpl.admin.delete');
+    Route::get(
+        '/admin/export-excel/{id}',
+        [plController::class,'exportExcel']
+    )->name('trpl.admin.export.excel');
+
+    Route::get(
+        'admin/export-pdf/{id}',
+        [plController::class,'exportPdf']
+    )->name('trpl.admin.export.pdf');
+
+    //Us Pl Admin
+    Route::get('/admin/us-pl', [UsplController::class,'index'])->name('admin.us.pl');
+
+    Route::get('/admin/us-pl/containers/{bookingNumber}', [UsplController::class,'getContainers']);
+
+    Route::get('/admin/us-pl/create/{container_number}', [UsplController::class,'create'])
+        ->name('admin.us.pl.create');
+
+    Route::get('/admin/us-pl/edit/{id}', [UsplController::class,'edit'])->name('admin.uspl.edit');
+
+    Route::get('/admin/us-pl/preview/{id}', [UsplController::class,'preview'])->name('admin.uspl.preview');
+    Route::post('/admin/us-pl/store',
+        [UsplController::class,'store'])
+        ->name('admin.uspl.store');
+    Route::post(
+        '/admin/us-pl/update/{id}',
+        [UsplController::class, 'update']
+    )->name('admin.uspl.update');
+    Route::get(
+        '/admin/us-export-excel/{id}',
+        [UsplController::class,'exportExcel']
+    )->name('admin.uspl.export.excel');
+    Route::get(
+        '/admin/us-export-pdf/{id}',
+        [UsplController::class,'exportPdf']
+    )->name('admin.uspl.export.pdf');
+    Route::get('/admin/uspl-delete/{id}',[UsplController::class,'delete'])->name('admin.us.delete');
+
+    //adminisf
+
+    Route::get('/admin/create-isf',[adminisf::class,'create'])->name('admin.isf.index');
+    Route::get('/admin/isf/get-shipment-data/{id}', [adminisf::class, 'getShipmentData'])
+        ->name('admin.isf.get-shipment-data');
+    Route::post('/admin/isf/store', [adminisf::class, 'store'])
+        ->name('admin.isf.store');
+    Route::get('/admin/isf/{id}/preview',
+        [adminisf::class,'preview'])
+        ->name('admin.isf.preview');
+    Route::get('/admin/isf-manage',[adminisf::class,'manage'])->name('admin.isf.manage');
+    Route::get(
+        '/admin/isf-export-excel/{id}',
+        [adminisf::class,'exportExcel']
+    )->name('admin.isf.export.excel');
+
+    Route::get('/admin/isf/edit/{id}', [adminisf::class, 'edit'])
+        ->name('admin.isf.edit');
+
+    Route::post('/admin/isf/update/{id}', [adminisf::class, 'update'])
+        ->name('admin.isf.update');
+    Route::get('/admin/isf/delete/{id}', [adminisf::class, 'delete'])
+        ->name('admin.isf.delete');
+    Route::get('/admin/isf/{id}/pdf',
+        [IsfController::class, 'exportPdf'])
+        ->name('admin.isf.pdf');
+
 
 });
 
@@ -201,6 +300,8 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
     )->name('uspl.export.pdf');
     Route::get('/uspl-delete/{id}',[UspackingListController::class,'delete'])->name('us.delete');
 
+    //isf
+
     Route::get('/create-isf',[IsfController::class,'create'])->name('isf.index');
     Route::get('/isf/get-shipment-data/{id}', [IsfController::class, 'getShipmentData'])
         ->name('isf.get-shipment-data');
@@ -247,5 +348,8 @@ Route::get('/phpinfo', function () {
     phpinfo();
 });
 Route::get('/test-libreoffice', [PackinglistController::class, 'testLibreOffice']);
+Route::get('/pl/containers/{bookingNumber}',
+    [PackinglistController::class,'getContainers'])
+    ->name('trpl.containers');
 
 require __DIR__.'/auth.php';

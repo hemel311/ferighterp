@@ -23,7 +23,16 @@
     </div>
 </div>
 
+<script>
+    window.adminHMDUser = {
+        name: "{{ Auth::guard('forwarder')->user()->name }}",
+        workspace: "{{ Auth::guard('forwarder')->user()->designation ?? 'Freight Forwarder' }}",
+        avatar: "{{asset(Auth::guard('forwarder')->user()->image)}}"
+    };
+</script>
+
 @include('feright.layout.js')
 @stack('js')
+
 </body>
 </html>
