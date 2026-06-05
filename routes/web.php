@@ -15,6 +15,9 @@ use App\Http\Controllers\freight\ProductController;
 use App\Http\Controllers\admin\plController;
 use App\Http\Controllers\admin\UsplController;
 use App\Http\Controllers\admin\IsfController as adminisf;
+use App\Http\Controllers\admin\VgmController as adminvgm;
+use App\Http\Controllers\admin\ContainerController as adminContainer;
+use App\Http\Controllers\admin\ShipmentController as adminShipment;
 
 
 Route::get('/',[AuthController::class,'index'])->name('login.page');
@@ -155,6 +158,66 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/isf/{id}/pdf',
         [IsfController::class, 'exportPdf'])
         ->name('admin.isf.pdf');
+
+//Admin vgm
+    Route::get('/admin/vgm',
+        [adminvgm::class,'index'])
+        ->name('admin.vgm');
+
+    Route::get('/admin/vgm/search',
+        [adminvgm::class,'search'])
+        ->name('admin.vgm.search');
+    Route::get('/vgm/create/{id}', [adminvgm::class,'create'])->name('admin.vgm.create');
+
+    Route::post('/admin/vgm/store', [adminvgm::class,'store'])->name('admin.vgm.store');
+    Route::post('/admin/vgm/extract-pdf',
+        [adminvgm::class,'extractPdf'])
+        ->name('admin.vgm.extract');
+    Route::get('/admin/vgm/delete/{id}', [adminvgm::class,'delete'])
+        ->name('admin.vgm.delete');
+    Route::get('/admin/vgm/download/{id}',
+        [adminvgm::class,'download'])
+        ->name('admin.vgm.download');
+
+    //admin Container
+
+    Route::get('/admin/add-container',[adminContainer::class,'index'])->name('admin.add.container');
+    Route::post('/admin/extract-ocr',
+        [adminContainer::class,'extractOcr']
+    )->name('admin.extract.ocr');
+
+    // Final Save
+    Route::post('/admin/container-upload/store',
+        [adminContainer::class,'store']
+    )->name('admin.container.store');
+
+    Route::get('/admin/container/manage',
+        [adminContainer::class,'manage'])
+        ->name('admin.container.manage');
+
+    Route::get('/admin/container/search',
+        [adminContainer::class,'search'])
+        ->name('admin.container.search');
+
+    Route::get('/admin/container/edit/{id}',
+        [ContainerController::class,'edit'])
+        ->name('admin.container.edit');
+
+    Route::post('/admin/container/update/{id}',
+        [adminContainer::class,'update'])
+        ->name('admin.container.update');
+    Route::get('/admin/container/delete/{id}',
+        [adminContainer::class,'delete']
+    )->name('admin.container.delete');
+
+//admin Shipment
+    Route::get('/admin/add-shipment',[adminShipment::class,'index'])->name('admin.add.shipment');
+    Route::post('/admin/create-shipment',[adminShipment::class,'store'])->name('admin.create.shipment');
+    Route::get('/admin/manage-shipment',[adminShipment::class,'manage'])->name('admin.manage.shipment');
+    Route::get('/admin/delete-shipment/{id}',[adminShipment::class,'delete'])->name('admin.delete.shipment');
+    Route::get('/admin/see-shipment/{id}',[adminShipment::class,'seeDetails'])->name('admin.see.shipment');
+    Route::get('/admin/edit-shipment/{id}',[adminShipment::class,'edit'])->name('admin.edit.shipment');
+    Route::post('/admin/update-shipment/{id}',[adminShipment::class,'update'])->name('admin.update.shipment');
 
 
 });

@@ -57,6 +57,39 @@
                     </a>
 
                 </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#shipment" role="button">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span>
+                    <span class="nav-text">Shipment</span>
+                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
+                </a>
+
+                <div class="collapse" id="shipment">
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('admin.add.shipment')}}">
+                        <span class="nav-text">Add Shipment</span>
+                    </a>
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('admin.manage.shipment')}}">
+                        <span class="nav-text">Manage Shipment</span>
+                    </a>
+                </div>
+                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#container" role="button">
+                    <span class="nav-icon"><i class="bi bi-box"></i></span>
+                    <span class="nav-text">Container</span>
+                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
+                </a>
+
+                <div class="collapse" id="container">
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('admin.add.container')}}">
+                        <span class="nav-text">Add Container</span>
+                    </a>
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('admin.container.manage')}}">
+                        <span class="nav-text">Manage Container</span>
+                    </a>
+                </div>
+                <div class="collapse" id="vgm">
+                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="{{route('admin.vgm')}}">
+                        <span class="nav-text">Add VGM</span>
+                    </a>
+                </div>
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#packinglist" role="button">
                     <span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span>
                     <span class="nav-text">Packing List</span>
@@ -84,17 +117,17 @@
                     </a>
 
                 </div>
-                <a class="nav-link ps-4" data-bs-toggle="collapse" href="#si" role="button">
-                    <span class="nav-icon"><i class="bi bi-file-earmark-richtext"></i></span>
-                    <span class="nav-text">SI Excel</span>
-                    <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
-                </a>
-                <div class="collapse" id="si">
-                    <a class="nav-link ps-5 bi bi-file-earmark-text" href="#">
-                        <span class="nav-text">See SI Excel</span>
-                    </a>
+                {{--<a class="nav-link ps-4" data-bs-toggle="collapse" href="#si" role="button">--}}
+                    {{--<span class="nav-icon"><i class="bi bi-file-earmark-richtext"></i></span>--}}
+                    {{--<span class="nav-text">SI Excel</span>--}}
+                    {{--<span class="ms-auto"><i class="bi bi-chevron-down"></i></span>--}}
+                {{--</a>--}}
+                {{--<div class="collapse" id="si">--}}
+                    {{--<a class="nav-link ps-5 bi bi-file-earmark-text" href="#">--}}
+                        {{--<span class="nav-text">See SI Excel</span>--}}
+                    {{--</a>--}}
 
-                </div>
+                {{--</div>--}}
                 <a class="nav-link ps-4" data-bs-toggle="collapse" href="#shipmentcompany" role="button">
                     <span class="nav-icon"><i class="bi bi-water"></i></span>
                     <span class="nav-text">MBL Prefix</span>
