@@ -8,7 +8,8 @@ class CalculationItem extends Model
 {
     protected $fillable = [
         'calculation_sheet_id',
-        'product_id',
+        'turkish_name',
+        'english_name',
         'container_quantities',
         'invoice_qty',
         'original_price',

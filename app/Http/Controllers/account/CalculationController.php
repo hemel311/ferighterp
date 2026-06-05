@@ -33,34 +33,30 @@ class CalculationController extends Controller
             compact('shipments')
         );
     }
-public function loadProducts($shipmentId)
-{
-    try {
+    public function loadProducts($shipmentId)
+    {
+        try {
 
-        $shipment = Shipment::findOrFail($shipmentId);
+            $shipment = Shipment::findOrFail(
+                $shipmentId
+            );
 
-        $products = ShipmentItem::with('product')
-            ->where('shipment_id', $shipmentId)
-            ->get();
+            $containers =
+                $shipment->container_qty;
 
-        $containers = $shipment->container_qty;
+            return view(
+                'account.partials.product',
+                compact('containers')
+            );
 
-        return view(
-            'account.partials.product',
-            compact(
-                'products',
-                'containers'
-            )
-        );
+        } catch (\Exception $e) {
 
-    } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
 
-        return response()->json([
-            'error' => $e->getMessage()
-        ]);
-
+        }
     }
-}
     public function store(Request $request)
     {
         $sheet = CalculationSheet::create([
@@ -70,57 +66,103 @@ public function loadProducts($shipmentId)
             'percentage'    => $request->percentage,
         ]);
 
-        if($request->filled('product_id'))
+        if($request->filled('english_name'))
         {
-            foreach($request->product_id as $index => $productId)
+            foreach(
+                $request->english_name
+                as $index => $englishName
+            )
             {
                 $containerData = [];
 
-                foreach($request->containers[$index] as $key => $qty)
+                if(
+                isset(
+                    $request->containers[$index]
+                )
+                )
                 {
-                    $containerData[$key] = (int)$qty;
-                }
-
-                $invoiceQty = array_sum($containerData);
-
-                $originalPrice =
-                    $request->original_price[$index] ?? 0;
-
-                $percentage =
-                    $request->percentage ?? 0;
-
-                $itemPrice = $originalPrice;
-
-                if($percentage > 0)
-                {
-                    $itemPrice =
-                        $originalPrice +
-                        ($originalPrice * $percentage / 100);
+                    foreach(
+                        $request->containers[$index]
+                        as $container => $qty
+                    )
+                    {
+                        $containerData[$container]
+                            = (int)$qty;
+                    }
                 }
 
                 CalculationItem::create([
-                    'calculation_sheet_id' => $sheet->id,
-                    'product_id' => $productId,
-                    'container_quantities' => $containerData,
-                    'invoice_qty' => $invoiceQty,
-                    'original_price' => $originalPrice,
-                    'item_price' => $itemPrice,
 
-                    'price_pi_a' => $request->price_pi_a[$index],
-                    'tl_usd' => $request->tl_usd[$index],
-                    'shipping_additional' => $request->shipping_additional[$index],
-                    'cif_price' => $request->cif_price[$index],
-                    'tl_total' => $request->tl_total[$index],
+                    'calculation_sheet_id'
+                    => $sheet->id,
+
+                    'turkish_name'
+                    => $request
+                        ->turkish_name[$index],
+
+                    'english_name'
+                    => $englishName,
+
+                    'container_quantities'
+                    => $containerData,
+
+                    'invoice_qty'
+                    => $request
+                        ->invoice_qty[$index],
+
+                    'original_price'
+                    => $request
+                        ->original_price[$index],
+
+                    'item_price'
+                    => $request
+                        ->item_price[$index],
+
+                    'price_pi_a'
+                    => $request
+                            ->price_pi_a[$index] ?? null,
+
+                    'tl_usd'
+                    => $request
+                        ->tl_usd[$index],
+
+                    'shipping_additional'
+                    => $request
+                        ->shipping_additional[$index],
+
+                    'cif_price'
+                    => $request
+                        ->cif_price[$index],
+
+                    'tl_total'
+                    => $request
+                        ->tl_total[$index],
+
                 ]);
             }
         }
 
         return redirect()
-            ->route('account.calculation.index')
+            ->route(
+                'account.calculation.index'
+            )
             ->with(
                 'success',
-                'Calculation created successfully'
+                'Calculation Created Successfully'
             );
+    }
+
+    public function show($id)
+    {
+        $calculation = CalculationSheet::with([
+            'shipment',
+            'items.product'
+        ])->findOrFail($id);
+
+        return view(
+            'account.view',
+            compact('calculation')
+        );
     }
 
 }

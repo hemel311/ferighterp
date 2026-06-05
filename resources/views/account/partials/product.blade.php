@@ -1,8 +1,13 @@
 
 
 
-
+<button type="button"
+        id="addRow"
+        class="btn btn-success mb-3">
+    Add Product
+</button>
 <div class="table-responsive">
+
 
     <table class="table table-bordered">
 
@@ -33,123 +38,13 @@
             <th>CIF Price</th>
 
             <th>TL Total</th>
+            <th>Action</th>
 
         </tr>
 
         </thead>
 
-        <tbody>
-
-        @foreach($products as $key => $item)
-
-            <tr class="product-row">
-
-                <input type="hidden"
-                       name="tl_usd[]"
-                       class="tl-usd-hidden">
-                <input type="hidden"
-                       name="shipping_additional[]"
-                       class="shipping-additional-hidden">
-                <input type="hidden"
-                       name="cif_price[]"
-                       class="cif-price-hidden">
-                <input type="hidden"
-                       name="tl_total[]"
-                       class="tl-total-hidden">
-                <input type="hidden"
-                       name="price_pi_a[]"
-                       class="price-pia-hidden">
-                <input type="hidden"
-                       name="invoice_qty[]"
-                       class="invoice-qty-hidden">
-                <td>
-
-                    {{ $item->product->turkish_name ?? '' }}
-
-                    <input type="hidden"
-                           name="product_id[]"
-                           value="{{ $item->product_id }}">
-
-                </td>
-
-                <td>
-                    {{ $item->item_name }}
-                </td>
-
-                @for($i=1; $i <= $containers; $i++)
-
-                    <td>
-
-                        <input type="number"
-                               min="0"
-                               value="0"
-                               class="form-control cont-qty"
-                               name="containers[{{ $key }}][CONT {{ $i }}]">
-
-                    </td>
-
-                @endfor
-
-                <td>
-
-                    <input type="number"
-                           readonly
-                           class="form-control invoice-qty">
-
-                </td>
-
-                <td>
-
-                    <input type="number"
-                           step="0.01"
-                           class="form-control original-price"
-                           name="original_price[]">
-
-                </td>
-
-                <td>
-
-                    <input type="number"
-                           readonly
-                           class="form-control item-price">
-
-                </td>
-
-                <td>
-
-                    <input type="number"
-                           readonly
-                           class="form-control tl-usd">
-
-                </td>
-
-                <td>
-
-                    <input type="number"
-                           readonly
-                           class="form-control shipping-additional">
-
-                </td>
-
-                <td>
-
-                    <input type="number"
-                           readonly
-                           class="form-control cif-price">
-
-                </td>
-
-                <td>
-
-                    <input type="number"
-                           readonly
-                           class="form-control tl-total">
-
-                </td>
-
-            </tr>
-
-        @endforeach
+        <tbody id="productTableBody">
 
         </tbody>
 
@@ -161,6 +56,23 @@
 
     $(document).ready(function(){
 
+        let rowIndex = 0;
+
+        function getTotalInvoiceQty()
+        {
+            let totalQty = 0;
+
+            $('.product-row').each(function(){
+
+                totalQty += parseFloat(
+                    $(this).find('.invoice-qty').val()
+                ) || 0;
+
+            });
+
+            return totalQty;
+        }
+
         function calculateRow(row)
         {
             let invoiceQty = 0;
@@ -171,11 +83,8 @@
 
             });
 
-            row.find('.invoice-qty')
-                .val(invoiceQty);
-
-            row.find('.invoice-qty-hidden')
-                .val(invoiceQty);
+            row.find('.invoice-qty').val(invoiceQty);
+            row.find('.invoice-qty-hidden').val(invoiceQty);
 
             let originalPrice =
                 parseFloat(
@@ -201,18 +110,17 @@
 
             row.find('.item-price')
                 .val(itemPrice.toFixed(2));
+            row.find('.item-price-hidden')
+                .val(itemPrice.toFixed(2));
 
             let tcmb =
-                parseFloat(
-                    $('#tcmb').val()
-                ) || 0;
+                parseFloat($('#tcmb').val()) || 0;
 
             let tlUsd = 0;
 
             if(tcmb > 0)
             {
-                tlUsd =
-                    itemPrice / tcmb;
+                tlUsd = itemPrice / tcmb;
             }
 
             row.find('.tl-usd')
@@ -226,12 +134,16 @@
                     $('#shipping_cost').val()
                 ) || 0;
 
+            let totalInvoiceQty =
+                getTotalInvoiceQty();
+
             let shippingAdditional = 0;
 
-            if(invoiceQty > 0)
+            if(totalInvoiceQty > 0)
             {
                 shippingAdditional =
-                    shippingCost / invoiceQty;
+                    shippingCost /
+                    totalInvoiceQty;
             }
 
             row.find('.shipping-additional')
@@ -273,16 +185,167 @@
                 );
         }
 
+        function recalculateAllRows()
+        {
+            $('.product-row').each(function(){
+
+                calculateRow($(this));
+
+            });
+        }
+
+        /*
+        =====================================
+        ADD PRODUCT ROW
+        =====================================
+        */
+
+        $('#addRow').click(function(){
+
+            let html = `
+            <tr class="product-row">
+
+                <td>
+                    <input type="text"
+                           name="turkish_name[]"
+                           class="form-control">
+                </td>
+
+                <td>
+                    <input type="text"
+                           name="english_name[]"
+                           class="form-control">
+                </td>
+
+                @for($i=1; $i <= $containers; $i++)
+
+                <td>
+                    <input type="number"
+                           min="0"
+                           value="0"
+                           class="form-control cont-qty"
+                           name="containers[${rowIndex}][CONT {{ $i }}]">
+                </td>
+
+                @endfor
+
+                <td>
+                    <input type="number"
+                           readonly
+                           class="form-control invoice-qty">
+
+                    <input type="hidden"
+                           name="invoice_qty[]"
+                           class="invoice-qty-hidden">
+                </td>
+
+                <td>
+                    <input type="number"
+                           step="0.01"
+                           name="original_price[]"
+                           class="form-control original-price">
+                </td>
+
+                <td>
+                    <input type="number"
+       readonly
+       class="form-control item-price">
+
+<input type="hidden"
+       name="item_price[]"
+       class="item-price-hidden">
+                </td>
+
+                <td>
+                    <input type="number"
+                           readonly
+                           class="form-control tl-usd">
+
+                    <input type="hidden"
+                           name="tl_usd[]"
+                           class="tl-usd-hidden">
+                </td>
+
+                <td>
+                    <input type="number"
+                           readonly
+                           class="form-control shipping-additional">
+
+                    <input type="hidden"
+                           name="shipping_additional[]"
+                           class="shipping-additional-hidden">
+                </td>
+
+                <td>
+                    <input type="number"
+                           readonly
+                           class="form-control cif-price">
+
+                    <input type="hidden"
+                           name="cif_price[]"
+                           class="cif-price-hidden">
+                </td>
+
+                <td>
+                    <input type="number"
+                           readonly
+                           class="form-control tl-total">
+
+                    <input type="hidden"
+                           name="tl_total[]"
+                           class="tl-total-hidden">
+                </td>
+
+                <td>
+                    <button type="button"
+                            class="btn btn-danger removeRow">
+                        X
+                    </button>
+                </td>
+
+            </tr>
+        `;
+
+            $('#productTableBody')
+                .append(html);
+
+            rowIndex++;
+            recalculateAllRows();
+
+        });
+
+        /*
+        =====================================
+        REMOVE ROW
+        =====================================
+        */
+
+        $(document).on(
+            'click',
+            '.removeRow',
+            function(){
+
+                $(this)
+                    .closest('tr')
+                    .remove();
+
+                recalculateAllRows();
+
+            }
+        );
+
+        /*
+        =====================================
+        RECALCULATE
+        =====================================
+        */
+
         $(document).on(
             'keyup change',
             '.cont-qty,.original-price,#tcmb,#shipping_cost,#percentage,#add_percentage',
             function(){
 
-                $('.product-row').each(function(){
-
-                    calculateRow($(this));
-
-                });
+                recalculateAllRows();
 
             }
         );
