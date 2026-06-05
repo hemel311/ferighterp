@@ -10,5 +10,8 @@ class Product extends Model
         'product_name',
         'hs_code',
         'description',
+        'turkish_name'
     ];
+
+
 }

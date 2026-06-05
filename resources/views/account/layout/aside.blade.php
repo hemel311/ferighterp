@@ -14,60 +14,47 @@
             <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
             <span class="nav-text">Dashboard</span>
         </a>
-        <a class="nav-link" href="users.html">
-            <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
-            <span class="nav-text">Users</span>
+        {{--Calculation menu--}}
+        <a class="nav-link" data-bs-toggle="collapse" href="#calculation">
+    <span class="nav-icon">
+        <i class="bi bi-calculator"></i>
+    </span>
+            <span class="nav-text">Calculation</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
         </a>
-        <a class="nav-link" href="add-user.html">
-            <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
-            <span class="nav-text">Add User</span>
+
+        <div class="collapse" id="calculation">
+            <a class="nav-link ps-5" href="{{route('account.calculation.create')}}">Create Calculation</a>
+            <a class="nav-link ps-5" href="{{route('account.calculation.index')}}">Manage Calculation</a>
+        </div>
+
+        <!-- Shipment -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#commercialInvoice">
+    <span class="nav-icon">
+        <i class="bi bi-receipt"></i>
+    </span>
+            <span class="nav-text">Commercial Invoice</span>
+            <span class="ms-auto">
+        <i class="bi bi-chevron-down"></i>
+    </span>
         </a>
-        <a class="nav-link" href="profile.html">
-            <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
-            <span class="nav-text">Profile</span>
-        </a>
-        <a class="nav-link" href="charts.html">
-            <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
-            <span class="nav-text">Charts</span>
-        </a>
-        <a class="nav-link" href="tables.html">
-            <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
-            <span class="nav-text">Tables</span>
-        </a>
-        <a class="nav-link" href="forms.html">
-            <span class="nav-icon"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i></span>
-            <span class="nav-text">Forms</span>
-        </a>
-        <a class="nav-link" href="components.html">
-            <span class="nav-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
-            <span class="nav-text">Components</span>
-        </a>
-        <a class="nav-link" href="alerts.html">
-            <span class="nav-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
-            <span class="nav-text">Alerts</span>
-        </a>
-        <a class="nav-link" href="modals.html">
-            <span class="nav-icon"><i class="bi bi-window-stack" aria-hidden="true"></i></span>
-            <span class="nav-text">Modals</span>
-        </a>
-        <a class="nav-link" href="settings.html">
-            <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
-            <span class="nav-text">Settings</span>
-        </a>
-        <a class="nav-link" href="blank.html">
-            <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-            <span class="nav-text">Blank Page</span>
-        </a>
+
+        <div class="collapse" id="commercialInvoice">
+            <a class="nav-link ps-5" href="">Create Commercial Invoice</a>
+            <a class="nav-link ps-5" href="">Manage Commercial Invoice</a>
+        </div>
     </nav>
 
     <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{asset('assets')}}/images/avatar/avatar.jpg" alt="Admin Hasan">
-        <strong>Admin Hasan</strong>
-        <small>Active Workspace</small>
+        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{asset(\Illuminate\Support\Facades\Auth::guard('accountant')->user()->image)}}" alt="Admin Hasan">
+        <strong>{{\Illuminate\Support\Facades\Auth::guard('accountant')->user()->name}}</strong>
+        <small>Account</small>
     </div>
 
-    <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-    </div>
+    {{--<div class="sidebar-footer">--}}
+    {{--<span class="status-dot"></span>--}}
+    {{--<span class="sidebar-footer-text">System running smoothly</span>--}}
+    {{--</div>--}}
 </aside>

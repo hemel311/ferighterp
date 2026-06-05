@@ -42,6 +42,7 @@ class ShipmentController extends Controller
             'container_qty' => $request->container_qty,
             'remarks' => $request->remarks,
             'status' => $request->status,
+
         ]);
 
         if($request->product_id)

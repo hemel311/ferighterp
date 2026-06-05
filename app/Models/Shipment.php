@@ -39,4 +39,10 @@ class Shipment extends Model
     {
         return $this->hasMany(TrPackingList::class);
     }
+    public function calculationSheets()
+    {
+        return $this->hasMany(
+            CalculationSheet::class
+        );
+    }
 }

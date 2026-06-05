@@ -25,5 +25,13 @@
 </div>
 
 @include('account.layout.js')
+@stack('js')
+<script>
+    window.adminHMDUser = {
+        name: "{{ Auth::guard('accountant')->user()->name }}",
+        workspace: "{{ Auth::guard('accountant')->user()->designation ?? 'Administrator' }}",
+        avatar: "{{asset(\Illuminate\Support\Facades\Auth::guard('accountant')->user()->image)}}"
+    };
+</script>
 </body>
 </html>

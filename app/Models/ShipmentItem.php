@@ -10,6 +10,7 @@ class ShipmentItem extends Model
         'shipment_id',
         'hs_code',
         'item_name',
+        'product_id'
     ];
 
     public function shipment()

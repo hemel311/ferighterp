@@ -18,6 +18,8 @@ use App\Http\Controllers\admin\IsfController as adminisf;
 use App\Http\Controllers\admin\VgmController as adminvgm;
 use App\Http\Controllers\admin\ContainerController as adminContainer;
 use App\Http\Controllers\admin\ShipmentController as adminShipment;
+use App\Http\Controllers\account\CalculationController;
+
 
 
 Route::get('/',[AuthController::class,'index'])->name('login.page');
@@ -395,10 +397,57 @@ Route::get('/add-container',[ContainerController::class,'index'])->name('add.con
 
 
 Route::middleware(['accountant'])->group(function () {
-
-    Route::get('/accountant/dashboard', function () {
+    Route::get('/account/dashboard', function () {
         return view('account.dashboard');
     })->name('account.dashboard');
+
+    /*
+        |--------------------------------------------------------------------------
+        | Calculation Module
+        |--------------------------------------------------------------------------
+        */
+
+    Route::prefix('account/calculation')
+        ->name('account.calculation.')
+        ->group(function () {
+
+            Route::get('/',
+                [CalculationController::class, 'index'])
+                ->name('index');
+
+            Route::get('/create',
+                [CalculationController::class, 'create'])
+                ->name('create');
+
+            Route::get('/load-products/{shipment}',
+                [CalculationController::class, 'loadProducts'])
+                ->name('loadProducts');
+
+            Route::post('/store',
+                [CalculationController::class, 'store'])
+                ->name('store');
+
+            Route::get('/edit/{id}',
+                [CalculationController::class, 'edit'])
+                ->name('edit');
+
+            Route::post('/update/{id}',
+                [CalculationController::class, 'update'])
+                ->name('update');
+
+            Route::get('/show/{id}',
+                [CalculationController::class, 'show'])
+                ->name('show');
+
+            Route::get('/export-excel/{id}',
+                [CalculationController::class, 'exportExcel'])
+                ->name('exportExcel');
+
+            Route::delete('/delete/{id}',
+                [CalculationController::class, 'destroy'])
+                ->name('delete');
+        });
+
 
 });
 
