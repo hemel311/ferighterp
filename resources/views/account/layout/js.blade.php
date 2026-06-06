@@ -30,9 +30,23 @@
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            height: 650
-        });
+            height: 650,
 
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+
+            buttonText: {
+                today: 'Today',
+                month: 'Month',
+                week: 'Week',
+                list: 'List'
+            },
+
+            events: '{{route('account.calendar.events')}}'
+        });
         calendar.render();
     });
 </script>

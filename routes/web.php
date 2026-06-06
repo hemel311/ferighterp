@@ -22,8 +22,8 @@ use App\Http\Controllers\account\CalculationController;
 use App\Http\Controllers\account\CommercialInvoiceController;
 use App\Http\Controllers\admin\CalculationController as adminCalculation;
 use App\Http\Controllers\admin\CommercialInvoiceController as adminCommercial;
-
-
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\admin\AdminController;
 
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
@@ -36,9 +36,14 @@ Route::post('/common-logout',[AuthController::class,'logout'])->name('commonlogo
 
 Route::middleware(['admin'])->group(function () {
 
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    //admin calender
+    Route::get('/admin/calendar/events',
+        [CalendarController::class,'events'])
+        ->name('admin.calendar.events');
+
+    Route::get('/admin/dashboard',
+        [AdminController::class,'index'])
+        ->name('admin.dashboard');
 
     //feright user
     Route::get('/add-feright',[\App\Http\Controllers\admin\AddFerightController::class,'index'])->name('addferight');
@@ -323,6 +328,9 @@ Route::middleware(['admin'])->group(function () {
 });
 
 Route::middleware(['forwarder'])->group(function () {
+    Route::get('/feright/calendar/events',
+        [CalendarController::class,'events'])
+        ->name('forwarder.calendar.events');
 
     Route::get('/feright/dashboard', function () {
         return view('feright.dashboard');
@@ -498,6 +506,10 @@ Route::middleware(['accountant'])->group(function () {
     Route::get('/account/dashboard', function () {
         return view('account.dashboard');
     })->name('account.dashboard');
+//account calender
+    Route::get('/accountant/calendar/events',
+        [CalendarController::class,'events'])
+        ->name('account.calendar.events');
 
     /*
         |--------------------------------------------------------------------------

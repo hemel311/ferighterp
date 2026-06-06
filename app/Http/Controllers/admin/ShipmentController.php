@@ -62,7 +62,7 @@ class ShipmentController extends Controller
         }
 
         return redirect()
-            ->route('admin.feright.manage')
+            ->route('admin.manage.shipment')
             ->with('success','Shipment Saved Successfully');
     }
     public function manage()
