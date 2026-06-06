@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\account;
+namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\CalculationSheet;
 use App\Models\CommercialInvoice;
 use App\Models\Shipment;
 use App\Models\Templates;
-use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
 
 class CommercialInvoiceController extends Controller
 {
@@ -24,7 +23,7 @@ class CommercialInvoiceController extends Controller
             ->paginate(20);
 
         return view(
-            'account.commercial.index',
+            'admin.account.commercial.index',
             compact('invoices')
         );
     }
@@ -34,7 +33,7 @@ class CommercialInvoiceController extends Controller
         $shipments = Shipment::latest()->get();
 
         return view(
-            'account.commercial.create',
+            'admin.account.commercial.create',
             compact('shipments')
         );
     }
@@ -52,7 +51,7 @@ class CommercialInvoiceController extends Controller
             }
 
             return view(
-                'account.commercial.partials.product',
+                'admin.account.commercial.partials.product',
                 compact('calculation')
             );
 
@@ -96,7 +95,7 @@ class CommercialInvoiceController extends Controller
 
         return redirect()
             ->route(
-                'account.commercial.index'
+                'account.commercial.admin.index'
             )
             ->with(
                 'success',
@@ -132,7 +131,7 @@ class CommercialInvoiceController extends Controller
             $invoice->shipping_cost;
 
         return view(
-            'account.commercial.view',
+            'admin.account.commercial.view',
             compact(
                 'invoice',
                 'grandTotal',
@@ -149,7 +148,7 @@ class CommercialInvoiceController extends Controller
         ])->findOrFail($id);
 
         return view(
-            'account.commercial.edit',
+            'admin.account.commercial.edit',
             compact('invoice')
         );
     }
@@ -170,7 +169,7 @@ class CommercialInvoiceController extends Controller
 
         return redirect()
             ->route(
-                'account.commercial.index'
+                'account.commercial.admin.index'
             )
             ->with(
                 'success',
@@ -729,8 +728,4 @@ class CommercialInvoiceController extends Controller
             '.pdf'
         )->deleteFileAfterSend(true);
     }
-
-
-
-
 }

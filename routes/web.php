@@ -20,6 +20,8 @@ use App\Http\Controllers\admin\ContainerController as adminContainer;
 use App\Http\Controllers\admin\ShipmentController as adminShipment;
 use App\Http\Controllers\account\CalculationController;
 use App\Http\Controllers\account\CommercialInvoiceController;
+use App\Http\Controllers\admin\CalculationController as adminCalculation;
+use App\Http\Controllers\admin\CommercialInvoiceController as adminCommercial;
 
 
 
@@ -222,6 +224,101 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/edit-shipment/{id}',[adminShipment::class,'edit'])->name('admin.edit.shipment');
     Route::post('/admin/update-shipment/{id}',[adminShipment::class,'update'])->name('admin.update.shipment');
 
+    //Admin Account
+    Route::prefix('/admin/account/calculation')
+        ->name('account.calculation.admin.')
+        ->group(function () {
+
+            Route::get('/',
+                [adminCalculation::class, 'index'])
+                ->name('index');
+
+            Route::get('/create',
+                [adminCalculation::class, 'create'])
+                ->name('create');
+
+            Route::get('/load-products/{shipment}',
+                [adminCalculation::class, 'loadProducts'])
+                ->name('loadProducts');
+
+            Route::post('/store',
+                [adminCalculation::class, 'store'])
+                ->name('store');
+
+            Route::get('/edit/{id}',
+                [adminCalculation::class, 'edit'])
+                ->name('edit');
+
+            Route::post('/update/{id}',
+                [adminCalculation::class, 'update'])
+                ->name('update');
+
+            Route::get('/show/{id}',
+                [adminCalculation::class, 'show'])
+                ->name('show');
+
+            Route::get('/export-excel/{id}',
+                [adminCalculation::class, 'exportExcel'])
+                ->name('exportExcel');
+
+            Route::delete('/delete/{id}',
+                [adminCalculation::class, 'destroy'])
+                ->name('delete');
+        });
+
+    //adminCommercial
+    Route::prefix('/admin/account/commercial')
+        ->name('account.commercial.admin.')
+        ->group(function () {
+
+            Route::get(
+                '/',
+                [adminCommercial::class,'index']
+            )->name('index');
+
+            Route::get(
+                '/create',
+                [adminCommercial::class,'create']
+            )->name('create');
+
+            Route::get(
+                '/load/{shipment}',
+                [adminCommercial::class,'loadCalculation']
+            )->name('load');
+
+            Route::post(
+                '/store',
+                [adminCommercial::class,'store']
+            )->name('store');
+
+            Route::get(
+                '/show/{id}',
+                [adminCommercial::class,'show']
+            )->name('show');
+
+            Route::get(
+                '/delete/{id}',
+                [adminCommercial::class,'destroy']
+            )->name('delete');
+            Route::get(
+                '/edit/{id}',
+                [adminCommercial::class,'edit']
+            )->name('edit');
+
+            Route::post(
+                '/update/{id}',
+                [adminCommercial::class,'update']
+            )->name('update');
+            Route::get(
+                '/export-excel/{id}',
+                [adminCommercial::class,'exportExcel']
+            )->name('exportExcel');
+
+            Route::get('/export-pdf/{id}',[adminCommercial::class,'exportPdf'])->name('exportPdf');
+        });
+
+
+
 
 });
 
@@ -232,13 +329,13 @@ Route::middleware(['forwarder'])->group(function () {
     })->name('feright.dashboard');
 
 //SHipment
-Route::get('/add-shipment',[ShipmentController::class,'index'])->name('add.shipment');
-Route::post('/create-shipment',[ShipmentController::class,'store'])->name('create.shipment');
-Route::get('/manage-shipment',[ShipmentController::class,'manage'])->name('manage.shipment');
-Route::get('/delete-shipment/{id}',[ShipmentController::class,'delete'])->name('delete.shipment');
-Route::get('/see-shipment/{id}',[ShipmentController::class,'seeDetails'])->name('see.shipment');
-Route::get('/edit-shipment/{id}',[ShipmentController::class,'edit'])->name('edit.shipment');
-Route::post('/update-shipment/{id}',[ShipmentController::class,'update'])->name('update.shipment');
+    Route::get('/add-shipment',[ShipmentController::class,'index'])->name('add.shipment');
+    Route::post('/create-shipment',[ShipmentController::class,'store'])->name('create.shipment');
+    Route::get('/manage-shipment',[ShipmentController::class,'manage'])->name('manage.shipment');
+    Route::get('/delete-shipment/{id}',[ShipmentController::class,'delete'])->name('delete.shipment');
+    Route::get('/see-shipment/{id}',[ShipmentController::class,'seeDetails'])->name('see.shipment');
+    Route::get('/edit-shipment/{id}',[ShipmentController::class,'edit'])->name('edit.shipment');
+    Route::post('/update-shipment/{id}',[ShipmentController::class,'update'])->name('update.shipment');
 
 //product
     Route::get('/add-product',[ProductController::class,'index'])->name('add.product');
@@ -253,7 +350,7 @@ Route::post('/update-shipment/{id}',[ShipmentController::class,'update'])->name(
 
 //container
 
-Route::get('/add-container',[ContainerController::class,'index'])->name('add.container');
+    Route::get('/add-container',[ContainerController::class,'index'])->name('add.container');
     Route::post('/extract-ocr',
         [ContainerController::class,'extractOcr']
     )->name('extract.ocr');

@@ -205,7 +205,10 @@
                     <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
                 </a>
                 <div class="collapse" id="calculation">
-                    <a class="nav-link ps-5 bi bi-calculator" href="#">
+                    <a class="nav-link ps-5 bi bi-calculator" href="{{route('account.calculation.admin.create')}}">
+                        <span class="nav-text">Create Calculation</span>
+                    </a>
+                    <a class="nav-link ps-5 bi bi-calculator" href="{{route('account.calculation.admin.index')}}">
                         <span class="nav-text">See Calculation</span>
                     </a>
                 </div>
@@ -215,7 +218,10 @@
                     <span class="ms-auto"><i class="bi bi-chevron-down"></i></span>
                 </a>
                 <div class="collapse" id="cinvoice">
-                    <a class="nav-link ps-5 bi bi-receipt" href="#">
+                    <a class="nav-link ps-5 bi bi-receipt" href="{{route('account.commercial.admin.create')}}">
+                        <span class="nav-text">Add Commercial Invoice</span>
+                    </a>
+                    <a class="nav-link ps-5 bi bi-receipt" href="{{route('account.commercial.admin.index')}}">
                         <span class="nav-text">See Commercial Invoice</span>
                     </a>
                 </div>
