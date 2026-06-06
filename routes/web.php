@@ -24,6 +24,8 @@ use App\Http\Controllers\admin\CalculationController as adminCalculation;
 use App\Http\Controllers\admin\CommercialInvoiceController as adminCommercial;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\admin\AdminController;
+use App\Http\Controllers\freight\FreightController;
+use App\Http\Controllers\account\AccountController;
 
 Route::get('/',[AuthController::class,'index'])->name('login.page');
 
@@ -332,9 +334,9 @@ Route::middleware(['forwarder'])->group(function () {
         [CalendarController::class,'events'])
         ->name('forwarder.calendar.events');
 
-    Route::get('/feright/dashboard', function () {
-        return view('feright.dashboard');
-    })->name('feright.dashboard');
+    Route::get('/feright/dashboard',
+        [FreightController::class,'index'])
+        ->name('feright.dashboard');
 
 //SHipment
     Route::get('/add-shipment',[ShipmentController::class,'index'])->name('add.shipment');
@@ -503,9 +505,7 @@ Route::middleware(['forwarder'])->group(function () {
 
 
 Route::middleware(['accountant'])->group(function () {
-    Route::get('/account/dashboard', function () {
-        return view('account.dashboard');
-    })->name('account.dashboard');
+    Route::get('/account/dashboard',[AccountController::class,'index'])->name('account.dashboard');
 //account calender
     Route::get('/accountant/calendar/events',
         [CalendarController::class,'events'])
