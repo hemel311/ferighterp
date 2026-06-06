@@ -42,8 +42,8 @@
         </a>
 
         <div class="collapse" id="commercialInvoice">
-            <a class="nav-link ps-5" href="">Create Commercial Invoice</a>
-            <a class="nav-link ps-5" href="">Manage Commercial Invoice</a>
+            <a class="nav-link ps-5" href="{{route('account.commercial.create')}}">Create Commercial Invoice</a>
+            <a class="nav-link ps-5" href="{{route('account.commercial.index')}}">Manage Commercial Invoice</a>
         </div>
     </nav>
 

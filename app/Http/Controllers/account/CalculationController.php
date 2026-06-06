@@ -8,7 +8,11 @@ use App\Models\CalculationSheet;
 use App\Models\ContainerUpload;
 use App\Models\Shipment;
 use App\Models\ShipmentItem;
+use App\Models\Templates;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CalculationController extends Controller
 {
@@ -137,6 +141,8 @@ class CalculationController extends Controller
                     'tl_total'
                     => $request
                         ->tl_total[$index],
+                    'direct_usd' =>
+                        $request->direct_usd[$index] ?? 0,
 
                 ]);
             }
@@ -156,7 +162,7 @@ class CalculationController extends Controller
     {
         $calculation = CalculationSheet::with([
             'shipment',
-            'items.product'
+            'items'
         ])->findOrFail($id);
 
         return view(
@@ -165,4 +171,447 @@ class CalculationController extends Controller
         );
     }
 
+    public function edit($id)
+    {
+        $calculation = CalculationSheet::with([
+            'shipment',
+            'items'
+        ])->findOrFail($id);
+
+        $containers =
+            $calculation->shipment->container_qty;
+
+        $shipments = Shipment::latest()->get();
+
+        return view(
+            'account.edit',
+            compact(
+                'calculation',
+                'containers',
+                'shipments'
+            )
+        );
+    }
+
+    public function update(Request $request, $id)
+    {
+        $sheet = CalculationSheet::findOrFail($id);
+
+        $sheet->update([
+            'tcmb'          => $request->tcmb,
+            'shipping_cost' => $request->shipping_cost,
+            'percentage'    => $request->percentage,
+        ]);
+
+        $sheet->items()->delete();
+
+        foreach($request->english_name as $index => $englishName)
+        {
+            $containerData = [];
+
+            if(isset($request->containers[$index]))
+            {
+                foreach(
+                    $request->containers[$index]
+                    as $container => $qty
+                )
+                {
+                    $containerData[$container] =
+                        (int)$qty;
+                }
+            }
+
+            CalculationItem::create([
+
+                'calculation_sheet_id' => $sheet->id,
+
+                'turkish_name' =>
+                    $request->turkish_name[$index],
+
+                'english_name' =>
+                    $englishName,
+
+                'container_quantities' =>
+                    $containerData,
+
+                'invoice_qty' =>
+                    $request->invoice_qty[$index],
+
+                'original_price' =>
+                    $request->original_price[$index],
+
+                'item_price' =>
+                    $request->item_price[$index],
+
+                'tl_usd' =>
+                    $request->tl_usd[$index],
+
+                'shipping_additional' =>
+                    $request->shipping_additional[$index],
+
+                'cif_price' =>
+                    $request->cif_price[$index],
+
+                'tl_total' =>
+                    $request->tl_total[$index],
+
+            ]);
+        }
+
+     return redirect()->back()->with('success','Calculation Updated Successfully');
+
 }
+
+    public function destroy($id)
+    {
+        $calculation = CalculationSheet::findOrFail($id);
+
+        $calculation->delete();
+
+        return redirect()
+            ->route('account.calculation.index')
+            ->with(
+                'success',
+                'Calculation Deleted Successfully'
+            );
+    }
+
+    public function exportExcel($id)
+    {
+        $calculation = CalculationSheet::with([
+            'shipment',
+            'items'
+        ])->findOrFail($id);
+
+        $template = Templates::where(
+            'type',
+            'calculation'
+        )->firstOrFail();
+
+        $templatePath = storage_path(
+            'app/private/' . $template->file
+        );
+
+        if (!file_exists($templatePath))
+        {
+            return back()->with(
+                'error',
+                'Template not found'
+            );
+        }
+
+        $spreadsheet = IOFactory::load(
+            $templatePath
+        );
+
+        $sheet = $spreadsheet->getActiveSheet();
+
+        /*
+        |--------------------------------------------------------------------------
+        | MAX CONTAINER COUNT
+        |--------------------------------------------------------------------------
+        */
+
+        $containerCount = 0;
+
+        foreach ($calculation->items as $item)
+        {
+            $count = count(
+                $item->container_quantities ?? []
+            );
+
+            if ($count > $containerCount)
+            {
+                $containerCount = $count;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | INSERT EXTRA CONTAINER COLUMNS
+        |--------------------------------------------------------------------------
+        */
+
+        if ($containerCount > 4)
+        {
+            $extraColumns = $containerCount - 4;
+
+            $sheet->insertNewColumnBefore(
+                'H',
+                $extraColumns
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CONTAINER HEADERS
+        |--------------------------------------------------------------------------
+        */
+
+        for ($i = 1; $i <= $containerCount; $i++)
+        {
+            $column = Coordinate::stringFromColumnIndex(
+                3 + $i
+            );
+
+            $sheet->setCellValue(
+                $column . '1',
+                'CONT ' . $i
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SHIFTED COLUMN POSITIONS
+        |--------------------------------------------------------------------------
+        */
+
+        $pricePiACol = Coordinate::stringFromColumnIndex(
+            4 + $containerCount
+        );
+
+        $shippingCol = Coordinate::stringFromColumnIndex(
+            5 + $containerCount
+        );
+
+        $cifCol = Coordinate::stringFromColumnIndex(
+            6 + $containerCount
+        );
+
+        $tlUsdCol = Coordinate::stringFromColumnIndex(
+            7 + $containerCount
+        );
+
+        $tlTotalCol = Coordinate::stringFromColumnIndex(
+            8 + $containerCount
+        );
+
+        $itemPriceCol = Coordinate::stringFromColumnIndex(
+            9 + $containerCount
+        );
+
+        $tcmbCol = Coordinate::stringFromColumnIndex(
+            10 + $containerCount
+        );
+
+        $originalPriceCol = Coordinate::stringFromColumnIndex(
+            12 + $containerCount
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | PRODUCT DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $row = 2;
+
+        foreach ($calculation->items as $item)
+        {
+            $sheet->setCellValue(
+                'A' . $row,
+                $item->turkish_name
+            );
+
+            $sheet->setCellValue(
+                'B' . $row,
+                $item->english_name
+            );
+
+            $sheet->setCellValue(
+                'C' . $row,
+                $item->invoice_qty
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | CONTAINERS
+            |--------------------------------------------------------------------------
+            */
+
+            $containerColumn = 4;
+
+            foreach (
+            ($item->container_quantities ?? [])
+                as $qty
+            )
+            {
+                $sheet->setCellValue(
+                    Coordinate::stringFromColumnIndex(
+                        $containerColumn
+                    ) . $row,
+                    $qty
+                );
+
+                $containerColumn++;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | PRICE PI A
+            |--------------------------------------------------------------------------
+            */
+
+            if ($item->direct_usd)
+            {
+                $pricePiA = $item->item_price;
+                $tlUsd = $item->item_price;
+            }
+            else
+            {
+                $pricePiA = $item->tl_usd;
+                $tlUsd = $item->tl_usd;
+            }
+
+            $sheet->setCellValue(
+                $pricePiACol . $row,
+                $pricePiA
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | SHIPPING ADDITIONAL
+            |--------------------------------------------------------------------------
+            */
+
+            $sheet->setCellValue(
+                $shippingCol . $row,
+                $item->shipping_additional
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | CIF PRICE
+            |--------------------------------------------------------------------------
+            */
+
+            $sheet->setCellValue(
+                $cifCol . $row,
+                $item->cif_price
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | TL TO USD
+            |--------------------------------------------------------------------------
+            */
+
+            $sheet->setCellValue(
+                $tlUsdCol . $row,
+                $tlUsd
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | TL PRICE TOTAL
+            |--------------------------------------------------------------------------
+            */
+
+            $sheet->setCellValue(
+                $tlTotalCol . $row,
+                $item->tl_total
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | ITEM PRICE
+            |--------------------------------------------------------------------------
+            */
+
+            $sheet->setCellValue(
+                $itemPriceCol . $row,
+                $item->item_price
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | TCMB
+            |--------------------------------------------------------------------------
+            */
+
+            $sheet->setCellValue(
+                $tcmbCol . $row,
+                $calculation->tcmb
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | ORIGINAL PRICE
+            |--------------------------------------------------------------------------
+            */
+
+            $sheet->setCellValue(
+                $originalPriceCol . $row,
+                $item->original_price
+            );
+
+            $row++;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL ROW
+        |--------------------------------------------------------------------------
+        */
+
+
+
+        $sheet->setCellValue(
+            'C12' . $row,
+            $calculation->items->sum(
+                'invoice_qty'
+            )
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | SHIPPING COST LABEL
+        |--------------------------------------------------------------------------
+        */
+
+        $sheet->setCellValue(
+            $shippingCol . '12',
+            $calculation->shipping_cost
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | EXPORT FILE
+        |--------------------------------------------------------------------------
+        */
+
+        $fileName =
+            'Calculation_' .
+            $calculation->shipment->booking_number .
+            '.xlsx';
+
+        $tempDir = storage_path(
+            'app/temp'
+        );
+
+        if (!file_exists($tempDir))
+        {
+            mkdir(
+                $tempDir,
+                0777,
+                true
+            );
+        }
+
+        $tempFile =
+            $tempDir . '/' . $fileName;
+
+        $writer = new Xlsx(
+            $spreadsheet
+        );
+
+        $writer->save(
+            $tempFile
+        );
+
+        return response()->download(
+            $tempFile
+        )->deleteFileAfterSend(true);
+    }
+}
+

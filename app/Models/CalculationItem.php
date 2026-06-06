@@ -18,6 +18,7 @@ class CalculationItem extends Model
         'shipping_additional',
         'cif_price',
         'tl_total',
+        'direct_usd'
     ];
 
     protected $casts = [

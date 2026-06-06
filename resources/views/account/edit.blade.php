@@ -1,6 +1,6 @@
 @extends('account.master')
 @section('title')
-    Create Calculation
+    Edit Calculation
 @endsection
 
 @section('body')
@@ -9,13 +9,13 @@
 
         <div class="card">
             <div class="card-header">
-                <h4>Create Calculation</h4>
+                <h4>Edit Calculation</h4>
             </div>
 
             <div class="card-body">
 
                 <form method="POST"
-                      action="{{ route('account.calculation.store') }}">
+                      action="{{ route('account.calculation.update',$calculation->id) }}">
 
                     @csrf
 
@@ -26,24 +26,14 @@
                                 Booking Number
                             </label>
 
-                            <select name="shipment_id"
-                                    id="shipment_id"
-                                    class="form-control select2"
-                                    required>
+                            <input type="hidden"
+                                   name="shipment_id"
+                                   value="{{ $calculation->shipment_id }}">
 
-                                <option value="">
-                                    Select Booking Number
-                                </option>
-
-                                @foreach($shipments as $shipment)
-
-                                    <option value="{{ $shipment->id }}">
-                                        {{ $shipment->booking_number }}
-                                    </option>
-
-                                @endforeach
-
-                            </select>
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{ $calculation->shipment->booking_number }}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-2 mb-3">
@@ -55,7 +45,7 @@
                                    step="0.0001"
                                    class="form-control"
                                    name="tcmb"
-                                   id="tcmb">
+                                   id="tcmb" value="{{ $calculation->tcmb }}">
                         </div>
 
                         <div class="col-md-2 mb-3">
@@ -67,7 +57,9 @@
                                    step="0.01"
                                    class="form-control"
                                    name="shipping_cost"
-                                   id="shipping_cost">
+                                   id="shipping_cost"
+                                   value="{{ $calculation->shipping_cost }}"
+                            >
                         </div>
 
                         <div class="col-md-2 mb-3">
@@ -77,10 +69,11 @@
                             </label>
 
                             <input type="checkbox"
-                                   id="add_percentage">
+                                   id="add_percentage"
+                                    {{ $calculation->percentage > 0 ? 'checked' : '' }}>
                         </div>
 
-                        <div class="col-md-3 mb-3 d-none"
+                        <div class="col-md-3 mb-3 {{ $calculation->percentage > 0 ? '' : 'd-none' }}"
                              id="percentage_div">
 
                             <label class="form-label">
@@ -91,7 +84,7 @@
                                    step="0.01"
                                    class="form-control"
                                    name="percentage"
-                                   id="percentage">
+                                   id="percentage" value="{{ $calculation->percentage }}">
                         </div>
 
                     </div>
@@ -100,11 +93,7 @@
 
                     <div id="productArea">
 
-                        <div class="text-center text-muted">
-
-                            Select a booking number to load products.
-
-                        </div>
+                        @include('account.partials.edit-product')
 
                     </div>
 
@@ -137,7 +126,11 @@
                 $('#percentage_div').toggleClass(
                     'd-none'
                 );
+                setTimeout(function(){
 
+                    recalculateAllRows();
+
+                }, 300);
             });
 
             $('#shipment_id').change(function(){
@@ -174,17 +167,6 @@
 
         });
 
-    </script>
-    <script>
-        $(document).ready(function(){
-
-            $('#shipment_id').select2({
-                placeholder: 'Select Booking Number',
-                allowClear: true,
-                width: '100%'
-            });
-
-        });
     </script>
 
 @endpush

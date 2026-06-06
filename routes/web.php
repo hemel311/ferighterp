@@ -19,6 +19,7 @@ use App\Http\Controllers\admin\VgmController as adminvgm;
 use App\Http\Controllers\admin\ContainerController as adminContainer;
 use App\Http\Controllers\admin\ShipmentController as adminShipment;
 use App\Http\Controllers\account\CalculationController;
+use App\Http\Controllers\account\CommercialInvoiceController;
 
 
 
@@ -446,6 +447,55 @@ Route::middleware(['accountant'])->group(function () {
             Route::delete('/delete/{id}',
                 [CalculationController::class, 'destroy'])
                 ->name('delete');
+        });
+    Route::prefix('account/commercial')
+        ->name('account.commercial.')
+        ->group(function () {
+
+            Route::get(
+                '/',
+                [CommercialInvoiceController::class,'index']
+            )->name('index');
+
+            Route::get(
+                '/create',
+                [CommercialInvoiceController::class,'create']
+            )->name('create');
+
+            Route::get(
+                '/load/{shipment}',
+                [CommercialInvoiceController::class,'loadCalculation']
+            )->name('load');
+
+            Route::post(
+                '/store',
+                [CommercialInvoiceController::class,'store']
+            )->name('store');
+
+            Route::get(
+                '/show/{id}',
+                [CommercialInvoiceController::class,'show']
+            )->name('show');
+
+            Route::get(
+                '/delete/{id}',
+                [CommercialInvoiceController::class,'destroy']
+            )->name('delete');
+            Route::get(
+                '/edit/{id}',
+                [CommercialInvoiceController::class,'edit']
+            )->name('edit');
+
+            Route::post(
+                '/update/{id}',
+                [CommercialInvoiceController::class,'update']
+            )->name('update');
+            Route::get(
+                '/export-excel/{id}',
+                [CommercialInvoiceController::class,'exportExcel']
+            )->name('exportExcel');
+
+            Route::get('/export-pdf/{id}',[CommercialInvoiceController::class,'exportPdf'])->name('exportPdf');
         });
 
 

@@ -41,6 +41,9 @@ Upload Template
                 <option value="ISF">
                     ISF
                 </option>
+                <option value="calculation">
+                    Calculation template
+                </option>
 
             </select>
         </div>

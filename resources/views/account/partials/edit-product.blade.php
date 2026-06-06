@@ -1,13 +1,9 @@
-
-
-
 <button type="button"
         id="addRow"
-        class="btn btn-success mb-3">
+        class="btn btn-success">
     Add Product
 </button>
 <div class="table-responsive">
-
 
     <table class="table table-bordered">
 
@@ -18,6 +14,8 @@
             <th>Turkish Name</th>
 
             <th>English Name</th>
+
+            <th>Direct USD</th>
 
             @for($i=1; $i <= $containers; $i++)
 
@@ -30,7 +28,7 @@
             <th>Original Price</th>
 
             <th>Item Price</th>
-            <th>Direct USD</th>
+
             <th>TL/USD</th>
 
             <th>Shipping Additional</th>
@@ -38,6 +36,7 @@
             <th>CIF Price</th>
 
             <th>TL Total</th>
+
             <th>Action</th>
 
         </tr>
@@ -46,12 +45,176 @@
 
         <tbody id="productTableBody">
 
+        @foreach($calculation->items as $key => $item)
+
+            @php
+
+                $containerData =
+                    $item->container_quantities ?? [];
+
+            @endphp
+
+            <tr class="product-row">
+
+                <td>
+
+                    <input type="text"
+                           name="turkish_name[]"
+                           class="form-control"
+                           value="{{ $item->turkish_name }}">
+
+                </td>
+
+                <td>
+
+                    <input type="text"
+                           name="english_name[]"
+                           class="form-control"
+                           value="{{ $item->english_name }}">
+
+                </td>
+
+                <td class="text-center">
+
+                    <input type="checkbox"
+                           class="direct-usd"
+                            {{ $item->direct_usd ? 'checked' : '' }}>
+
+                    <input type="hidden"
+                           name="direct_usd[]"
+                           class="direct-usd-hidden"
+                           value="{{ $item->direct_usd }}">
+
+                </td>
+
+                @for($i=1; $i <= $containers; $i++)
+
+                    <td>
+
+                        <input type="number"
+                               min="0"
+                               class="form-control cont-qty"
+                               name="containers[{{ $key }}][CONT {{ $i }}]"
+                               value="{{ $containerData['CONT '.$i] ?? 0 }}">
+
+                    </td>
+
+                @endfor
+
+                <td>
+
+                    <input type="number"
+                           readonly
+                           class="form-control invoice-qty"
+                           value="{{ $item->invoice_qty }}">
+
+                    <input type="hidden"
+                           name="invoice_qty[]"
+                           class="invoice-qty-hidden"
+                           value="{{ $item->invoice_qty }}">
+
+                </td>
+
+                <td>
+
+                    <input type="number"
+                           step="0.01"
+                           name="original_price[]"
+                           class="form-control original-price"
+                           value="{{ $item->original_price }}">
+
+                </td>
+
+                <td>
+
+                    <input type="number"
+                           readonly
+                           class="form-control item-price"
+                           value="{{ $item->item_price }}">
+
+                    <input type="hidden"
+                           name="item_price[]"
+                           class="item-price-hidden"
+                           value="{{ $item->item_price }}">
+
+                </td>
+
+                <td>
+
+                    <input type="number"
+                           readonly
+                           class="form-control tl-usd"
+                           value="{{ $item->tl_usd }}">
+
+                    <input type="hidden"
+                           name="tl_usd[]"
+                           class="tl-usd-hidden"
+                           value="{{ $item->tl_usd }}">
+
+                </td>
+
+                <td>
+
+                    <input type="number"
+                           readonly
+                           class="form-control shipping-additional"
+                           value="{{ $item->shipping_additional }}">
+
+                    <input type="hidden"
+                           name="shipping_additional[]"
+                           class="shipping-additional-hidden"
+                           value="{{ $item->shipping_additional }}">
+
+                </td>
+
+                <td>
+
+                    <input type="number"
+                           readonly
+                           class="form-control cif-price"
+                           value="{{ $item->cif_price }}">
+
+                    <input type="hidden"
+                           name="cif_price[]"
+                           class="cif-price-hidden"
+                           value="{{ $item->cif_price }}">
+
+                </td>
+
+                <td>
+
+                    <input type="number"
+                           readonly
+                           class="form-control tl-total"
+                           value="{{ $item->tl_total }}">
+
+                    <input type="hidden"
+                           name="tl_total[]"
+                           class="tl-total-hidden"
+                           value="{{ $item->tl_total }}">
+
+                </td>
+
+                <td>
+
+                    <button type="button"
+                            class="btn btn-danger removeRow">
+                        X
+                    </button>
+
+                </td>
+
+            </tr>
+
+        @endforeach
+
         </tbody>
 
     </table>
 
 </div>
 
+@push('js')
 <script>
 
     $(document).ready(function(){
@@ -226,6 +389,17 @@
                            name="english_name[]"
                            class="form-control">
                 </td>
+                             <td class="text-center">
+
+    <input type="checkbox"
+           class="direct-usd">
+
+    <input type="hidden"
+           name="direct_usd[]"
+           class="direct-usd-hidden"
+           value="0">
+
+</td>
 
                 @for($i=1; $i <= $containers; $i++)
 
@@ -266,17 +440,7 @@
        class="item-price-hidden">
                 </td>
 
-                <td class="text-center">
 
-    <input type="checkbox"
-           class="direct-usd">
-
-    <input type="hidden"
-           name="direct_usd[]"
-           class="direct-usd-hidden"
-           value="0">
-
-</td>
 
 <td>
     <input type="number"
@@ -393,3 +557,4 @@
     });
 
 </script>
+@endpush()
