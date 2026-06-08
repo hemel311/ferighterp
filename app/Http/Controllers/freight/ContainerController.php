@@ -19,28 +19,43 @@ class ContainerController extends Controller
             compact('shipments')
         );
     }
-    public function extractOcr(Request $request, GoogleVisionService $googleVision
+    public function extractOcr(
+        Request $request,
+        GoogleVisionService $googleVision
     )
     {
         $request->validate([
-            'container_image' => 'required|image',
-            'seal_image'      => 'required|image',
+            'container_image' => 'nullable|image',
+            'seal_image'      => 'nullable|image',
         ]);
 
         try {
 
-            $containerNumber = $googleVision->extractContainerNumber(
-                $request->file('container_image')->getRealPath()
-            );
+            $containerNumber = null;
+            $sealNumber = null;
 
-            $sealNumber = $googleVision->extractSealNumber(
-                $request->file('seal_image')->getRealPath()
-            );
+            if($request->hasFile('container_image'))
+            {
+                $containerNumber =
+                    $googleVision->extractContainerNumber(
+                        $request->file('container_image')
+                            ->getRealPath()
+                    );
+            }
+
+            if($request->hasFile('seal_image'))
+            {
+                $sealNumber =
+                    $googleVision->extractSealNumber(
+                        $request->file('seal_image')
+                            ->getRealPath()
+                    );
+            }
 
             return response()->json([
-                'success' => true,
+                'success'          => true,
                 'container_number' => $containerNumber,
-                'seal_number' => $sealNumber
+                'seal_number'      => $sealNumber
             ]);
 
         } catch (\Exception $e) {
@@ -59,74 +74,112 @@ class ContainerController extends Controller
     {
         $request->validate([
             'booking_number'      => 'required',
-            'container_images.*'  => 'required|image',
-            'seal_images.*'       => 'required|image',
+            'container_images.*'  => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'seal_images.*'       => 'nullable|image|mimes:jpg,jpeg,png,webp',
         ]);
 
-        foreach ($request->container_images as $key => $containerImage)
+        $status = $request->action === 'submit'
+            ? 'submitted'
+            : 'draft';
+
+        foreach ($request->container_serial as $key => $serial)
         {
+            $containerPath = null;
+            $sealPath = null;
+
             /*
             |--------------------------------------------------------------------------
-            | Upload Container Image
+            | Container Image Upload
             |--------------------------------------------------------------------------
             */
 
-            $containerName =
-                time().'_container_'.$key.'.'.$containerImage->extension();
+            if (
+                isset($request->container_images[$key]) &&
+                $request->container_images[$key] != null
+            )
+            {
+                $containerImage =
+                    $request->container_images[$key];
 
-            $containerImage->move(
-                public_path('uploads/container'),
-                $containerName
+                $containerName =
+                    time().'_container_'.$key.'_'.uniqid().'.'.
+                    $containerImage->extension();
+
+                $containerImage->move(
+                    public_path('uploads/container'),
+                    $containerName
+                );
+
+                $containerPath =
+                    'uploads/container/'.$containerName;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Seal Image Upload
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                isset($request->seal_images[$key]) &&
+                $request->seal_images[$key] != null
+            )
+            {
+                $sealImage =
+                    $request->seal_images[$key];
+
+                $sealName =
+                    time().'_seal_'.$key.'_'.uniqid().'.'.
+                    $sealImage->extension();
+
+                $sealImage->move(
+                    public_path('uploads/seal'),
+                    $sealName
+                );
+
+                $sealPath =
+                    'uploads/seal/'.$sealName;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Save / Update Record
+            |--------------------------------------------------------------------------
+            */
+
+            ContainerUpload::updateOrCreate(
+
+                [
+                    'booking_number'   => $request->booking_number,
+                    'container_serial' => $serial,
+                ],
+
+                [
+                    'container_number' =>
+                        $request->container_number[$key] ?? null,
+
+                    'seal_number' =>
+                        $request->seal_number[$key] ?? null,
+
+                    'container_image' =>
+                        $containerPath,
+
+                    'seal_image' =>
+                        $sealPath,
+
+                    'status' =>
+                        $status,
+                ]
             );
-
-            /*
-            |--------------------------------------------------------------------------
-            | Upload Seal Image
-            |--------------------------------------------------------------------------
-            */
-
-            $sealImage = $request->seal_images[$key];
-
-            $sealName =
-                time().'_seal_'.$key.'.'.$sealImage->extension();
-
-            $sealImage->move(
-                public_path('uploads/seal'),
-                $sealName
-            );
-
-            /*
-            |--------------------------------------------------------------------------
-            | Save Database
-            |--------------------------------------------------------------------------
-            */
-
-            ContainerUpload::create([
-
-                'booking_number'   => $request->booking_number,
-
-                'container_serial' =>
-                    $request->container_serial[$key],
-
-                'container_number' =>
-                    $request->container_number[$key] ?? null,
-
-                'seal_number' =>
-                    $request->seal_number[$key] ?? null,
-
-                'container_image' =>
-                    'uploads/container/'.$containerName,
-
-                'seal_image' =>
-                    'uploads/seal/'.$sealName,
-            ]);
         }
 
         return redirect()
             ->back()
             ->with(
                 'success',
-                'Container Information Saved Successfully'
+                $status == 'draft'
+                    ? 'Draft saved successfully.'
+                    : 'Container information submitted successfully.'
             );
     }
     public function manage()
@@ -158,19 +211,37 @@ class ContainerController extends Controller
             compact('container')
         );
     }
-    public function update(Request $request, $id)
+    public function update(
+        Request $request,
+        $id,
+        GoogleVisionService $googleVision
+    )
     {
         $container = ContainerUpload::findOrFail($id);
 
         $request->validate([
-            'container_number' => 'required',
-            'seal_number'      => 'required',
+            'container_number' => 'nullable|string|max:255',
+            'seal_number'      => 'nullable|string|max:255',
+            'container_image'  => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'seal_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp',
         ]);
 
-        // Replace Container Image
-        if($request->hasFile('container_image'))
+        $status = $request->action === 'submit'
+            ? 'submitted'
+            : 'draft';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Replace Container Image + OCR
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('container_image'))
         {
-            if(file_exists(public_path($container->container_image)))
+            if (
+                !empty($container->container_image) &&
+                file_exists(public_path($container->container_image))
+            )
             {
                 unlink(public_path($container->container_image));
             }
@@ -178,21 +249,52 @@ class ContainerController extends Controller
             $containerImage = $request->file('container_image');
 
             $containerName =
-                time().'_container.'.$containerImage->extension();
+                time().'_container_'.uniqid().'.'.
+                $containerImage->extension();
 
             $containerImage->move(
                 public_path('uploads/container'),
                 $containerName
             );
 
-            $container->container_image =
+            $containerPath =
                 'uploads/container/'.$containerName;
+
+            $container->container_image = $containerPath;
+
+            try {
+
+                $ocrContainerNumber =
+                    $googleVision->extractContainerNumber(
+                        public_path($containerPath)
+                    );
+
+                if(!empty($ocrContainerNumber))
+                {
+                    $container->container_number =
+                        $ocrContainerNumber;
+                }
+
+            } catch (\Exception $e) {
+
+                \Log::error(
+                    'Container OCR Error: '.$e->getMessage()
+                );
+            }
         }
 
-        // Replace Seal Image
-        if($request->hasFile('seal_image'))
+        /*
+        |--------------------------------------------------------------------------
+        | Replace Seal Image + OCR
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('seal_image'))
         {
-            if(file_exists(public_path($container->seal_image)))
+            if (
+                !empty($container->seal_image) &&
+                file_exists(public_path($container->seal_image))
+            )
             {
                 unlink(public_path($container->seal_image));
             }
@@ -200,22 +302,59 @@ class ContainerController extends Controller
             $sealImage = $request->file('seal_image');
 
             $sealName =
-                time().'_seal.'.$sealImage->extension();
+                time().'_seal_'.uniqid().'.'.
+                $sealImage->extension();
 
             $sealImage->move(
                 public_path('uploads/seal'),
                 $sealName
             );
 
-            $container->seal_image =
+            $sealPath =
                 'uploads/seal/'.$sealName;
+
+            $container->seal_image = $sealPath;
+
+            try {
+
+                $ocrSealNumber =
+                    $googleVision->extractSealNumber(
+                        public_path($sealPath)
+                    );
+
+                if(!empty($ocrSealNumber))
+                {
+                    $container->seal_number =
+                        $ocrSealNumber;
+                }
+
+            } catch (\Exception $e) {
+
+                \Log::error(
+                    'Seal OCR Error: '.$e->getMessage()
+                );
+            }
         }
 
-        $container->container_number =
-            $request->container_number;
+        /*
+        |--------------------------------------------------------------------------
+        | Manual Override
+        |--------------------------------------------------------------------------
+        */
 
-        $container->seal_number =
-            $request->seal_number;
+        if($request->filled('container_number'))
+        {
+            $container->container_number =
+                $request->container_number;
+        }
+
+        if($request->filled('seal_number'))
+        {
+            $container->seal_number =
+                $request->seal_number;
+        }
+
+        $container->status = $status;
 
         $container->save();
 
@@ -223,7 +362,9 @@ class ContainerController extends Controller
             ->route('container.manage')
             ->with(
                 'success',
-                'Container Updated Successfully'
+                $status == 'draft'
+                    ? 'Draft updated successfully.'
+                    : 'Container submitted successfully.'
             );
     }
     public function delete($id)

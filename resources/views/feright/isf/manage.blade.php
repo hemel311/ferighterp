@@ -18,7 +18,7 @@
             </div>
 
             <div>
-                <a href="" class="btn btn-primary">
+                <a href="{{route('isf.index')}}" class="btn btn-primary">
                     <i class="fa fa-plus"></i> Add ISF
                 </a>
             </div>

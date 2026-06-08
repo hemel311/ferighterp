@@ -47,6 +47,16 @@ Route::middleware(['admin'])->group(function () {
         [AdminController::class,'index'])
         ->name('admin.dashboard');
 
+    Route::get('/change-password', [
+        AdminController::class,
+        'changePassword'
+    ])->name('admin.password.change');
+
+    Route::post('/change-password', [
+        AdminController::class,
+        'updatePassword'
+    ])->name('admin.password.update');
+
     //feright user
     Route::get('/add-feright',[\App\Http\Controllers\admin\AddFerightController::class,'index'])->name('addferight');
     Route::post('/create-feright',[\App\Http\Controllers\admin\AddFerightController::class,'store'])->name('create.feright');

@@ -59,9 +59,21 @@
                     <!-- Dynamic Container Area -->
                     <div id="containerArea"></div>
 
-                    <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-success">
-                            Save Container Details
+                    <div class="d-flex gap-2">
+                        <button
+                                type="submit"
+                                name="action"
+                                value="draft"
+                                class="btn btn-warning">
+                            Save Draft
+                        </button>
+
+                        <button
+                                type="submit"
+                                name="action"
+                                value="submit"
+                                class="btn btn-success">
+                            Final Submit
                         </button>
                     </div>
 

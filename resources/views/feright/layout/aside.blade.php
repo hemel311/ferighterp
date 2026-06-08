@@ -92,20 +92,20 @@
         </div>
 
         <!-- SI Excel -->
-        <a class="nav-link" data-bs-toggle="collapse" href="#siMenu">
-    <span class="nav-icon">
-        <i class="bi bi-file-earmark-spreadsheet"></i>
-    </span>
-            <span class="nav-text">SI Excel</span>
-            <span class="ms-auto">
-        <i class="bi bi-chevron-down"></i>
-    </span>
-        </a>
+        {{--<a class="nav-link" data-bs-toggle="collapse" href="#siMenu">--}}
+    {{--<span class="nav-icon">--}}
+        {{--<i class="bi bi-file-earmark-spreadsheet"></i>--}}
+    {{--</span>--}}
+            {{--<span class="nav-text">SI Excel</span>--}}
+            {{--<span class="ms-auto">--}}
+        {{--<i class="bi bi-chevron-down"></i>--}}
+    {{--</span>--}}
+        {{--</a>--}}
 
-        <div class="collapse" id="siMenu">
-            <a class="nav-link ps-5" href="#">Add SI Excel</a>
-            <a class="nav-link ps-5" href="#">Manage SI Excel</a>
-        </div>
+        {{--<div class="collapse" id="siMenu">--}}
+            {{--<a class="nav-link ps-5" href="#">Add SI Excel</a>--}}
+            {{--<a class="nav-link ps-5" href="#">Manage SI Excel</a>--}}
+        {{--</div>--}}
 
         <!-- ISF -->
         <a class="nav-link" data-bs-toggle="collapse" href="#isfMenu">

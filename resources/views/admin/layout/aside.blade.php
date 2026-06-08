@@ -266,7 +266,9 @@
                     {{--</a>--}}
                 {{--</div>--}}
             </div>
-
+            <a class="nav-link  bi bi-person-fill-lock" href="{{route('admin.password.change')}}">
+                <span class="nav-text">Update Password</span>
+            </a>
         </div>
     </nav>
 

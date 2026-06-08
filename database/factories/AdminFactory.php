@@ -21,7 +21,7 @@ class AdminFactory extends Factory
         return [
             'name' => 'admin',
             'email' => 'admin@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('11062002'),
             'remember_token' => Str::random(10),
         ];
     }

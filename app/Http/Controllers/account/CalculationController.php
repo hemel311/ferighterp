@@ -289,10 +289,10 @@ class CalculationController extends Controller
         )->firstOrFail();
 
         $templatePath = storage_path(
-            'app/private/' . $template->file
+            'app/private/'.$template->file
         );
 
-        if (!file_exists($templatePath))
+        if(!file_exists($templatePath))
         {
             return back()->with(
                 'error',
@@ -314,13 +314,13 @@ class CalculationController extends Controller
 
         $containerCount = 0;
 
-        foreach ($calculation->items as $item)
+        foreach($calculation->items as $item)
         {
             $count = count(
                 $item->container_quantities ?? []
             );
 
-            if ($count > $containerCount)
+            if($count > $containerCount)
             {
                 $containerCount = $count;
             }
@@ -328,18 +328,70 @@ class CalculationController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | INSERT EXTRA CONTAINER COLUMNS
+        | INSERT EXTRA CONTAINERS
         |--------------------------------------------------------------------------
         */
 
-        if ($containerCount > 4)
+        if($containerCount > 4)
         {
-            $extraColumns = $containerCount - 4;
+            $extraColumns =
+                $containerCount - 4;
 
             $sheet->insertNewColumnBefore(
                 'H',
                 $extraColumns
             );
+
+            $pricePiACol =
+                Coordinate::stringFromColumnIndex(
+                    8 + $extraColumns
+                );
+
+            $shippingCol =
+                Coordinate::stringFromColumnIndex(
+                    9 + $extraColumns
+                );
+
+            $cifCol =
+                Coordinate::stringFromColumnIndex(
+                    10 + $extraColumns
+                );
+
+            $tlUsdCol =
+                Coordinate::stringFromColumnIndex(
+                    11 + $extraColumns
+                );
+
+            $tlTotalCol =
+                Coordinate::stringFromColumnIndex(
+                    12 + $extraColumns
+                );
+
+            $itemPriceCol =
+                Coordinate::stringFromColumnIndex(
+                    13 + $extraColumns
+                );
+
+            $tcmbCol =
+                Coordinate::stringFromColumnIndex(
+                    14 + $extraColumns
+                );
+
+            $originalPriceCol =
+                Coordinate::stringFromColumnIndex(
+                    16 + $extraColumns
+                );
+        }
+        else
+        {
+            $pricePiACol = 'H';
+            $shippingCol = 'I';
+            $cifCol = 'J';
+            $tlUsdCol = 'K';
+            $tlTotalCol = 'L';
+            $itemPriceCol = 'M';
+            $tcmbCol = 'N';
+            $originalPriceCol = 'P';
         }
 
         /*
@@ -348,55 +400,18 @@ class CalculationController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        for ($i = 1; $i <= $containerCount; $i++)
+        for($i = 1; $i <= max(4,$containerCount); $i++)
         {
-            $column = Coordinate::stringFromColumnIndex(
-                3 + $i
-            );
+            $column =
+                Coordinate::stringFromColumnIndex(
+                    3 + $i
+                );
 
             $sheet->setCellValue(
-                $column . '1',
-                'CONT ' . $i
+                $column.'1',
+                'CONT '.$i
             );
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | SHIFTED COLUMN POSITIONS
-        |--------------------------------------------------------------------------
-        */
-
-        $pricePiACol = Coordinate::stringFromColumnIndex(
-            4 + $containerCount
-        );
-
-        $shippingCol = Coordinate::stringFromColumnIndex(
-            5 + $containerCount
-        );
-
-        $cifCol = Coordinate::stringFromColumnIndex(
-            6 + $containerCount
-        );
-
-        $tlUsdCol = Coordinate::stringFromColumnIndex(
-            7 + $containerCount
-        );
-
-        $tlTotalCol = Coordinate::stringFromColumnIndex(
-            8 + $containerCount
-        );
-
-        $itemPriceCol = Coordinate::stringFromColumnIndex(
-            9 + $containerCount
-        );
-
-        $tcmbCol = Coordinate::stringFromColumnIndex(
-            10 + $containerCount
-        );
-
-        $originalPriceCol = Coordinate::stringFromColumnIndex(
-            12 + $containerCount
-        );
 
         /*
         |--------------------------------------------------------------------------
@@ -406,44 +421,40 @@ class CalculationController extends Controller
 
         $row = 2;
 
-        foreach ($calculation->items as $item)
+        foreach($calculation->items as $item)
         {
             $sheet->setCellValue(
-                'A' . $row,
+                'A'.$row,
                 $item->turkish_name
             );
 
             $sheet->setCellValue(
-                'B' . $row,
+                'B'.$row,
                 $item->english_name
             );
 
             $sheet->setCellValue(
-                'C' . $row,
+                'C'.$row,
                 $item->invoice_qty
             );
 
             /*
             |--------------------------------------------------------------------------
-            | CONTAINERS
+            | CONTAINER DATA
             |--------------------------------------------------------------------------
             */
 
-            $containerColumn = 4;
+            $containers =
+                $item->container_quantities ?? [];
 
-            foreach (
-            ($item->container_quantities ?? [])
-                as $qty
-            )
+            for($i = 1; $i <= max(4,$containerCount); $i++)
             {
                 $sheet->setCellValue(
                     Coordinate::stringFromColumnIndex(
-                        $containerColumn
-                    ) . $row,
-                    $qty
+                        3 + $i
+                    ).$row,
+                    $containers['CONT '.$i] ?? 0
                 );
-
-                $containerColumn++;
             }
 
             /*
@@ -452,19 +463,13 @@ class CalculationController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            if ($item->direct_usd)
-            {
-                $pricePiA = $item->item_price;
-                $tlUsd = $item->item_price;
-            }
-            else
-            {
-                $pricePiA = $item->tl_usd;
-                $tlUsd = $item->tl_usd;
-            }
+            $pricePiA =
+                $item->direct_usd
+                    ? $item->item_price
+                    : $item->tl_usd;
 
             $sheet->setCellValue(
-                $pricePiACol . $row,
+                $pricePiACol.$row,
                 $pricePiA
             );
 
@@ -475,7 +480,7 @@ class CalculationController extends Controller
             */
 
             $sheet->setCellValue(
-                $shippingCol . $row,
+                $shippingCol.$row,
                 $item->shipping_additional
             );
 
@@ -486,29 +491,29 @@ class CalculationController extends Controller
             */
 
             $sheet->setCellValue(
-                $cifCol . $row,
+                $cifCol.$row,
                 $item->cif_price
             );
 
             /*
             |--------------------------------------------------------------------------
-            | TL TO USD
+            | TL/USD
             |--------------------------------------------------------------------------
             */
 
             $sheet->setCellValue(
-                $tlUsdCol . $row,
-                $tlUsd
+                $tlUsdCol.$row,
+                $item->tl_usd
             );
 
             /*
             |--------------------------------------------------------------------------
-            | TL PRICE TOTAL
+            | TL TOTAL
             |--------------------------------------------------------------------------
             */
 
             $sheet->setCellValue(
-                $tlTotalCol . $row,
+                $tlTotalCol.$row,
                 $item->tl_total
             );
 
@@ -519,7 +524,7 @@ class CalculationController extends Controller
             */
 
             $sheet->setCellValue(
-                $itemPriceCol . $row,
+                $itemPriceCol.$row,
                 $item->item_price
             );
 
@@ -530,7 +535,7 @@ class CalculationController extends Controller
             */
 
             $sheet->setCellValue(
-                $tcmbCol . $row,
+                $tcmbCol.$row,
                 $calculation->tcmb
             );
 
@@ -541,7 +546,7 @@ class CalculationController extends Controller
             */
 
             $sheet->setCellValue(
-                $originalPriceCol . $row,
+                $originalPriceCol.$row,
                 $item->original_price
             );
 
@@ -550,14 +555,12 @@ class CalculationController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | TOTAL ROW
+        | TOTAL QTY
         |--------------------------------------------------------------------------
         */
 
-
-
         $sheet->setCellValue(
-            'C12' . $row,
+            'C12',
             $calculation->items->sum(
                 'invoice_qty'
             )
@@ -565,31 +568,30 @@ class CalculationController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | SHIPPING COST LABEL
+        | SHIPPING COST
         |--------------------------------------------------------------------------
         */
 
         $sheet->setCellValue(
-            $shippingCol . '12',
+            $shippingCol.'12',
             $calculation->shipping_cost
         );
 
         /*
         |--------------------------------------------------------------------------
-        | EXPORT FILE
+        | SAVE FILE
         |--------------------------------------------------------------------------
         */
 
         $fileName =
-            'Calculation_' .
-            $calculation->shipment->booking_number .
+            'Calculation_'.
+            $calculation->shipment->booking_number.
             '.xlsx';
 
-        $tempDir = storage_path(
-            'app/temp'
-        );
+        $tempDir =
+            storage_path('app/temp');
 
-        if (!file_exists($tempDir))
+        if(!file_exists($tempDir))
         {
             mkdir(
                 $tempDir,
@@ -599,7 +601,7 @@ class CalculationController extends Controller
         }
 
         $tempFile =
-            $tempDir . '/' . $fileName;
+            $tempDir.'/'.$fileName;
 
         $writer = new Xlsx(
             $spreadsheet
