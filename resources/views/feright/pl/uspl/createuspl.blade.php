@@ -1,7 +1,7 @@
 @extends('feright.master')
 
 @section('title')
-    Create TR Packing List
+    Create US Packing List
 @endsection
 
 @section('body')
@@ -187,7 +187,7 @@
                                     <input type="text"
                                            name="items[{{$index}}][qty_per_pallet]"
                                            value="{{ $product->quantity_per_unit }}"
-                                           class="form-control">
+                                           class="form-control calc">
                                 </td>
 
                                 <td>
@@ -235,8 +235,8 @@
                                 <td>
                                     <input type="number"
                                            name="items[{{$index}}][item_quantity]"
-                                           value="{{ $product->item_quantity }}"
-                                           class="form-control quantity calc">
+                                           class="form-control quantity"
+                                           readonly>
                                 </td>
 
                                 <td>
@@ -480,53 +480,103 @@
 
             $('#productBody tr').each(function(){
 
-                let pallets = parseFloat($(this).find('.pallets').val()) || 0;
+                let row = $(this);
 
-                let packages = parseFloat($(this).find('.packages').val()) || 0;
+                let pallets =
+                    parseFloat(row.find('.pallets').val()) || 0;
 
-                let netWeight = parseFloat($(this).find('.net-weight').val()) || 0;
+                let packages =
+                    parseFloat(row.find('.packages').val()) || 0;
 
-                let grossWeight = parseFloat($(this).find('.gross-weight').val()) || 0;
+                let netWeight =
+                    parseFloat(row.find('.net-weight').val()) || 0;
 
-                let quantity = parseFloat($(this).find('.quantity').val()) || 0;
+                let grossWeight =
+                    parseFloat(row.find('.gross-weight').val()) || 0;
 
-                totalNetWeight += netWeight;
+                let quantityPerUnit =
+                    parseFloat(
+                        row.find('input[name*="[qty_per_pallet]"]').val()
+                    ) || 0;
 
-                totalGrossWeight += grossWeight;
+                /*
+                ------------------------------------
+                AUTO TOTAL QUANTITY
+                ------------------------------------
+                */
 
-                totalPallets += pallets;
+                let quantity = 0;
 
-                totalPackages += packages;
+                if (pallets > 0)
+                {
+                    quantity = pallets * quantityPerUnit;
+                }
+                else if (packages > 0)
+                {
+                    quantity = packages * quantityPerUnit;
+                }
 
-                totalPieces += quantity;
+                row.find('.quantity').val(quantity);
+
+                /*
+                ------------------------------------
+                PALLET / PACK KG
+                ------------------------------------
+                */
 
                 let palletPackKg = 0;
 
-                if(pallets > 0)
+                if (pallets > 0)
                 {
                     palletPackKg = netWeight / pallets;
                 }
-                else if(packages > 0)
+                else if (packages > 0)
                 {
                     palletPackKg = netWeight / packages;
                 }
 
-                $(this)
-                    .find('.pallet-pack-kg')
-                    .val(palletPackKg > 0 ? palletPackKg.toFixed(2) : '');
+                row.find('.pallet-pack-kg').val(
+                    palletPackKg > 0
+                        ? palletPackKg.toFixed(2)
+                        : ''
+                );
+
+                /*
+                ------------------------------------
+                TOTALS
+                ------------------------------------
+                */
+
+                totalNetWeight += netWeight;
+                totalGrossWeight += grossWeight;
+                totalPallets += pallets;
+                totalPackages += packages;
+                totalPieces += quantity;
 
             });
 
-            $('#total_net_weight').val(totalNetWeight.toFixed(2));
+            $('#total_net_weight').val(
+                totalNetWeight.toFixed(2)
+            );
 
-            $('#total_gross_weight').val(totalGrossWeight.toFixed(2));
+            $('#total_gross_weight').val(
+                totalGrossWeight.toFixed(2)
+            );
 
-            $('#total_pallets').val(totalPallets);
+            $('#total_pallets').val(
+                totalPallets
+            );
 
-            $('#total_packages').val(totalPackages);
+            $('#total_packages').val(
+                totalPackages
+            );
 
-            $('#total_pieces').val(totalPieces);
+            $('#total_pieces').val(
+                totalPieces
+            );
         }
+
+
         $(document).on('keyup change','.calc',function(){
 
             calculateTotals();

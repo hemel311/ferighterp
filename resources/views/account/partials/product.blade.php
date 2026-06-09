@@ -109,9 +109,9 @@
             }
 
             row.find('.item-price')
-                .val(itemPrice.toFixed(2));
+                .val(itemPrice);
             row.find('.item-price-hidden')
-                .val(itemPrice.toFixed(2));
+                .val(itemPrice);
 
             let tcmb =
                 parseFloat($('#tcmb').val()) || 0;
@@ -134,10 +134,10 @@
             }
 
             row.find('.tl-usd')
-                .val(tlUsd.toFixed(4));
+                .val(tlUsd);
 
             row.find('.tl-usd-hidden')
-                .val(tlUsd.toFixed(4));
+                .val(tlUsd);
 
             let shippingCost =
                 parseFloat(
@@ -158,12 +158,12 @@
 
             row.find('.shipping-additional')
                 .val(
-                    shippingAdditional.toFixed(4)
+                    shippingAdditional
                 );
 
             row.find('.shipping-additional-hidden')
                 .val(
-                    shippingAdditional.toFixed(4)
+                    shippingAdditional
                 );
 
             let cifPrice =
@@ -172,12 +172,12 @@
 
             row.find('.cif-price')
                 .val(
-                    cifPrice.toFixed(4)
+                    cifPrice
                 );
 
             row.find('.cif-price-hidden')
                 .val(
-                    cifPrice.toFixed(4)
+                    cifPrice
                 );
 
             let tlTotal =
@@ -186,12 +186,12 @@
 
             row.find('.tl-total')
                 .val(
-                    tlTotal.toFixed(2)
+                    tlTotal
                 );
 
             row.find('.tl-total-hidden')
                 .val(
-                    tlTotal.toFixed(2)
+                    tlTotal
                 );
         }
 
@@ -251,7 +251,7 @@
 
                 <td>
                     <input type="number"
-                           step="0.01"
+                           step="any"
                            name="original_price[]"
                            class="form-control original-price">
                 </td>

@@ -179,7 +179,7 @@
                                     <input type="text"
                                            name="items[{{ $key }}][qty_per_pallet]"
                                            value="{{ $product->qty_per_pallet }}"
-                                           class="form-control">
+                                           class="form-control calc">
                                 </td>
 
                                 <td>
@@ -201,7 +201,7 @@
                                 <td>
                                     <input type="text"
                                            value="{{ $product->pallet_pack_kg }}"
-                                           class="form-control pallet-pack-kg"
+                                           class="form-control pallet-pack-kg calc"
                                            readonly>
                                 </td>
 
@@ -209,7 +209,7 @@
                                     <input type="number"
                                            name="items[{{ $key }}][item_quantity]"
                                            value="{{ $product->total_item_qty }}"
-                                           class="form-control quantity calc">
+                                           class="form-control quantity calc" readonly>
                                 </td>
 
                                 <td>
@@ -349,7 +349,7 @@
 @push('js')
     <script>
 
-        let rowIndex = {{ $packingList->products->count() }};
+        let rowIndex = {{ count($products) }};
 
         $('#addRow').click(function(){
 
@@ -365,7 +365,7 @@
     <input type="text"
            name="items[${rowIndex}][warehouse_code]"
            class="form-control">
-</td>
+    </td>
         <td>
             <input type="number"
        name="items[${rowIndex}][total_pallets]"
@@ -378,13 +378,11 @@
                    name="items[${rowIndex}][total_packages]"
                    class="form-control packages calc"
                    min="0">
-
         </td>
         <td>
-           <input type="text"
+            <input type="text"
        name="items[${rowIndex}][qty_per_pallet]"
        class="form-control">
-
         </td>
 
         <td>
@@ -454,53 +452,103 @@
 
             $('#productBody tr').each(function(){
 
-                let pallets = parseFloat($(this).find('.pallets').val()) || 0;
+                let row = $(this);
 
-                let packages = parseFloat($(this).find('.packages').val()) || 0;
+                let pallets =
+                    parseFloat(row.find('.pallets').val()) || 0;
 
-                let netWeight = parseFloat($(this).find('.net-weight').val()) || 0;
+                let packages =
+                    parseFloat(row.find('.packages').val()) || 0;
 
-                let grossWeight = parseFloat($(this).find('.gross-weight').val()) || 0;
+                let netWeight =
+                    parseFloat(row.find('.net-weight').val()) || 0;
 
-                let quantity = parseFloat($(this).find('.quantity').val()) || 0;
+                let grossWeight =
+                    parseFloat(row.find('.gross-weight').val()) || 0;
 
-                totalNetWeight += netWeight;
+                let quantityPerUnit =
+                    parseFloat(
+                        row.find('input[name*="[qty_per_pallet]"]').val()
+                    ) || 0;
 
-                totalGrossWeight += grossWeight;
+                /*
+                ------------------------------------
+                AUTO TOTAL QUANTITY
+                ------------------------------------
+                */
 
-                totalPallets += pallets;
+                let quantity = 0;
 
-                totalPackages += packages;
+                if (pallets > 0)
+                {
+                    quantity = pallets * quantityPerUnit;
+                }
+                else if (packages > 0)
+                {
+                    quantity = packages * quantityPerUnit;
+                }
 
-                totalPieces += quantity;
+                row.find('.quantity').val(quantity);
+
+                /*
+                ------------------------------------
+                PALLET / PACK KG
+                ------------------------------------
+                */
 
                 let palletPackKg = 0;
 
-                if(pallets > 0)
+                if (pallets > 0)
                 {
                     palletPackKg = netWeight / pallets;
                 }
-                else if(packages > 0)
+                else if (packages > 0)
                 {
                     palletPackKg = netWeight / packages;
                 }
 
-                $(this)
-                    .find('.pallet-pack-kg')
-                    .val(palletPackKg > 0 ? palletPackKg.toFixed(2) : '');
+                row.find('.pallet-pack-kg').val(
+                    palletPackKg > 0
+                        ? palletPackKg.toFixed(2)
+                        : ''
+                );
+
+                /*
+                ------------------------------------
+                TOTALS
+                ------------------------------------
+                */
+
+                totalNetWeight += netWeight;
+                totalGrossWeight += grossWeight;
+                totalPallets += pallets;
+                totalPackages += packages;
+                totalPieces += quantity;
 
             });
 
-            $('#total_net_weight').val(totalNetWeight.toFixed(2));
+            $('#total_net_weight').val(
+                totalNetWeight.toFixed(2)
+            );
 
-            $('#total_gross_weight').val(totalGrossWeight.toFixed(2));
+            $('#total_gross_weight').val(
+                totalGrossWeight.toFixed(2)
+            );
 
-            $('#total_pallets').val(totalPallets);
+            $('#total_pallets').val(
+                totalPallets
+            );
 
-            $('#total_packages').val(totalPackages);
+            $('#total_packages').val(
+                totalPackages
+            );
 
-            $('#total_pieces').val(totalPieces);
+            $('#total_pieces').val(
+                totalPieces
+            );
         }
+
+
         $(document).on('keyup change','.calc',function(){
 
             calculateTotals();
@@ -590,6 +638,13 @@
         $('textarea').on('focus', function() {
             this.setSelectionRange(0, 0);
         });
+
+        $(document).on('keyup change','.calc',function(){
+
+            calculateTotals();
+
+        });
+
         $(document).ready(function () {
 
             calculateTotals();

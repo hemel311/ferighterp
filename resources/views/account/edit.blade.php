@@ -42,7 +42,7 @@
                             </label>
 
                             <input type="number"
-                                   step="0.0001"
+                                   step="any"
                                    class="form-control"
                                    name="tcmb"
                                    id="tcmb" value="{{ $calculation->tcmb }}">
@@ -54,7 +54,7 @@
                             </label>
 
                             <input type="number"
-                                   step="0.01"
+                                   step="any"
                                    class="form-control"
                                    name="shipping_cost"
                                    id="shipping_cost"
@@ -81,7 +81,7 @@
                             </label>
 
                             <input type="number"
-                                   step="0.01"
+                                   step="any"
                                    class="form-control"
                                    name="percentage"
                                    id="percentage" value="{{ $calculation->percentage }}">
