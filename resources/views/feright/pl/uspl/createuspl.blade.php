@@ -141,6 +141,9 @@
                             <th style="width:120px">
                                 Total Quantity
                             </th>
+                            <th style="width:120px">
+                                Manual Quantity
+                            </th>
 
                             <th style="width:80px">
                                 Action
@@ -235,8 +238,15 @@
                                 <td>
                                     <input type="number"
                                            name="items[{{$index}}][item_quantity]"
+                                           value="{{ $product->item_quantity }}"
                                            class="form-control quantity"
                                            readonly>
+                                </td>
+                                <td class="text-center">
+
+                                    <input type="checkbox"
+                                           class="manual-quantity">
+
                                 </td>
 
                                 <td>
@@ -434,10 +444,19 @@
         </td>
 
         <td>
-            <input type="number"
-                   name="items[${rowIndex}][item_quantity]"
-                   class="form-control quantity calc">
-        </td>
+
+    <input type="number"
+           name="items[${rowIndex}][item_quantity]"
+           class="form-control quantity"
+           readonly>
+
+</td>
+        <td class="text-center">
+
+    <input type="checkbox"
+           class="manual-quantity">
+
+</td>
 
         <td>
             <button type="button"
@@ -505,18 +524,34 @@
                 ------------------------------------
                 */
 
-                let quantity = 0;
+                let quantityField =
+                    row.find('.quantity');
 
-                if (pallets > 0)
-                {
-                    quantity = pallets * quantityPerUnit;
-                }
-                else if (packages > 0)
-                {
-                    quantity = packages * quantityPerUnit;
-                }
+                let manualQuantity =
+                    row.find('.manual-quantity').is(':checked');
 
-                row.find('.quantity').val(quantity);
+                let quantity =
+                    parseFloat(quantityField.val()) || 0;
+
+                if(!manualQuantity)
+                {
+                    if (pallets > 0)
+                    {
+                        quantity = pallets * quantityPerUnit;
+                    }
+                    else if (packages > 0)
+                    {
+                        quantity = packages * quantityPerUnit;
+                    }
+
+                    quantityField.val(quantity);
+
+                    quantityField.prop('readonly', true);
+                }
+                else
+                {
+                    quantityField.prop('readonly', false);
+                }
 
                 /*
                 ------------------------------------
@@ -672,8 +707,35 @@
             calculateTotals();
 
         });
+        $(document).on(
+            'change',
+            '.manual-quantity',
+            function(){
+
+                calculateTotals();
+
+            }
+        );
+
+        $(document).on(
+            'keyup change',
+            '.quantity',
+            function(){
+
+                let row = $(this).closest('tr');
+
+                if(
+                    row.find('.manual-quantity').is(':checked')
+                )
+                {
+                    calculateTotals();
+                }
+
+            }
+        );
 
         $(document).ready(function () {
+
 
             calculateTotals();
 

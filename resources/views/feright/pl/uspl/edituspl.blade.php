@@ -132,6 +132,9 @@
                             <th style="width:120px">
                                 Total Quantity
                             </th>
+                            <th style="width:100px">
+                                Manual Qty
+                            </th>
 
                             <th style="width:80px">
                                 Action
@@ -209,8 +212,13 @@
                                     <input type="number"
                                            name="items[{{ $key }}][item_quantity]"
                                            value="{{ $product->total_item_qty }}"
-                                           class="form-control quantity calc" readonly>
+                                           class="form-control quantity"
+                                           readonly>
                                 </td>
+                                <td class="text-center">
+
+                                    <input type="checkbox"
+                                           class="manual-quantity">
 
                                 <td>
                                     <button type="button"
@@ -349,7 +357,7 @@
 @push('js')
     <script>
 
-        let rowIndex = {{ count($products) }};
+        let rowIndex = {{ count($packingList->products) }};
 
         $('#addRow').click(function(){
 
@@ -405,11 +413,18 @@
                    readonly>
         </td>
 
-        <td>
-            <input type="number"
-                   name="items[${rowIndex}][item_quantity]"
-                   class="form-control quantity calc">
-        </td>
+       <td>
+    <input type="number"
+           name="items[${rowIndex}][item_quantity]"
+           class="form-control quantity"
+           readonly>
+</td>
+        <td class="text-center">
+
+    <input type="checkbox"
+           class="manual-quantity">
+
+</td>
 
         <td>
             <button type="button"
@@ -477,42 +492,34 @@
                 ------------------------------------
                 */
 
-                let quantity = 0;
+                let quantityField =
+                    row.find('.quantity');
 
-                if (pallets > 0)
+                let manualQuantity =
+                    row.find('.manual-quantity').is(':checked');
+
+                let quantity =
+                    parseFloat(quantityField.val()) || 0;
+
+                if(!manualQuantity)
                 {
-                    quantity = pallets * quantityPerUnit;
+                    quantityField.prop('readonly', true);
+
+                    if (pallets > 0)
+                    {
+                        quantity = pallets * quantityPerUnit;
+                    }
+                    else if (packages > 0)
+                    {
+                        quantity = packages * quantityPerUnit;
+                    }
+
+                    quantityField.val(quantity);
                 }
-                else if (packages > 0)
+                else
                 {
-                    quantity = packages * quantityPerUnit;
+                    quantityField.prop('readonly', false);
                 }
-
-                row.find('.quantity').val(quantity);
-
-                /*
-                ------------------------------------
-                PALLET / PACK KG
-                ------------------------------------
-                */
-
-                let palletPackKg = 0;
-
-                if (pallets > 0)
-                {
-                    palletPackKg = netWeight / pallets;
-                }
-                else if (packages > 0)
-                {
-                    palletPackKg = netWeight / packages;
-                }
-
-                row.find('.pallet-pack-kg').val(
-                    palletPackKg > 0
-                        ? palletPackKg.toFixed(2)
-                        : ''
-                );
-
                 /*
                 ------------------------------------
                 TOTALS
@@ -644,6 +651,31 @@
             calculateTotals();
 
         });
+
+        $(document).on(
+            'change',
+            '.manual-quantity',
+            function(){
+
+                calculateTotals();
+
+            }
+        );
+
+        $(document).on(
+            'keyup change',
+            '.quantity',
+            function(){
+
+                let row = $(this).closest('tr');
+
+                if(row.find('.manual-quantity').is(':checked'))
+                {
+                    calculateTotals();
+                }
+
+            }
+        );
 
         $(document).ready(function () {
 
