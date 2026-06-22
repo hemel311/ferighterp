@@ -111,6 +111,7 @@
                         <th>Gross Weight</th>
                         <th>Pallet/Pack KG</th>
                         <th>Total Quantity</th>
+                        <th>Total M²</th>
 
                     </tr>
 
@@ -138,6 +139,7 @@
                             <td>{{ $item->pallet_pack_kg }}</td>
 
                             <td>{{ $item->total_item_qty }}</td>
+                            <td>{{ $item->total_m2 }}</td>
 
                         </tr>
 
@@ -206,6 +208,14 @@
                     <input type="text"
                            class="form-control"
                            value="{{ $packingList->products->sum('total_item_qty') }}"
+                           readonly>
+                </div>
+                <div class="col-md-2">
+                    <label>Total M²</label>
+
+                    <input type="text"
+                           class="form-control"
+                           value="{{ $packingList->products->sum('total_m2') }}"
                            readonly>
                 </div>
 

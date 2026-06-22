@@ -142,8 +142,14 @@
                                 Total Quantity
                             </th>
                             <th style="width:120px">
+                                Total M²
+                            </th>
+                            <th style="width:120px">
                                 Manual Quantity
                             </th>
+
+
+
 
                             <th style="width:80px">
                                 Action
@@ -230,7 +236,7 @@
 
                                     <input type="text"
                                            class="form-control pallet-pack-kg"
-                                           value="{{ round($palletPackKg,2) }}"
+                                           value="{{ $palletPackKg }}"
                                            readonly>
 
                                 </td>
@@ -241,6 +247,20 @@
                                            value="{{ $product->item_quantity }}"
                                            class="form-control quantity"
                                            readonly>
+                                </td>
+                                <td>
+
+                                    <input type="number"
+                                           step="0.01"
+                                           name="items[{{$index}}][total_m2]"
+                                           value="{{ $product->total_m2 }}"
+                                           class="form-control"
+                                           >
+
+                                    <input type="hidden"
+                                           name="items[{{$index}}][is_m2]"
+                                           value="{{ $product->is_m2 }}">
+
                                 </td>
                                 <td class="text-center">
 
@@ -348,6 +368,18 @@
                                readonly>
 
                     </div>
+                    <div class="col-md mb-3">
+
+                        <label class="form-label">
+                            Total M²
+                        </label>
+
+                        <input type="text"
+                               id="total_m2_summary"
+                               class="form-control"
+                               readonly>
+
+                    </div>
 
                 </div>
 
@@ -451,6 +483,14 @@
            readonly>
 
 </td>
+<td>
+
+    <input type="number"
+           step="0.01"
+           name="items[${rowIndex}][total_m2]"
+           class="form-control">
+
+</td>
         <td class="text-center">
 
     <input type="checkbox"
@@ -496,6 +536,7 @@
             let totalPallets = 0;
             let totalPackages = 0;
             let totalPieces = 0;
+            let totalM2 = 0;
 
             $('#productBody tr').each(function(){
 
@@ -575,6 +616,9 @@
                         ? palletPackKg.toFixed(2)
                         : ''
                 );
+                totalM2 += parseFloat(
+                    row.find('input[name*="[total_m2]"]').val()
+                ) || 0;
 
                 /*
                 ------------------------------------
@@ -608,6 +652,9 @@
 
             $('#total_pieces').val(
                 totalPieces
+            );
+            $('#total_m2_summary').val(
+                totalM2.toFixed(2)
             );
         }
 
@@ -740,6 +787,13 @@
             calculateTotals();
 
         });
+        $(document).on(
+            'keyup change',
+            'input[name*="[total_m2]"]',
+            function(){
+                calculateTotals();
+            }
+        );
 
     </script>
 @endpush

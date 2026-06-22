@@ -112,6 +112,11 @@ class UspackingListController extends Controller
                     'gross_weight'       => $item['gross_weight'] ?? 0,
 
                     'total_item_qty'     => $item['item_quantity'] ?? 0,
+                    'is_m2' =>
+                        $item['is_m2'] ?? 0,
+
+                    'total_m2' =>
+                        $item['total_m2'] ?? null,
 
                     'pallet_pack_kg'     => (
                         ($item['total_pallets'] ?? 0) > 0
@@ -195,6 +200,11 @@ class UspackingListController extends Controller
                     'gross_weight'       => $item['gross_weight'] ?? 0,
 
                     'total_item_qty'     => $item['item_quantity'] ?? 0,
+                    'is_m2' =>
+                        $item['is_m2'] ?? 0,
+
+                    'total_m2' =>
+                        $item['total_m2'] ?? null,
 
                     'pallet_pack_kg' =>
                         ($item['total_pallets'] ?? 0) > 0
@@ -281,11 +291,38 @@ class UspackingListController extends Controller
         ==========================
         */
 
-
         $sheet->setCellValue(
             'C6',
-            "CONTAINER NUMBER"." ".$packingList->container->container_number
+            "CONTAINER NUMBER ".$packingList->container->container_number
         );
+
+        /*
+        ==========================
+        M2 CHECK
+        ==========================
+        */
+
+        $totalM2 = $packingList->products->sum('total_m2');
+
+        $hasM2 = $totalM2 > 0;
+
+        $totalM2 = $packingList->products->sum('total_m2');
+
+        /*
+        ==========================
+        ADD M2 COLUMN
+        ==========================
+        */
+
+        if($hasM2)
+        {
+            $sheet->insertNewColumnBefore('H',1);
+
+            $sheet->setCellValue(
+                'H7',
+                'TOTAL M²'
+            );
+        }
 
         /*
         ==========================
@@ -306,6 +343,7 @@ class UspackingListController extends Controller
                 'D'.$row,
                 $item->packages
             );
+
             $sheet->setCellValue(
                 'E'.$row,
                 $item->qty_per_pallet
@@ -336,25 +374,55 @@ class UspackingListController extends Controller
                     $item->packages;
             }
 
-            $sheet->setCellValue(
-                'H'.$row,
-                round($palletPackKg,2)
-            );
+            if($hasM2)
+            {
+                $sheet->setCellValue(
+                    'H'.$row,
+                    $item->total_m2
+                );
 
+                $sheet->setCellValue(
+                    'I'.$row,
+                    round($palletPackKg,2)
+                );
 
-            $sheet->setCellValue(
-                'I'.$row,
-                $item->total_kg
-            );
+                $sheet->setCellValue(
+                    'J'.$row,
+                    $item->total_kg
+                );
 
-            $sheet->setCellValue(
-                'J'.$row,
-                $item->gross_weight
-            );
-            $sheet->setCellValue(
-                'K'.$row,
-                $item->warehouse_code
-            );
+                $sheet->setCellValue(
+                    'K'.$row,
+                    $item->gross_weight
+                );
+
+                $sheet->setCellValue(
+                    'L'.$row,
+                    $item->warehouse_code
+                );
+            }
+            else
+            {
+                $sheet->setCellValue(
+                    'H'.$row,
+                    round($palletPackKg,2)
+                );
+
+                $sheet->setCellValue(
+                    'I'.$row,
+                    $item->total_kg
+                );
+
+                $sheet->setCellValue(
+                    'J'.$row,
+                    $item->gross_weight
+                );
+
+                $sheet->setCellValue(
+                    'K'.$row,
+                    $item->warehouse_code
+                );
+            }
 
             $row++;
         }
@@ -366,39 +434,68 @@ class UspackingListController extends Controller
         */
 
         $totalNetWeight = $packingList->products->sum('total_kg');
-
         $totalGrossWeight = $packingList->products->sum('gross_weight');
-
         $totalPallets = $packingList->products->sum('total_pallets');
-
         $totalPackages = $packingList->products->sum('packages');
-
         $totalPieces = $packingList->products->sum('total_item_qty');
 
+        $totalColumn = $hasM2 ? 'J' : 'I';
+
         $sheet->setCellValue(
-            'I18',
+            $totalColumn.'18',
             $totalNetWeight
         );
 
         $sheet->setCellValue(
-            'I19',
+            $totalColumn.'19',
             $totalGrossWeight
         );
 
         $sheet->setCellValue(
-            'I20',
+            $totalColumn.'20',
             $totalPallets
         );
 
-        $sheet->setCellValue(
-            'I22',
-            $totalPackages
-        );
+        if($hasM2)
+        {
+            $sheet->insertNewRowBefore(22,1);
 
-        $sheet->setCellValue(
-            'I23',
-            $totalPieces
-        );
+            $sheet->setCellValue(
+                'I22',
+                'Total M²'
+            );
+
+            $sheet->setCellValue(
+                'J22',
+                $totalM2
+            );
+            $sheet->setCellValue(
+                'K22',
+                "m2"
+            );
+
+            $sheet->setCellValue(
+                $totalColumn.'23',
+                $totalPackages
+            );
+
+            $sheet->setCellValue(
+                $totalColumn.'24',
+                $totalPieces
+            );
+        }
+        else
+        {
+            $sheet->setCellValue(
+                $totalColumn.'22',
+                $totalPackages
+            );
+
+            $sheet->setCellValue(
+                $totalColumn.'23',
+                $totalPieces
+            );
+        }
 
         $fileName =
             'US_Packing_List_'.
@@ -446,6 +543,9 @@ class UspackingListController extends Controller
             'container',
             'products'
         ])->findOrFail($id);
+        $totalM2 = $packingList->products->sum('total_m2');
+
+        $hasM2 = $totalM2 > 0;
 
         $template = Templates::where(
             'type',
@@ -488,7 +588,11 @@ class UspackingListController extends Controller
 
         $sheet->getPageSetup()->setHorizontalCentered(true);
         $sheet->getPageSetup()->setVerticalCentered(true);
-        $sheet->getPageSetup()->setPrintArea('B2:L24');
+        $sheet->getPageSetup()->setPrintArea(
+            $hasM2
+                ? 'B2:M25'
+                : 'B2:L24'
+        );
 
         $sheet->getPageSetup()->setOrientation(
             \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE
@@ -514,6 +618,15 @@ class UspackingListController extends Controller
         PRODUCT DATA
         ==========================
         */
+        if($hasM2)
+        {
+            $sheet->insertNewColumnBefore('H',1);
+
+            $sheet->setCellValue(
+                'H7',
+                'TOTAL M²'
+            );
+        }
 
         $row = 8;
 
@@ -558,25 +671,55 @@ class UspackingListController extends Controller
                     $item->packages;
             }
 
-            $sheet->setCellValue(
-                'H'.$row,
-                round($palletPackKg,2)
-            );
+            if($hasM2)
+            {
+                $sheet->setCellValue(
+                    'H'.$row,
+                    $item->total_m2
+                );
 
+                $sheet->setCellValue(
+                    'I'.$row,
+                    round($palletPackKg,2)
+                );
 
-            $sheet->setCellValue(
-                'I'.$row,
-                $item->total_kg
-            );
+                $sheet->setCellValue(
+                    'J'.$row,
+                    $item->total_kg
+                );
 
-            $sheet->setCellValue(
-                'J'.$row,
-                $item->gross_weight
-            );
-            $sheet->setCellValue(
-                'K'.$row,
-                $item->warehouse_code
-            );
+                $sheet->setCellValue(
+                    'K'.$row,
+                    $item->gross_weight
+                );
+
+                $sheet->setCellValue(
+                    'L'.$row,
+                    $item->warehouse_code
+                );
+            }
+            else
+            {
+                $sheet->setCellValue(
+                    'H'.$row,
+                    round($palletPackKg,2)
+                );
+
+                $sheet->setCellValue(
+                    'I'.$row,
+                    $item->total_kg
+                );
+
+                $sheet->setCellValue(
+                    'J'.$row,
+                    $item->gross_weight
+                );
+
+                $sheet->setCellValue(
+                    'K'.$row,
+                    $item->warehouse_code
+                );
+            }
 
             $row++;
         }
@@ -588,39 +731,64 @@ class UspackingListController extends Controller
         */
 
         $totalNetWeight = $packingList->products->sum('total_kg');
-
         $totalGrossWeight = $packingList->products->sum('gross_weight');
-
         $totalPallets = $packingList->products->sum('total_pallets');
-
         $totalPackages = $packingList->products->sum('packages');
-
         $totalPieces = $packingList->products->sum('total_item_qty');
 
+        $totalColumn = $hasM2 ? 'J' : 'I';
+
         $sheet->setCellValue(
-            'I18',
+            $totalColumn.'18',
             $totalNetWeight
         );
 
         $sheet->setCellValue(
-            'I19',
+            $totalColumn.'19',
             $totalGrossWeight
         );
 
         $sheet->setCellValue(
-            'I20',
+            $totalColumn.'20',
             $totalPallets
         );
 
-        $sheet->setCellValue(
-            'I22',
-            $totalPackages
-        );
+        if($hasM2)
+        {
+            $sheet->insertNewRowBefore(22,1);
 
-        $sheet->setCellValue(
-            'I23',
-            $totalPieces
-        );
+            $sheet->setCellValue(
+                'I22',
+                'Total M²'
+            );
+
+            $sheet->setCellValue(
+                'J22',
+                $totalM2
+            );
+
+            $sheet->setCellValue(
+                $totalColumn.'23',
+                $totalPackages
+            );
+
+            $sheet->setCellValue(
+                $totalColumn.'24',
+                $totalPieces
+            );
+        }
+        else
+        {
+            $sheet->setCellValue(
+                $totalColumn.'22',
+                $totalPackages
+            );
+
+            $sheet->setCellValue(
+                $totalColumn.'23',
+                $totalPieces
+            );
+        }
         /*
         ==========================
         SAVE XLSX
