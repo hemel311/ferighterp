@@ -127,6 +127,7 @@ class PackinglistController extends Controller
 
             'total_item_quantity' => $totalPieces,
 
+
             'status' => $status,
         ]);
 
@@ -165,6 +166,14 @@ class PackinglistController extends Controller
 
                 'net_weight' => $item['net_weight'] ?? 0,
                 'pallet_pack_kg' => $item['pallet_pack_kg'] ?? null,
+                'is_special_product' =>
+                    isset($item['is_special_product']) ? 1 : 0,
+
+                'is_m2' =>
+                    isset($item['is_m2']) ? 1 : 0,
+
+                'total_m2' =>
+                    $item['total_m2'] ?? null,
             ]);
         }
 
@@ -202,6 +211,7 @@ class PackinglistController extends Controller
         $totalPallets = 0;
         $totalPackages = 0;
         $totalPieces = 0;
+        $totalM2 = 0;
 
         foreach ($request->items as $item)
         {
@@ -214,6 +224,11 @@ class PackinglistController extends Controller
             $totalPackages += $item['total_packages'] ?? 0;
 
             $totalPieces += $item['item_quantity'] ?? 0;
+
+            if(isset($item['is_m2']))
+            {
+                $totalM2 += $item['total_m2'] ?? 0;
+            }
         }
 
         $status = $request->action == 'draft'
@@ -237,6 +252,7 @@ class PackinglistController extends Controller
             'total_packages' => $totalPackages,
 
             'total_item_quantity' => $totalPieces,
+            'total_m2' => $totalM2,
 
             'status' => $status,
         ]);
@@ -255,21 +271,40 @@ class PackinglistController extends Controller
                 'tr_packing_list_id' => $packingList->id,
 
                 'product_name' => $item['product_name'],
-                'quantity_per_unit'=>$item['quantity_per_unit'],
 
-                'description' => $item['description'] ?? null,
+                'quantity_per_unit' =>
+                    $item['quantity_per_unit'] ?? null,
 
-                'total_pallets' => $item['total_pallets'] ?? 0,
+                'description' =>
+                    $item['description'] ?? null,
 
-                'total_packages' => $item['total_packages'] ?? 0,
+                'total_pallets' =>
+                    $item['total_pallets'] ?? 0,
 
-                'item_quantity' => $item['item_quantity'] ?? 0,
+                'total_packages' =>
+                    $item['total_packages'] ?? 0,
 
-                'gross_weight' => $item['gross_weight'] ?? 0,
+                'item_quantity' =>
+                    $item['item_quantity'] ?? 0,
 
-                'net_weight' => $item['net_weight'] ?? 0,
+                'gross_weight' =>
+                    $item['gross_weight'] ?? 0,
+
+                'net_weight' =>
+                    $item['net_weight'] ?? 0,
+
                 'pallet_pack_kg' =>
                     $item['pallet_pack_kg'] ?? null,
+
+                'is_special_product' =>
+                    isset($item['is_special_product']) ? 1 : 0,
+
+                'is_m2' =>
+                    isset($item['is_m2']) ? 1 : 0,
+
+                'total_m2' =>
+                    $item['total_m2'] ?? null,
+
             ]);
         }
 
@@ -329,6 +364,11 @@ public function delete($id)
             'container',
             'items'
         ])->findOrFail($id);
+        $hasM2 = $packingList->items->contains(function ($item) {
+            return $item->is_m2 == 1;
+        });
+
+        $totalM2 = $packingList->items->sum('total_m2');
 
         $template = Templates::where(
             'type',
@@ -387,6 +427,20 @@ public function delete($id)
         */
 
         $row = 8;
+        $hasM2 = $packingList->items->contains(function ($item) {
+            return $item->is_m2 == 1;
+        });
+
+        $totalM2 = $packingList->items->sum('total_m2');
+        if($hasM2)
+        {
+            $sheet->insertNewColumnBefore('K', 1);
+
+            $sheet->setCellValue(
+                'K7',
+                'TOTAL M²'
+            );
+        }
 
         foreach($packingList->items as $item)
         {
@@ -414,55 +468,170 @@ public function delete($id)
                 $item->item_quantity
             );
 
+            if($hasM2)
+            {
+                $sheet->setCellValue('J'.$row,$item->item_quantity);
 
-            $sheet->setCellValue(
-                'K'.$row,
-                $item->pallet_pack_kg
-            );
+                $sheet->setCellValue(
+                    'K'.$row,
+                    $item->is_m2
+                        ? $item->total_m2
+                        : ''
+                );
 
-            $sheet->setCellValue(
-                'L'.$row,
-                $item->net_weight
-            );
+                $sheet->setCellValue(
+                    'L'.$row,
+                    $item->pallet_pack_kg
+                );
 
-            $sheet->setCellValue(
-                'M'.$row,
-                $item->gross_weight
-            );
+                $sheet->setCellValue(
+                    'M'.$row,
+                    $item->net_weight
+                );
 
+                $sheet->setCellValue(
+                    'N'.$row,
+                    $item->gross_weight
+                );
+            }
+            else
+            {
+                $sheet->setCellValue('J'.$row,$item->item_quantity);
+
+                $sheet->setCellValue(
+                    'K'.$row,
+                    $item->pallet_pack_kg
+                );
+
+                $sheet->setCellValue(
+                    'L'.$row,
+                    $item->net_weight
+                );
+
+                $sheet->setCellValue(
+                    'M'.$row,
+                    $item->gross_weight
+                );
+            }
             $row++;
         }
 
         /*
-        ==========================
-        TOTALS
-        ==========================
-        */
+       ==========================
+TOTALS
+==========================
+*/
 
-        $sheet->setCellValue(
-            'L22',
-            $packingList->total_net_weight
-        );
 
-        $sheet->setCellValue(
-            'L23',
-            $packingList->total_gross_weight
-        );
 
-        $sheet->setCellValue(
-            'L24',
-            $packingList->total_pallets
-        );
+        if($hasM2)
+        {
 
-        $sheet->setCellValue(
-            'L26',
-            $packingList->total_packages
-        );
+            $sheet->insertNewRowBefore(26,1);
+            $sheet->setCellValue(
+                'L22',
+                "Net Weight"
+            );
+            $sheet->setCellValue(
+                'M22',
+                $packingList->total_net_weight
+            );
 
-        $sheet->setCellValue(
-            'L27',
-            $packingList->total_item_quantity
-        );
+            $sheet->setCellValue(
+                'L23',
+                "Gross weight"
+            );
+            $sheet->setCellValue(
+                'M23',
+                $packingList->total_gross_weight
+            );
+            $sheet->setCellValue(
+                'L24',
+                "Total Palates"
+            );
+
+            $sheet->setCellValue(
+                'M24',
+                $packingList->total_pallets
+            );
+
+            $sheet->setCellValue(
+                'L26',
+                'Total M²'
+            );
+
+            $sheet->setCellValue(
+                'M26',
+                $totalM2
+            );
+
+            $sheet->setCellValue(
+                'N26',
+                'm²'
+            );
+
+            // shifted rows
+            $sheet->setCellValue(
+                'L27',
+               "Total Package"
+            );
+            $sheet->setCellValue(
+                'M27',
+                $packingList->total_packages
+            );
+
+            $sheet->setCellValue(
+                'L28',
+                "Total Pieces"
+            );
+            $sheet->setCellValue(
+                'M28',
+                $packingList->total_item_quantity
+            );
+        }
+        else
+        {
+            $sheet->setCellValue(
+                'K22',
+                "Net Weight"
+            );
+            $sheet->setCellValue(
+                'L22',
+                $packingList->total_net_weight
+            );
+
+            $sheet->setCellValue(
+                'K23',
+                "Gross weight"
+            );
+            $sheet->setCellValue(
+                'L23',
+                $packingList->total_gross_weight
+            );
+            $sheet->setCellValue(
+                'K24',
+                "Total Palates"
+            );
+
+            $sheet->setCellValue(
+                'L24',
+                $packingList->total_pallets
+            );
+            $sheet->setCellValue(
+                'K26',
+                "Total Package"
+            );
+            $sheet->setCellValue(
+                'L26',
+                $packingList->total_packages
+            );
+
+
+            $sheet->setCellValue(
+                'L27',
+                $packingList->total_item_quantity
+            );
+        }
         $sheet->setCellValue(
             'C21',"INVOICE DATE:".Carbon::parse($packingList->pl_date
             )->format('d.m.Y')
@@ -493,6 +662,10 @@ public function exportPdf($id)
         'container',
         'items'
     ])->findOrFail($id);
+    $hasM2 = $packingList->items->contains(function ($item) {
+        return $item->is_m2 == 1;
+    });
+    $totalM2 = $packingList->items->sum('total_m2');
 
     $template = Templates::where(
         'type',
@@ -573,6 +746,20 @@ public function exportPdf($id)
     */
 
     $row = 8;
+    $hasM2 = $packingList->items->contains(function ($item) {
+        return $item->is_m2 == 1;
+    });
+
+    $totalM2 = $packingList->items->sum('total_m2');
+    if($hasM2)
+    {
+        $sheet->insertNewColumnBefore('K', 1);
+
+        $sheet->setCellValue(
+            'K7',
+            'TOTAL M²'
+        );
+    }
 
     foreach($packingList->items as $item)
     {
@@ -600,55 +787,170 @@ public function exportPdf($id)
             $item->item_quantity
         );
 
+        if($hasM2)
+        {
+            $sheet->setCellValue('J'.$row,$item->item_quantity);
 
-        $sheet->setCellValue(
-            'K'.$row,
-            $item->pallet_pack_kg
-        );
+            $sheet->setCellValue(
+                'K'.$row,
+                $item->is_m2
+                    ? $item->total_m2
+                    : ''
+            );
 
-        $sheet->setCellValue(
-            'L'.$row,
-            $item->net_weight
-        );
+            $sheet->setCellValue(
+                'L'.$row,
+                $item->pallet_pack_kg
+            );
 
-        $sheet->setCellValue(
-            'M'.$row,
-            $item->gross_weight
-        );
+            $sheet->setCellValue(
+                'M'.$row,
+                $item->net_weight
+            );
 
+            $sheet->setCellValue(
+                'N'.$row,
+                $item->gross_weight
+            );
+        }
+        else
+        {
+            $sheet->setCellValue('J'.$row,$item->item_quantity);
+
+            $sheet->setCellValue(
+                'K'.$row,
+                $item->pallet_pack_kg
+            );
+
+            $sheet->setCellValue(
+                'L'.$row,
+                $item->net_weight
+            );
+
+            $sheet->setCellValue(
+                'M'.$row,
+                $item->gross_weight
+            );
+        }
         $row++;
     }
 
     /*
-    ==========================
-    TOTALS
-    ==========================
-    */
+   ==========================
+TOTALS
+==========================
+*/
 
-    $sheet->setCellValue(
-        'L22',
-        $packingList->total_net_weight
-    );
 
-    $sheet->setCellValue(
-        'L23',
-        $packingList->total_gross_weight
-    );
 
-    $sheet->setCellValue(
-        'L24',
-        $packingList->total_pallets
-    );
+    if($hasM2)
+    {
 
-    $sheet->setCellValue(
-        'L26',
-        $packingList->total_packages
-    );
+        $sheet->insertNewRowBefore(26,1);
+        $sheet->setCellValue(
+            'L22',
+            "Net Weight"
+        );
+        $sheet->setCellValue(
+            'M22',
+            $packingList->total_net_weight
+        );
 
-    $sheet->setCellValue(
-        'L27',
-        $packingList->total_item_quantity
-    );
+        $sheet->setCellValue(
+            'L23',
+            "Gross weight"
+        );
+        $sheet->setCellValue(
+            'M23',
+            $packingList->total_gross_weight
+        );
+        $sheet->setCellValue(
+            'L24',
+            "Total Palates"
+        );
+
+        $sheet->setCellValue(
+            'M24',
+            $packingList->total_pallets
+        );
+
+        $sheet->setCellValue(
+            'L26',
+            'Total M²'
+        );
+
+        $sheet->setCellValue(
+            'M26',
+            $totalM2
+        );
+
+        $sheet->setCellValue(
+            'N26',
+            'm²'
+        );
+
+        // shifted rows
+        $sheet->setCellValue(
+            'L27',
+            "Total Package"
+        );
+        $sheet->setCellValue(
+            'M27',
+            $packingList->total_packages
+        );
+
+        $sheet->setCellValue(
+            'L28',
+            "Total Pieces"
+        );
+        $sheet->setCellValue(
+            'M28',
+            $packingList->total_item_quantity
+        );
+    }
+    else
+    {
+        $sheet->setCellValue(
+            'K22',
+            "Net Weight"
+        );
+        $sheet->setCellValue(
+            'L22',
+            $packingList->total_net_weight
+        );
+
+        $sheet->setCellValue(
+            'K23',
+            "Gross weight"
+        );
+        $sheet->setCellValue(
+            'L23',
+            $packingList->total_gross_weight
+        );
+        $sheet->setCellValue(
+            'K24',
+            "Total Palates"
+        );
+
+        $sheet->setCellValue(
+            'L24',
+            $packingList->total_pallets
+        );
+        $sheet->setCellValue(
+            'K26',
+            "Total Package"
+        );
+        $sheet->setCellValue(
+            'L26',
+            $packingList->total_packages
+        );
+
+
+        $sheet->setCellValue(
+            'L27',
+            $packingList->total_item_quantity
+        );
+    }
     $sheet->setCellValue(
         'C21',"INVOICE DATE:".Carbon::parse($packingList->pl_date
         )->format('d.m.Y')

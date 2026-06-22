@@ -171,11 +171,17 @@
                                 Total Quantity
                             </th>
                             <th width="120">
+                                Total M²
+                            </th>
+                            <th width="120">
                                 Special Product
                             </th>
 
                             <th width="120">
                                 Manual Quantity
+                            </th>
+                            <th width="80">
+                                M²
                             </th>
 
                             <th style="width:80px">
@@ -251,6 +257,16 @@
                                 </td>
                                 <td>
 
+                                    <input type="number"
+                                           step="0.01"
+                                           class="form-control total-m2-field"
+                                           name="items[{{ $key }}][total_m2]"
+                                           value="{{ $item->total_m2 }}"
+                                            {{ !$item->is_m2 ? 'style=display:none;' : '' }}>
+
+                                </td>
+                                <td>
+
                                     <input type="checkbox"
                                            class="special-product"
                                            name="items[{{ $key }}][is_special_product]"
@@ -259,10 +275,20 @@
 
                                 </td>
 
+
                                 <td>
 
                                     <input type="checkbox"
                                            class="manual-quantity">
+
+                                </td>
+                                <td>
+
+                                    <input type="checkbox"
+                                           class="m2-checkbox"
+                                           name="items[{{ $key }}][is_m2]"
+                                           value="1"
+                                            {{ $item->is_m2 ? 'checked' : '' }}>
 
                                 </td>
 
@@ -360,6 +386,18 @@
 
                         <input type="text"
                                id="total_pieces"
+                               class="form-control"
+                               readonly>
+
+                    </div>
+                    <div class="col-md mb-3 total-m2-summary d-none">
+
+                        <label class="form-label">
+                            Total M²
+                        </label>
+
+                        <input type="text"
+                               id="total_m2_summary"
                                class="form-control"
                                readonly>
 
@@ -462,6 +500,15 @@
         </td>
         <td>
 
+    <input type="number"
+           step="0.01"
+           class="form-control total-m2-field"
+           name="items[${rowIndex}][total_m2]"
+           style="display:none;">
+
+</td>
+        <td>
+
     <input type="checkbox"
            class="special-product"
            name="items[${rowIndex}][is_special_product]"
@@ -473,6 +520,14 @@
 
     <input type="checkbox"
            class="manual-quantity">
+
+</td>
+<td>
+
+    <input type="checkbox"
+           class="m2-checkbox"
+           name="items[${rowIndex}][is_m2]"
+           value="1">
 
 </td>
 
@@ -527,13 +582,30 @@
 
         function calculateTotals()
         {
+            let totalM2 = 0;
+            let hasM2 = false;
             let totalNetWeight = 0;
             let totalGrossWeight = 0;
             let totalPallets = 0;
             let totalPackages = 0;
             let totalPieces = 0;
             $('#productBody tr').each(function(){
+
                 let row = $(this);
+
+                let isM2 =
+                    row.find('.m2-checkbox').is(':checked');
+
+                let rowM2 =
+                    parseFloat(
+                        row.find('.total-m2-field').val()
+                    ) || 0;
+
+                if(isM2)
+                {
+                    hasM2 = true;
+                    totalM2 += rowM2;
+                }
                 let pallets =
                     parseFloat(row.find('.pallets').val()) || 0;
                 let packages =
@@ -592,7 +664,24 @@
                                 : ''
                         );
                 }
+
             });
+            if(hasM2)
+            {
+                $('.total-m2-summary')
+                    .removeClass('d-none');
+
+                $('#total_m2_summary')
+                    .val(totalM2.toFixed(2));
+            }
+            else
+            {
+                $('.total-m2-summary')
+                    .addClass('d-none');
+
+                $('#total_m2_summary')
+                    .val('');
+            }
             $('#total_net_weight').val(totalNetWeight.toFixed(2));
             $('#total_gross_weight').val(totalGrossWeight.toFixed(2));
             $('#total_pallets').val(totalPallets);
@@ -724,5 +813,31 @@
             }
 
         });
+        $(document).on('change','.m2-checkbox',function(){
+
+            let row = $(this).closest('tr');
+
+            if($(this).is(':checked'))
+            {
+                row.find('.total-m2-field').show();
+            }
+            else
+            {
+                row.find('.total-m2-field')
+                    .hide()
+                    .val('');
+            }
+
+            calculateTotals();
+
+        });
+
+        $(document).on(
+            'keyup change',
+            '.total-m2-field',
+            function(){
+                calculateTotals();
+            }
+        );
     </script>
 @endpush

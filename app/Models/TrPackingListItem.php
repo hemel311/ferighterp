@@ -16,7 +16,10 @@ class TrPackingListItem extends Model
         'item_quantity',
         'net_weight',
         'gross_weight',
-        'pallet_pack_kg'
+        'pallet_pack_kg',
+        'is_m2',
+        'total_m2',
+
 
     ];
 

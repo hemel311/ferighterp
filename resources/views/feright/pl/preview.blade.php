@@ -3,7 +3,13 @@
 @section('title')
     TR Packing List Preview
 @endsection
+@php
+    $hasM2 = $packingList->items->contains(function ($item) {
+        return $item->is_m2;
+    });
 
+    $totalM2 = $packingList->items->sum('total_m2');
+@endphp
 @section('body')
 
     <div class="page-header">
@@ -138,6 +144,10 @@
                         <th>Pallet/Pack KG</th>
                         <th>Total Quantity</th>
 
+                        @if($hasM2)
+                            <th>Total M²</th>
+                        @endif
+
                     </tr>
 
                     </thead>
@@ -166,6 +176,12 @@
                             </td>
 
                             <td>{{ $item->item_quantity }}</td>
+
+                            @if($hasM2)
+                                <td>
+                                    {{ $item->is_m2 ? number_format($item->total_m2,2) : '' }}
+                                </td>
+                            @endif
 
                         </tr>
 
@@ -236,11 +252,21 @@
                            value="{{ $packingList->total_item_quantity }}"
                            readonly>
                 </div>
+                @if($hasM2)
+
+                    <div class="col-md-2">
+                        <label>Total M²</label>
+
+                        <input type="text"
+                               class="form-control"
+                               value="{{ number_format($totalM2,2) }}"
+                               readonly>
+                    </div>
 
             </div>
 
         </div>
 
     </div>
-
+    @endif
 @endsection

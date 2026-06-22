@@ -171,11 +171,19 @@
                                 Total Quantity
                             </th>
                             <th style="width:120px">
+                                Total M²
+                            </th>
+                            <th style="width:120px">
                                 Manual Entry
                             </th>
                             <th style="width:120px">
                                 Special Product
                             </th>
+                            <th style="width:120px">
+                                M²
+                            </th>
+
+
 
                             <th style="width:80px">
                                 Action
@@ -243,6 +251,16 @@
                                        class="form-control quantity  calc" readonly>
                             </td>
                             <td>
+
+                                <input type="number"
+                                       step="any"
+                                       min="0"
+                                       class="form-control total-m2-field"
+                                       name="items[0][total_m2]"
+                                       style="display:none;">
+
+                            </td>
+                            <td>
                                 <input type="checkbox"
                                        class="manual-quantity">
                             </td>
@@ -252,6 +270,14 @@
                                 <input type="checkbox"
                                        class="special-product"
                                        name="items[0][is_special_product]"
+                                       value="1">
+
+                            </td>
+                            <td>
+
+                                <input type="checkbox"
+                                       class="m2-checkbox"
+                                       name="items[0][is_m2]"
                                        value="1">
 
                             </td>
@@ -347,6 +373,18 @@
 
                         <input type="text"
                                id="total_pieces"
+                               class="form-control"
+                               readonly>
+
+                    </div>
+                    <div class="col-md mb-3 total-m2-summary d-none">
+
+                        <label class="form-label">
+                            Total M²
+                        </label>
+
+                        <input type="text"
+                               id="total_m2_summary"
                                class="form-control"
                                readonly>
 
@@ -450,11 +488,25 @@
                    name="items[${rowIndex}][item_quantity]"
                    class="form-control quantity calc" readonly>
         </td>
-         <td>
-                                <input type="checkbox"
-                                       class="manual-quantity">
-                            </td>
-                            <td>
+        <td>
+
+    <input type="number"
+           step="any"
+           min="0"
+           class="form-control total-m2-field"
+           name="items[${rowIndex}][total_m2]"
+           style="display:none;">
+
+</td>
+
+<td>
+
+    <input type="checkbox"
+           class="manual-quantity">
+
+</td>
+
+<td>
 
     <input type="checkbox"
            class="special-product"
@@ -463,12 +515,23 @@
 
 </td>
 
-        <td>
-            <button type="button"
-                    class="btn btn-danger btn-sm removeRow">
-                ×
-            </button>
-        </td>
+<td>
+
+    <input type="checkbox"
+           class="m2-checkbox"
+           name="items[${rowIndex}][is_m2]"
+           value="1">
+
+</td>
+
+<td>
+
+    <button type="button"
+            class="btn btn-danger btn-sm removeRow">
+        ×
+    </button>
+
+</td>
 
     </tr>
     `;
@@ -519,8 +582,24 @@
             let totalPallets = 0;
             let totalPackages = 0;
             let totalPieces = 0;
+            let totalM2 = 0;
+            let hasM2 = false;
             $('#productBody tr').each(function(){
                 let row = $(this);
+
+                let isM2 =
+                    row.find('.m2-checkbox').is(':checked');
+
+                let rowM2 =
+                    parseFloat(
+                        row.find('[name*="[total_m2]"]').val()
+                    ) || 0;
+
+                if(isM2)
+                {
+                    hasM2 = true;
+                    totalM2 += rowM2;
+                }
                 let pallets =
                     parseFloat(row.find('.pallets').val()) || 0;
                 let packages =
@@ -585,6 +664,20 @@
             $('#total_pallets').val(totalPallets);
             $('#total_packages').val(totalPackages);
             $('#total_pieces').val(totalPieces);
+            if(hasM2)
+            {
+                $('.total-m2-summary').removeClass('d-none');
+
+                $('#total_m2_summary')
+                    .val(totalM2.toFixed(2));
+            }
+            else
+            {
+                $('.total-m2-summary').addClass('d-none');
+
+                $('#total_m2_summary')
+                    .val('');
+            }
 
         }
         $(document).on('keyup change','.calc',function(){
@@ -725,6 +818,24 @@
 
                 calculateTotals();
             }
+
+        });
+        $(document).on('change','.m2-checkbox',function(){
+
+            let row = $(this).closest('tr');
+
+            if($(this).is(':checked'))
+            {
+                row.find('.total-m2-field').show();
+            }
+            else
+            {
+                row.find('.total-m2-field')
+                    .hide()
+                    .val('');
+            }
+
+            calculateTotals();
 
         });
 
