@@ -657,12 +657,11 @@
                     {
                         palletPackKg = netWeight / packages;
                     }
-                    row.find('.pallet-pack-kg')
-                        .val(
-                            palletPackKg > 0
-                                ? palletPackKg.toFixed(2)
-                                : ''
-                        );
+                    row.find('.pallet-pack-kg').val(
+                        palletPackKg > 0
+                            ? (Math.floor(palletPackKg * 1000) / 1000)
+                            : ''
+                    );
                 }
 
             });
